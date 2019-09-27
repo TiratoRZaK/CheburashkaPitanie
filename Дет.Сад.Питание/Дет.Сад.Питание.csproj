@@ -320,6 +320,10 @@
       <Project>{378e1aca-df97-4e8f-bf20-c643687200bf}</Project>
       <Name>DAL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Servises\Servises.csproj">
+      <Project>{2d7fb4dd-245c-4927-8291-edfcf936aee8}</Project>
+      <Name>Servises</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />

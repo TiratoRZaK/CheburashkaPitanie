@@ -32,11 +32,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProductsForm));
             this.dGVProductsList = new System.Windows.Forms.DataGridView();
-            this.butAddProduct = new System.Windows.Forms.Button();
-            this.tBSearch = new System.Windows.Forms.TextBox();
-            this.butRefresh = new System.Windows.Forms.Button();
-            this.pBSearch = new System.Windows.Forms.PictureBox();
-            this.butBuild = new System.Windows.Forms.Button();
             this.NameProduct = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -45,6 +40,12 @@
             this.Balance = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Edit = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Delete = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.butAddProduct = new System.Windows.Forms.Button();
+            this.tBSearch = new System.Windows.Forms.TextBox();
+            this.butRefresh = new System.Windows.Forms.Button();
+            this.pBSearch = new System.Windows.Forms.PictureBox();
+            this.butBuild = new System.Windows.Forms.Button();
+            this.lLoad = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProductsList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pBSearch)).BeginInit();
             this.SuspendLayout();
@@ -77,71 +78,6 @@
             this.dGVProductsList.Size = new System.Drawing.Size(1008, 478);
             this.dGVProductsList.TabIndex = 0;
             this.dGVProductsList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVProductsList_CellClick);
-            // 
-            // butAddProduct
-            // 
-            this.butAddProduct.BackColor = System.Drawing.Color.LimeGreen;
-            this.butAddProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butAddProduct.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.butAddProduct.Location = new System.Drawing.Point(22, 20);
-            this.butAddProduct.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.butAddProduct.Name = "butAddProduct";
-            this.butAddProduct.Size = new System.Drawing.Size(169, 27);
-            this.butAddProduct.TabIndex = 1;
-            this.butAddProduct.Text = "Добавить продукт";
-            this.butAddProduct.UseVisualStyleBackColor = false;
-            this.butAddProduct.Click += new System.EventHandler(this.ButAddProduct_Click);
-            // 
-            // tBSearch
-            // 
-            this.tBSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBSearch.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.tBSearch.Location = new System.Drawing.Point(807, 20);
-            this.tBSearch.Name = "tBSearch";
-            this.tBSearch.Size = new System.Drawing.Size(215, 27);
-            this.tBSearch.TabIndex = 2;
-            this.tBSearch.TextChanged += new System.EventHandler(this.TBSearch_TextChanged);
-            // 
-            // butRefresh
-            // 
-            this.butRefresh.BackColor = System.Drawing.Color.LimeGreen;
-            this.butRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butRefresh.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.butRefresh.Location = new System.Drawing.Point(226, 20);
-            this.butRefresh.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.butRefresh.Name = "butRefresh";
-            this.butRefresh.Size = new System.Drawing.Size(169, 27);
-            this.butRefresh.TabIndex = 4;
-            this.butRefresh.Text = "Обновить список";
-            this.butRefresh.UseVisualStyleBackColor = false;
-            this.butRefresh.Click += new System.EventHandler(this.ButRefresh_Click);
-            // 
-            // pBSearch
-            // 
-            this.pBSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pBSearch.BackgroundImage = global::Дет.Сад.Питание.Properties.Resources.search;
-            this.pBSearch.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pBSearch.Location = new System.Drawing.Point(780, 20);
-            this.pBSearch.Name = "pBSearch";
-            this.pBSearch.Size = new System.Drawing.Size(25, 28);
-            this.pBSearch.TabIndex = 3;
-            this.pBSearch.TabStop = false;
-            // 
-            // butBuild
-            // 
-            this.butBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.butBuild.BackColor = System.Drawing.Color.PeachPuff;
-            this.butBuild.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butBuild.Font = new System.Drawing.Font("Segoe UI", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.butBuild.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.butBuild.Location = new System.Drawing.Point(439, 20);
-            this.butBuild.Margin = new System.Windows.Forms.Padding(2);
-            this.butBuild.Name = "butBuild";
-            this.butBuild.Size = new System.Drawing.Size(299, 27);
-            this.butBuild.TabIndex = 14;
-            this.butBuild.Text = "Распечатать остатки продуктов";
-            this.butBuild.UseVisualStyleBackColor = false;
-            this.butBuild.Click += new System.EventHandler(this.ButBuild_Click);
             // 
             // NameProduct
             // 
@@ -214,12 +150,91 @@
             this.Delete.ReadOnly = true;
             this.Delete.Text = "Удалить";
             // 
+            // butAddProduct
+            // 
+            this.butAddProduct.BackColor = System.Drawing.Color.LimeGreen;
+            this.butAddProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.butAddProduct.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.butAddProduct.Location = new System.Drawing.Point(22, 20);
+            this.butAddProduct.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.butAddProduct.Name = "butAddProduct";
+            this.butAddProduct.Size = new System.Drawing.Size(169, 27);
+            this.butAddProduct.TabIndex = 1;
+            this.butAddProduct.Text = "Добавить продукт";
+            this.butAddProduct.UseVisualStyleBackColor = false;
+            this.butAddProduct.Click += new System.EventHandler(this.ButAddProduct_Click);
+            // 
+            // tBSearch
+            // 
+            this.tBSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tBSearch.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tBSearch.Location = new System.Drawing.Point(807, 20);
+            this.tBSearch.Name = "tBSearch";
+            this.tBSearch.Size = new System.Drawing.Size(215, 27);
+            this.tBSearch.TabIndex = 2;
+            this.tBSearch.TextChanged += new System.EventHandler(this.TBSearch_TextChanged);
+            // 
+            // butRefresh
+            // 
+            this.butRefresh.BackColor = System.Drawing.Color.LimeGreen;
+            this.butRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.butRefresh.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.butRefresh.Location = new System.Drawing.Point(226, 20);
+            this.butRefresh.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.butRefresh.Name = "butRefresh";
+            this.butRefresh.Size = new System.Drawing.Size(169, 27);
+            this.butRefresh.TabIndex = 4;
+            this.butRefresh.Text = "Обновить список";
+            this.butRefresh.UseVisualStyleBackColor = false;
+            this.butRefresh.Click += new System.EventHandler(this.ButRefresh_Click);
+            // 
+            // pBSearch
+            // 
+            this.pBSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pBSearch.BackgroundImage = global::Дет.Сад.Питание.Properties.Resources.search;
+            this.pBSearch.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pBSearch.Location = new System.Drawing.Point(780, 20);
+            this.pBSearch.Name = "pBSearch";
+            this.pBSearch.Size = new System.Drawing.Size(25, 28);
+            this.pBSearch.TabIndex = 3;
+            this.pBSearch.TabStop = false;
+            // 
+            // butBuild
+            // 
+            this.butBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.butBuild.BackColor = System.Drawing.Color.PeachPuff;
+            this.butBuild.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.butBuild.Font = new System.Drawing.Font("Segoe UI", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.butBuild.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.butBuild.Location = new System.Drawing.Point(439, 20);
+            this.butBuild.Margin = new System.Windows.Forms.Padding(2);
+            this.butBuild.Name = "butBuild";
+            this.butBuild.Size = new System.Drawing.Size(299, 27);
+            this.butBuild.TabIndex = 14;
+            this.butBuild.Text = "Распечатать остатки продуктов";
+            this.butBuild.UseVisualStyleBackColor = false;
+            this.butBuild.Click += new System.EventHandler(this.ButBuild_Click);
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(431, 252);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(205, 56);
+            this.lLoad.TabIndex = 16;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
+            // 
             // ProductsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(1046, 561);
+            this.Controls.Add(this.lLoad);
             this.Controls.Add(this.butBuild);
             this.Controls.Add(this.butRefresh);
             this.Controls.Add(this.pBSearch);
@@ -259,5 +274,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Balance;
         private System.Windows.Forms.DataGridViewButtonColumn Edit;
         private System.Windows.Forms.DataGridViewButtonColumn Delete;
+        private System.Windows.Forms.Label lLoad;
     }
 }

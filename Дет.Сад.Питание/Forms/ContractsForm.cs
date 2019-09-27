@@ -1,4 +1,5 @@
 ﻿using DAL.DTO;
+using Servises.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,11 +15,7 @@ namespace Дет.Сад.Питание.Forms
 {
     public partial class ContractsForm : Form
     {
-        public static Word.Application app = null;
-        public static Word.Document doc = null;
-        public static string generalfile = Application.StartupPath+"\\Документы\\Шаблоны\\Договор.docx"; // файл-шаблон
-        public static Object fileName = generalfile;
-        public static Object missing = Type.Missing;
+        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Договор.docx");
 
         public ContractDTO contract = null;
         public List<ProductDTO> addedProducts;
@@ -280,127 +277,102 @@ namespace Дет.Сад.Питание.Forms
                 if (dialogResult == DialogResult.OK)
                 {
                     lLoad.Visible = true;
-                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
-                    {
-                        proc.Kill();
-                    }
-                    app = new Word.Application();
-                    doc = app.Documents.Open(fileName);
-                    doc.Activate();
-
+                    WordWorker.Load();
                     ReplaceStrings();
-                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
                     int i = 1;
                     List<int> mergesRows = new List<int>();
                     foreach (string item in types)
                     {
-                        doc.Tables[4].Rows.Add();
+                        WordWorker.doc.Tables[4].Rows.Add();
                         i++;
                         mergesRows.Add(i);
-                        doc.Tables[4].Rows[i].Range.Bold = 0;
-                        doc.Tables[4].Rows[i].Height = float.Parse("0,3");
-                        doc.Tables[4].Rows[i].Cells[1].Range.Text = item;
+                        WordWorker.doc.Tables[4].Rows[i].Range.Bold = 0;
+                        WordWorker.doc.Tables[4].Rows[i].Height = float.Parse("0,3");
+                        WordWorker.doc.Tables[4].Rows[i].Cells[1].Range.Text = item;
                         foreach (ProductDTO product in addedProducts.Where(x => MainForm.DB.Types.Get(x.TypeId).Name == item))
                         {
-                            doc.Tables[4].Rows.Add();
+                            WordWorker.doc.Tables[4].Rows.Add();
                             i++;
-                            doc.Tables[4].Cell(i, 1).Range.Text = product.Name;
-                            doc.Tables[4].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                            doc.Tables[4].Cell(i, 3).Range.Text = product.Price.ToString();
-                            doc.Tables[4].Cell(i, 4).Range.Text = "-";
-                            doc.Tables[4].Cell(i, 5).Range.Text = product.Balance.ToString();
-                            doc.Tables[4].Cell(i, 6).Range.Text = Math.Round((product.Price * product.Balance), 2).ToString();
-                            doc.Tables[4].Cell(i, 7).Range.Text = "0";
+                            WordWorker.doc.Tables[4].Cell(i, 1).Range.Text = product.Name;
+                            WordWorker.doc.Tables[4].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                            WordWorker.doc.Tables[4].Cell(i, 3).Range.Text = product.Price.ToString();
+                            WordWorker.doc.Tables[4].Cell(i, 4).Range.Text = "-";
+                            WordWorker.doc.Tables[4].Cell(i, 5).Range.Text = product.Balance.ToString();
+                            WordWorker.doc.Tables[4].Cell(i, 6).Range.Text = Math.Round((product.Price * product.Balance), 2).ToString();
+                            WordWorker.doc.Tables[4].Cell(i, 7).Range.Text = "0";
                         }
                     }
                     foreach (var item in mergesRows)
-                        doc.Tables[4].Rows[item].Cells[1].Merge(doc.Tables[4].Rows[item].Cells[7]);
-                    doc.Tables[4].Rows.Add();
+                        WordWorker.doc.Tables[4].Rows[item].Cells[1].Merge(WordWorker.doc.Tables[4].Rows[item].Cells[7]);
+                    WordWorker.doc.Tables[4].Rows.Add();
                     i++;
-                    doc.Tables[4].Rows[i].Range.Bold = 0;
-                    doc.Tables[4].Rows[i].Height = float.Parse("0,3");
-                    doc.Tables[4].Cell(i, 1).Range.Text = "Итого";
-                    doc.Tables[4].Cell(i, 6).Range.Text = lSumm.Text;
-                    SaveFile(Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + ".docx");
-
-                    doc.Close();
-                    doc = null;
+                    WordWorker.doc.Tables[4].Rows[i].Range.Bold = 0;
+                    WordWorker.doc.Tables[4].Rows[i].Height = float.Parse("0,3");
+                    WordWorker.doc.Tables[4].Cell(i, 1).Range.Text = "Итого";
+                    WordWorker.doc.Tables[4].Cell(i, 6).Range.Text = lSumm.Text;
+                    WordWorker.Save(Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + ".docx");
+                    WordWorker.Close();
                     lLoad.Visible = false;
                 }
             } catch(Exception ex)
             {
-                doc.Close();
-                doc = null;
+                WordWorker.Close();
                 throw new Exception("Во время выполнения произошла ошибка!");
             }
         }
 
         void ReplaceStrings()
         {
-            FindReplace("{date}", dTPData.Value.ToShortDateString());
-            FindReplace("{dateEnd}", dTPOkonch.Value.ToShortDateString());
-            FindReplace("{typeSpec}", (cBSeller.SelectedItem as SellerDTO).TypeSpec);
-            FindReplace("{number}", tBNumber.Text.ToString());
-            FindReplace("{address}", "п.Советский");
-            FindReplace("{fullNameCompanyCustomer}", (cBCustomer.SelectedItem as CustomerDTO).FullNameCompany);
-            FindReplace("{fullNameCompanySeller}", (cBSeller.SelectedItem as SellerDTO).FullNameCompany);
-            FindReplace("{nameCustomerSpec}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomerSpec);
-            FindReplace("{nameCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomer);
-            FindReplace("{nameSeller}", (cBSeller.SelectedItem as SellerDTO).NameSeller);
-            FindReplace("{nameSellerSpec}", (cBSeller.SelectedItem as SellerDTO).NameSellerSpec);
-            FindReplace("{addressCustomer}", (cBCustomer.SelectedItem as CustomerDTO).AddressCompany);
-            FindReplace("{addressSeller}", (cBSeller.SelectedItem as SellerDTO).AddressCompany);
-            FindReplace("{emailSeller}", (cBSeller.SelectedItem as SellerDTO).Email);
-            FindReplace("{personalAccountCustomer}", (cBCustomer.SelectedItem as CustomerDTO).PersonalAccount);
-            FindReplace("{corespAccountSeller}", (cBSeller.SelectedItem as SellerDTO).CorrespondentAccount);
-            FindReplace("{bikCustomer}", (cBCustomer.SelectedItem as CustomerDTO).BIK.ToString());
-            FindReplace("{bikSeller}", (cBSeller.SelectedItem as SellerDTO).BIK.ToString());
-            FindReplace("{bikCustomer}", (cBCustomer.SelectedItem as CustomerDTO).BIK.ToString());
-            FindReplace("{innCustomer}", (cBCustomer.SelectedItem as CustomerDTO).INN.ToString());
-            FindReplace("{innSeller}", (cBSeller.SelectedItem as SellerDTO).INN.ToString());
-            FindReplace("{kppCustomer}", (cBCustomer.SelectedItem as CustomerDTO).KPP.ToString());
-            FindReplace("{kppSeller}", (cBSeller.SelectedItem as SellerDTO).KPP.ToString());
-            FindReplace("{bankCustomer}", (cBCustomer.SelectedItem as CustomerDTO).Bank);
-            FindReplace("{bankSeller}", (cBSeller.SelectedItem as SellerDTO).Bank);
-            FindReplace("{bankAccountCustomer}", (cBCustomer.SelectedItem as CustomerDTO).BankAccount);
-            FindReplace("{bankAccountSeller}", (cBSeller.SelectedItem as SellerDTO).BankAccount);
-            FindReplace("{phoneSeller}", (cBSeller.SelectedItem as SellerDTO).PhoneNumber);
-            FindReplace("{nameResponssable}", tBOtv.Text.ToString());
-            FindReplace("{year}", dTPData.Value.Year.ToString());
-            FindReplace("{total}", lSumm.Text.ToString());
-            string replacedOfWord = ReplaceOfWord(float.Parse(lSumm.Text));
+            WordWorker.FindReplace("{date}", dTPData.Value.ToShortDateString());
+            WordWorker.FindReplace("{dateEnd}", dTPOkonch.Value.ToShortDateString());
+            WordWorker.FindReplace("{typeSpec}", (cBSeller.SelectedItem as SellerDTO).TypeSpec);
+            WordWorker.FindReplace("{number}", tBNumber.Text.ToString());
+            WordWorker.FindReplace("{address}", "п.Советский");
+            WordWorker.FindReplace("{fullNameCompanyCustomer}", (cBCustomer.SelectedItem as CustomerDTO).FullNameCompany);
+            WordWorker.FindReplace("{fullNameCompanySeller}", (cBSeller.SelectedItem as SellerDTO).FullNameCompany);
+            WordWorker.FindReplace("{nameCustomerSpec}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomerSpec);
+            WordWorker.FindReplace("{nameCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomer);
+            WordWorker.FindReplace("{nameSeller}", (cBSeller.SelectedItem as SellerDTO).NameSeller);
+            WordWorker.FindReplace("{nameSellerSpec}", (cBSeller.SelectedItem as SellerDTO).NameSellerSpec);
+            WordWorker.FindReplace("{addressCustomer}", (cBCustomer.SelectedItem as CustomerDTO).AddressCompany);
+            WordWorker.FindReplace("{addressSeller}", (cBSeller.SelectedItem as SellerDTO).AddressCompany);
+            WordWorker.FindReplace("{emailSeller}", (cBSeller.SelectedItem as SellerDTO).Email);
+            WordWorker.FindReplace("{personalAccountCustomer}", (cBCustomer.SelectedItem as CustomerDTO).PersonalAccount);
+            WordWorker.FindReplace("{corespAccountSeller}", (cBSeller.SelectedItem as SellerDTO).CorrespondentAccount);
+            WordWorker.FindReplace("{bikCustomer}", (cBCustomer.SelectedItem as CustomerDTO).BIK.ToString());
+            WordWorker.FindReplace("{bikSeller}", (cBSeller.SelectedItem as SellerDTO).BIK.ToString());
+            WordWorker.FindReplace("{bikCustomer}", (cBCustomer.SelectedItem as CustomerDTO).BIK.ToString());
+            WordWorker.FindReplace("{innCustomer}", (cBCustomer.SelectedItem as CustomerDTO).INN.ToString());
+            WordWorker.FindReplace("{innSeller}", (cBSeller.SelectedItem as SellerDTO).INN.ToString());
+            WordWorker.FindReplace("{kppCustomer}", (cBCustomer.SelectedItem as CustomerDTO).KPP.ToString());
+            WordWorker.FindReplace("{kppSeller}", (cBSeller.SelectedItem as SellerDTO).KPP.ToString());
+            WordWorker.FindReplace("{bankCustomer}", (cBCustomer.SelectedItem as CustomerDTO).Bank);
+            WordWorker.FindReplace("{bankSeller}", (cBSeller.SelectedItem as SellerDTO).Bank);
+            WordWorker.FindReplace("{bankAccountCustomer}", (cBCustomer.SelectedItem as CustomerDTO).BankAccount);
+            WordWorker.FindReplace("{bankAccountSeller}", (cBSeller.SelectedItem as SellerDTO).BankAccount);
+            WordWorker.FindReplace("{phoneSeller}", (cBSeller.SelectedItem as SellerDTO).PhoneNumber);
+            WordWorker.FindReplace("{nameResponssable}", tBOtv.Text.ToString());
+            WordWorker.FindReplace("{year}", dTPData.Value.Year.ToString());
+            WordWorker.FindReplace("{total}", lSumm.Text.ToString());
+            string replacedOfWord = WordWorker.ReplaceOfWord(float.Parse(lSumm.Text));
             if (lSumm.Text.Contains(','))
             {
                 if (lSumm.Text.Substring(lSumm.Text.IndexOf(',')).Length - 1 == 2)
                 {
-                    FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1));
+                    WordWorker.FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
+                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1));
                 }
                 else
                 {
-                    FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1) + "0");
+                    WordWorker.FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
+                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1) + "0");
                 }
             }
             else
             {
-                FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                FindReplace("{kopeiki}", "00");
-            }
-        }
-
-        public void OpenFile()
-        {
-            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
-            if (dialogResult == DialogResult.OK)
-            {
-                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
-                {
-                    proc.Kill();
-                }
-                app = new Word.Application();
-                doc = app.Documents.Open(ref fileName);
-                app.Visible = true;
+                WordWorker.FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
+                WordWorker.FindReplace("{kopeiki}", "00");
             }
         }
 
@@ -410,38 +382,12 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
-                {
-                    proc.Kill();
-                }
-                app = new Word.Application();
-                app.Documents.Open(path);
-                app.Visible = true;
+                WordWorker.Open(path);
             }
             lLoad.Visible = false;
         }
 
-        string ReplaceOfWord(float total)
-        {
-            return RusNumber.Str((int)total);
-        }
-
-        public void SaveFile(string path)
-        {
-            doc.SaveAs(path);
-        }
-
-        public void FindReplace(string str_old, string str_new)
-        {
-            Word.Find find = app.Selection.Find;
-
-            find.Text = str_old; // текст поиска
-            find.Replacement.Text = str_new; // текст замены
-
-            find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
-        }
+       
 
         private void ButDirectory_Click(object sender, EventArgs e)
         {
@@ -465,127 +411,26 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
-            OpenDocument(Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1)+"\\"+ (lBContracts.SelectedItem as ContractDTO).ToString()+".docx");
+            try
+            {
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
+                {
+                    lLoad.Visible = true;
+                    WordWorker.Open(Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1)+"\\"+ (lBContracts.SelectedItem as ContractDTO).ToString()+".docx");
+                    lLoad.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                WordWorker.Close();
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
 
-        }
-    }
-    public class RusNumber
-    {
-        //Наименования сотен
-        private static string[] hunds =
-        {
-            "", "сто ", "двести ", "триста ", "четыреста ",
-            "пятьсот ", "шестьсот ", "семьсот ", "восемьсот ", "девятьсот "
-        };
-        //Наименования десятков
-        private static string[] tens =
-        {
-            "", "десять ", "двадцать ", "тридцать ", "сорок ", "пятьдесят ",
-            "шестьдесят ", "семьдесят ", "восемьдесят ", "девяносто "
-        };
-        /// <summary>
-        /// Перевод в строку числа с учётом падежного окончания относящегося к числу существительного
-        /// </summary>
-        /// <param name="val">Число</param>
-        /// <param name="male">Род существительного, которое относится к числу</param>
-        /// <param name="one">Форма существительного в единственном числе</param>
-        /// <param name="two">Форма существительного от двух до четырёх</param>
-        /// <param name="five">Форма существительного от пяти и больше</param>
-        /// <returns></returns>
-        public static string Str(int val, bool male, string one, string two, string five)
-        {
-            string[] frac20 =
-            {
-                "", "один ", "два ", "три ", "четыре ", "пять ", "шесть ",
-                "семь ", "восемь ", "девять ", "десять ", "одиннадцать ",
-                "двенадцать ", "тринадцать ", "четырнадцать ", "пятнадцать ",
-                "шестнадцать ", "семнадцать ", "восемнадцать ", "девятнадцать "
-            };
-
-            int num = val % 1000;
-            if (0 == num) return "";
-            if (num < 0) throw new ArgumentOutOfRangeException("val", "Параметр не может быть отрицательным");
-            if (!male)
-            {
-                frac20[1] = "одна ";
-                frac20[2] = "две ";
-            }
-
-            StringBuilder r = new StringBuilder(hunds[num / 100]);
-
-            if (num % 100 < 20)
-            {
-                r.Append(frac20[num % 100]);
-            }
-            else
-            {
-                r.Append(tens[num % 100 / 10]);
-                r.Append(frac20[num % 10]);
-            }
-
-            r.Append(Case(num, one, two, five));
-
-            if (r.Length != 0) r.Append(" ");
-            return r.ToString();
-        }
-        /// <summary>
-        /// Выбор правильного падежного окончания сущесвительного
-        /// </summary>
-        /// <param name="val">Число</param>
-        /// <param name="one">Форма существительного в единственном числе</param>
-        /// <param name="two">Форма существительного от двух до четырёх</param>
-        /// <param name="five">Форма существительного от пяти и больше</param>
-        /// <returns>Возвращает существительное с падежным окончанием, которое соответсвует числу</returns>
-        public static string Case(int val, string one, string two, string five)
-        {
-            int t = (val % 100 > 20) ? val % 10 : val % 20;
-
-            switch (t)
-            {
-                case 1: return one;
-                case 2: case 3: case 4: return two;
-                default: return five;
-            }
-        }
-        /// <summary>
-        /// Перевод целого числа в строку
-        /// </summary>
-        /// <param name="val">Число</param>
-        /// <returns>Возвращает строковую запись числа</returns>
-        public static string Str(int val)
-        {
-            int n = (int)val;
-
-            StringBuilder r = new StringBuilder();
-
-            if (0 == n) r.Append("0 ");
-            if (n % 1000 != 0)
-                r.Append(RusNumber.Str(n, true, "", "", ""));
-
-            n /= 1000;
-
-            r.Insert(0, RusNumber.Str(n, false, "тысяча", "тысячи", "тысяч"));
-            n /= 1000;
-
-            r.Insert(0, RusNumber.Str(n, true, "миллион", "миллиона", "миллионов"));
-            n /= 1000;
-
-            r.Insert(0, RusNumber.Str(n, true, "миллиард", "миллиарда", "миллиардов"));
-            n /= 1000;
-
-            r.Insert(0, RusNumber.Str(n, true, "триллион", "триллиона", "триллионов"));
-            n /= 1000;
-
-            r.Insert(0, RusNumber.Str(n, true, "триллиард", "триллиарда", "триллиардов"));
-
-            //Делаем первую букву заглавной
-            r[0] = char.ToUpper(r[0]);
-
-            return r.ToString();
         }
     }
 }

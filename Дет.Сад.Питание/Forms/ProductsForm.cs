@@ -1,6 +1,7 @@
 ﻿using DAL.DTO;
-using Microsoft.Office.Interop.Word;
+using Servises.WordWorker;
 using System;
+using Word = Microsoft.Office.Interop.Word;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,10 +11,7 @@ namespace Дет.Сад.Питание
 {
     public partial class ProductsForm : Form
     {
-        public static Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-        public static string generalfile = System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны\\Остатки продуктов.docx"; // файл-шаблон
-        public static Object fileName = generalfile;
-        public static Object missing = System.Type.Missing;
+        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Остатки продуктов.docx");
         public MainForm main;
 
         public ProductsForm(MainForm main)
@@ -102,33 +100,47 @@ namespace Дет.Сад.Питание
 
         private void ButBuild_Click(object sender, EventArgs e)
         {
-            BuildDocument();
+            try
+            {
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
+                {
+                    lLoad.Visible = true;
+                    BuildDocument();
+                    lLoad.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                WordWorker.Close();
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
 
         private void BuildDocument()
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(ref fileName);
-            app.Visible = true;
-            Document document = app.ActiveDocument;
-            Range range = document.Paragraphs[document.Paragraphs.Count].Range;
+            WordWorker.Load();
+            Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
             double summ = 0;
             int i = 2;
             foreach (ProductDTO product in MainForm.DB.Products.GetAll())
             {
-                document.Tables[1].Rows.Add();
+                WordWorker.doc.Tables[1].Rows.Add();
                 i++;
-                document.Tables[1].Cell(i, 1).Range.Text = product.Name;
-                document.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                document.Tables[1].Cell(i, 4).Range.Text = product.Balance.ToString();
-                document.Tables[1].Cell(i, 3).Range.Text = product.Price.ToString();
-                document.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Balance* product.Price, 2).ToString();
+                WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
+                WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = product.Balance.ToString();
+                WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.Price.ToString();
+                WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Balance* product.Price, 2).ToString();
                 summ += product.Balance * product.Price;
             }
-            document.Tables[1].Rows.Add();
+            WordWorker.doc.Tables[1].Rows.Add();
             i++;
-            document.Tables[1].Cell(i, 1).Range.Text = "Итого";
-            document.Tables[1].Cell(i, 5).Range.Text = summ.ToString();
+            WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = "Итого";
+            WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = summ.ToString();
+            WordWorker.Save(Application.StartupPath + "\\Документы\\Остатки продуктов на складе.docx");
+            WordWorker.Close();
+            WordWorker.Open(Application.StartupPath + "\\Документы\\Остатки продуктов на складе.docx");
         }
     }
 }

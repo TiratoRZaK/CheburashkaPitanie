@@ -7,17 +7,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using Servises.WordWorker;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class AccumulativeOnArrival : Form
     {
-        public static Word.Application app = null;
-        public static Word.Document doc = null;
-        public static string generalfile = Application.StartupPath + "\\Документы\\Шаблоны\\Накопительная по приходу.docx"; // файл-шаблон
-        public static Object fileName = generalfile;
-        public static Object missing = Type.Missing;
-
+        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Накопительная по приходу.docx");
+       
         public List<ProductDTO> deliveryNotesProducts;
         public List<ProductDTO> accumulateProducts;
         public List<ContractDTO> contracts;
@@ -152,15 +149,9 @@ namespace Дет.Сад.Питание.Forms
                 if (dialogResult == DialogResult.OK)
                 {
                     lLoad.Visible = true;
-                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
-                    {
-                        proc.Kill();
-                    }
-                    app = new Word.Application();
-                    doc = app.Documents.Open(fileName);
-                    doc.Activate();
+                    WordWorker.Load();
                     ReplaceStrings();
-                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
                     int contractIndex = 3;
                     int naklIndex = 1;
                     float TotalAll = 0;
@@ -174,11 +165,11 @@ namespace Дет.Сад.Питание.Forms
                     foreach (ContractDTO contract in cLBContracts.CheckedItems)
                     {
                         TotalContract = 0;
-                        doc.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
+                        WordWorker.doc.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
 
                         foreach (DeliveryNoteDTO nakl in deliveryNotes.Where(x => MainForm.DB.Invoices.Get(x.InvoiceId).ContractId == contract.Id))
                         {
-                            Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + contract.ToString() + "\\Файлы\\" + nakl.ToString() + ".nakl", FileMode.Open);
+                            Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + contract.ToString() + "\\Файлы\\" + nakl.ToString() + ".nakl", FileMode.Open);
                             List<ProductDTO> productList = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
                             stream.Close();
                             float Total = 0;
@@ -188,70 +179,52 @@ namespace Дет.Сад.Питание.Forms
                                 if (allProducts.Where(x => x.Id == item.Id).Count() == 0)
                                 {
                                     allProducts.Add(item);
-                                    doc.Tables[2].Rows.Add();
-                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 1).Range.Text = item.Name;
-                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 2).Range.Text = MainForm.DB.Units.Get(item.UnitId).Name;
-                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
-                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
+                                    WordWorker.doc.Tables[2].Rows.Add();
+                                    WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 1).Range.Text = item.Name;
+                                    WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 2).Range.Text = MainForm.DB.Units.Get(item.UnitId).Name;
+                                    WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
+                                    WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
                                 }
                                 else
                                 {
-                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
-                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
+                                    WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
+                                    WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
                                 }
 
                             }
                             TotalContract += Total;
-                            doc.Tables[1].Cell(1, naklIndex + 2).Range.Text = "От " + (nakl as DeliveryNoteDTO).Date.ToLongDateString();
-                            doc.Tables[1].Cell(2, naklIndex + 2).Range.Text = "Накл. №" + (nakl as DeliveryNoteDTO).Number.ToString();
-                            doc.Tables[1].Cell(contractIndex, naklIndex + 2).Range.Text = Math.Round(Total, 2).ToString();
+                            WordWorker.doc.Tables[1].Cell(1, naklIndex + 2).Range.Text = "От " + (nakl as DeliveryNoteDTO).Date.ToLongDateString();
+                            WordWorker.doc.Tables[1].Cell(2, naklIndex + 2).Range.Text = "Накл. №" + (nakl as DeliveryNoteDTO).Number.ToString();
+                            WordWorker.doc.Tables[1].Cell(contractIndex, naklIndex + 2).Range.Text = Math.Round(Total, 2).ToString();
 
                             naklIndex++;
                         }
-                        doc.Tables[1].Cell(contractIndex, 12).Range.Text = Math.Round(TotalContract, 2).ToString();
-                        doc.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
+                        WordWorker.doc.Tables[1].Cell(contractIndex, 12).Range.Text = Math.Round(TotalContract, 2).ToString();
+                        WordWorker.doc.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
                         TotalAll += TotalContract;
                         contractIndex++;
                     }
-                    doc.Tables[1].Cell(13, 12).Range.Text = Math.Round(TotalAll, 2).ToString();
+                    WordWorker.doc.Tables[1].Cell(13, 12).Range.Text = Math.Round(TotalAll, 2).ToString();
 
-                    SaveFile(Application.StartupPath + "\\Документы\\Накопительные по приходу\\Накопительная по приходу за " + cBMount.SelectedItem.ToString() + " " + cBYear.SelectedItem.ToString() + ".docx");
-                    app.Visible = true;
-                    doc = null;
+                    WordWorker.Save(Application.StartupPath + "\\Документы\\Накопительные по приходу\\Накопительная по приходу за " + cBMount.SelectedItem.ToString() + " " + cBYear.SelectedItem.ToString() + ".docx");
+                    WordWorker.app.Visible = true;
+                    WordWorker.doc = null;
                     lLoad.Visible = false;
                 }
             }
             catch (Exception ex)
             {
-                doc.Close();
-                doc = null;
+                WordWorker.Close();
                 throw new Exception("Во время выполнения произошла ошибка!");
             }
         }
 
         void ReplaceStrings()
         {
-            FindReplace("{mount}", cBMount.SelectedItem.ToString());
-            FindReplace("{year}", cBYear.SelectedItem.ToString());
-            FindReplace("{nameCompanyCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCompany);
-            FindReplace("{nameCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomer);
-        }
-
-        public void SaveFile(string fileName)
-        {
-            app.ActiveDocument.SaveAs(fileName);
-        }
-
-        public void FindReplace(string str_old, string str_new)
-        {
-            Word.Find find = app.Selection.Find;
-
-            find.Text = str_old; // текст поиска
-            find.Replacement.Text = str_new; // текст замены
-
-            find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
+            WordWorker.FindReplace("{mount}", cBMount.SelectedItem.ToString());
+            WordWorker.FindReplace("{year}", cBYear.SelectedItem.ToString());
+            WordWorker.FindReplace("{nameCompanyCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCompany);
+            WordWorker.FindReplace("{nameCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomer);
         }
 
         private void ButDirectory_Click(object sender, EventArgs e)

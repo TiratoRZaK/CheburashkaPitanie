@@ -8,17 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using Servises.WordWorker;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class DeliveryNotesForm : Form
     {
-        public static Word.Application app = null;
-        public static Word.Document doc = null;
-        public static string generalfile = Application.StartupPath + "\\Документы\\Шаблоны\\Накладная.docx"; // файл-шаблон
-        public static Object fileName = generalfile;
-        public static Object missing = Type.Missing;
-        public static bool checkOpenDoc = false;
+        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Накладная.docx");
 
         public DeliveryNoteDTO deliveryNote = null;
         public List<ProductDTO> addedProducts;
@@ -269,50 +265,41 @@ namespace Дет.Сад.Питание.Forms
                 if (dialogResult == DialogResult.OK)
                 {
                     lLoad.Visible = true;
-                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
-                    {
-                        proc.Kill();
-                    }
-                    app = new Word.Application();
-                    doc = app.Documents.Open(fileName);
-                    doc.Activate();
+                    WordWorker.Load();
 
                     ReplaceStrings();
-                    doc = app.ActiveDocument;
-                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
                     int i = 3;
                     foreach (ProductDTO product in addedProducts)
                     {
-                        doc.Tables[2].Rows.Add();
+                        WordWorker.doc.Tables[2].Rows.Add();
                         i++;
-                        doc.Tables[2].Cell(i, 1).Range.Text = (i - 3).ToString();
-                        doc.Tables[2].Cell(i, 2).Range.Text = product.Name;
-                        doc.Tables[2].Cell(i, 4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                        doc.Tables[2].Cell(i, 10).Range.Text = product.Balance.ToString();
-                        doc.Tables[2].Cell(i, 11).Range.Text = product.Price.ToString();
-                        doc.Tables[2].Cell(i, 12).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
-                        doc.Tables[2].Cell(i, 13).Range.Text = "БЕЗ НДС";
-                        doc.Tables[2].Cell(i, 15).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
+                        WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = (i - 3).ToString();
+                        WordWorker.doc.Tables[2].Cell(i, 2).Range.Text = product.Name;
+                        WordWorker.doc.Tables[2].Cell(i, 4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                        WordWorker.doc.Tables[2].Cell(i, 10).Range.Text = product.Balance.ToString();
+                        WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = product.Price.ToString();
+                        WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
+                        WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "БЕЗ НДС";
+                        WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
                     }
-                    doc.Tables[2].Rows.Add();
+                    WordWorker.doc.Tables[2].Rows.Add();
                     i++;
-                    doc.Tables[2].Cell(i, 1).Range.Text = "Итого";
-                    doc.Tables[2].Cell(i, 11).Range.Text = "X";
-                    doc.Tables[2].Cell(i, 12).Range.Text = lSumm.Text;
-                    doc.Tables[2].Cell(i, 13).Range.Text = "X";
-                    doc.Tables[2].Cell(i, 15).Range.Text = lSumm.Text;
+                    WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = "Итого";
+                    WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = "X";
+                    WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = lSumm.Text;
+                    WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "X";
+                    WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = lSumm.Text;
 
-                    SaveFile(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
+                    WordWorker.Save(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
 
-                    doc.Close();
-                    doc = null;
+                    WordWorker.Close();
                     lLoad.Visible = false;
                 }
             }
             catch (Exception ex)
             {
-                doc.Close();
-                doc = null;
+                WordWorker.Close();
                 throw new Exception("Во время выполнения произошла ошибка!");
             }
         }
@@ -320,51 +307,51 @@ namespace Дет.Сад.Питание.Forms
         {
             ContractDTO contract = MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId);
             InvoiceDTO invoice = MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId);
-            FindReplace("{dateNakl}", dTPData.Value.ToShortDateString());
-            FindReplace("{contractName}", contract.ToString());
-            FindReplace("{invoiceName}", invoice.ToString());
-            FindReplace("{numberNakl}", tBNumber.Text.ToString());
-            FindReplace("{nameCompanySeller}", MainForm.DB.Sellers.Get(contract.SellerId).NameCompany);
-            FindReplace("{nameCompanyCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).NameCompany);
-            FindReplace("{fullNameCompanySeller}", MainForm.DB.Sellers.Get(contract.SellerId).FullNameCompany);
-            FindReplace("{fullNameCompanyCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).FullNameCompany);
-            FindReplace("{nameSeller}", MainForm.DB.Sellers.Get(contract.SellerId).NameSeller);
-            FindReplace("{addressCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).AddressCompany);
-            FindReplace("{addressSeller}", MainForm.DB.Sellers.Get(contract.SellerId).AddressCompany);
-            FindReplace("{innCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).INN.ToString());
-            FindReplace("{innSeller}", MainForm.DB.Sellers.Get(contract.SellerId).INN.ToString());
-            FindReplace("{kppCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).KPP.ToString());
-            FindReplace("{kppSeller}", MainForm.DB.Sellers.Get(contract.SellerId).KPP.ToString());
-            FindReplace("{personalAccountCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).PersonalAccount);
-            FindReplace("{corespAccountSeller}", MainForm.DB.Sellers.Get(contract.SellerId).CorrespondentAccount);
-            FindReplace("{bikCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BIK.ToString());
-            FindReplace("{bikSeller}", MainForm.DB.Sellers.Get(contract.SellerId).BIK.ToString());
-            FindReplace("{bikCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BIK.ToString());
-            FindReplace("{bankCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).Bank);
-            FindReplace("{bankSeller}", MainForm.DB.Sellers.Get(contract.SellerId).Bank);
-            FindReplace("{bankAccountCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BankAccount);
-            FindReplace("{bankAccountSeller}", MainForm.DB.Sellers.Get(contract.SellerId).BankAccount);
-            FindReplace("{priemName}", tBPriemName.Text);
-            FindReplace("{gruzName}", tBGruzName.Text);
+            WordWorker.FindReplace("{dateNakl}", dTPData.Value.ToShortDateString());
+            WordWorker.FindReplace("{contractName}", contract.ToString());
+            WordWorker.FindReplace("{invoiceName}", invoice.ToString());
+            WordWorker.FindReplace("{numberNakl}", tBNumber.Text.ToString());
+            WordWorker.FindReplace("{nameCompanySeller}", MainForm.DB.Sellers.Get(contract.SellerId).NameCompany);
+            WordWorker.FindReplace("{nameCompanyCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).NameCompany);
+            WordWorker.FindReplace("{fullNameCompanySeller}", MainForm.DB.Sellers.Get(contract.SellerId).FullNameCompany);
+            WordWorker.FindReplace("{fullNameCompanyCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).FullNameCompany);
+            WordWorker.FindReplace("{nameSeller}", MainForm.DB.Sellers.Get(contract.SellerId).NameSeller);
+            WordWorker.FindReplace("{addressCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).AddressCompany);
+            WordWorker.FindReplace("{addressSeller}", MainForm.DB.Sellers.Get(contract.SellerId).AddressCompany);
+            WordWorker.FindReplace("{innCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).INN.ToString());
+            WordWorker.FindReplace("{innSeller}", MainForm.DB.Sellers.Get(contract.SellerId).INN.ToString());
+            WordWorker.FindReplace("{kppCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).KPP.ToString());
+            WordWorker.FindReplace("{kppSeller}", MainForm.DB.Sellers.Get(contract.SellerId).KPP.ToString());
+            WordWorker.FindReplace("{personalAccountCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).PersonalAccount);
+            WordWorker.FindReplace("{corespAccountSeller}", MainForm.DB.Sellers.Get(contract.SellerId).CorrespondentAccount);
+            WordWorker.FindReplace("{bikCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BIK.ToString());
+            WordWorker.FindReplace("{bikSeller}", MainForm.DB.Sellers.Get(contract.SellerId).BIK.ToString());
+            WordWorker.FindReplace("{bikCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BIK.ToString());
+            WordWorker.FindReplace("{bankCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).Bank);
+            WordWorker.FindReplace("{bankSeller}", MainForm.DB.Sellers.Get(contract.SellerId).Bank);
+            WordWorker.FindReplace("{bankAccountCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BankAccount);
+            WordWorker.FindReplace("{bankAccountSeller}", MainForm.DB.Sellers.Get(contract.SellerId).BankAccount);
+            WordWorker.FindReplace("{priemName}", tBPriemName.Text);
+            WordWorker.FindReplace("{gruzName}", tBGruzName.Text);
 
-            string replacedOfWord = ReplaceOfWord(float.Parse(lSumm.Text));
+            string replacedOfWord = WordWorker.ReplaceOfWord(float.Parse(lSumm.Text));
             if (lSumm.Text.Contains(','))
             {
                 if (lSumm.Text.Substring(lSumm.Text.IndexOf(',')).Length - 1 == 2)
                 {
-                    FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1));
+                    WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
+                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1));
                 }
                 else
                 {
-                    FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1) + "0");
+                    WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
+                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1) + "0");
                 }
             }
             else
             {
-                FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                FindReplace("{kopeiki}", "00");
+                WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
+                WordWorker.FindReplace("{kopeiki}", "00");
             }
         }
 
@@ -374,37 +361,9 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
-                {
-                    proc.Kill();
-                }
-                app = new Word.Application();
-                app.Documents.Open(fileName);
-                app.Visible = true;
+                WordWorker.Open(fileName);
             }
             lLoad.Visible = false;
-        }
-
-        string ReplaceOfWord(float total)
-        {
-            return RusNumber.Str((int)total);
-        }
-
-        public void SaveFile(string fileName)
-        {
-            app.ActiveDocument.SaveAs(fileName);
-        }
-
-        public void FindReplace(string str_old, string str_new)
-        {
-            Word.Find find = app.Selection.Find;
-
-            find.Text = str_old; // текст поиска
-            find.Replacement.Text = str_new; // текст замены
-
-            find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
         }
 
         private void ButDirectory_Click(object sender, EventArgs e)
