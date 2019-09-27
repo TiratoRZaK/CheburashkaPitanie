@@ -65,6 +65,7 @@
             this.Balance = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Sum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Delete = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.lLoad = new System.Windows.Forms.Label();
             this.pInvoices.SuspendLayout();
             this.pData.SuspendLayout();
             this.pProducts.SuspendLayout();
@@ -75,6 +76,7 @@
             // pInvoices
             // 
             this.pInvoices.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pInvoices.Controls.Add(this.lLoad);
             this.pInvoices.Controls.Add(this.butOpen);
             this.pInvoices.Controls.Add(this.label1);
             this.pInvoices.Controls.Add(this.lBInvoices);
@@ -83,9 +85,9 @@
             this.pInvoices.Controls.Add(this.butDel);
             this.pInvoices.Dock = System.Windows.Forms.DockStyle.Right;
             this.pInvoices.Enabled = false;
-            this.pInvoices.Location = new System.Drawing.Point(725, 0);
+            this.pInvoices.Location = new System.Drawing.Point(660, 0);
             this.pInvoices.Name = "pInvoices";
-            this.pInvoices.Size = new System.Drawing.Size(197, 450);
+            this.pInvoices.Size = new System.Drawing.Size(219, 450);
             this.pInvoices.TabIndex = 15;
             // 
             // butOpen
@@ -94,9 +96,9 @@
             this.butOpen.BackColor = System.Drawing.Color.LightSeaGreen;
             this.butOpen.Enabled = false;
             this.butOpen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butOpen.Location = new System.Drawing.Point(111, 323);
+            this.butOpen.Location = new System.Drawing.Point(114, 323);
             this.butOpen.Name = "butOpen";
-            this.butOpen.Size = new System.Drawing.Size(76, 48);
+            this.butOpen.Size = new System.Drawing.Size(88, 48);
             this.butOpen.TabIndex = 14;
             this.butOpen.Text = "Открыть документ";
             this.butOpen.UseVisualStyleBackColor = false;
@@ -107,7 +109,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 14);
+            this.label1.Location = new System.Drawing.Point(11, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(129, 13);
             this.label1.TabIndex = 1;
@@ -118,9 +120,9 @@
             this.lBInvoices.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lBInvoices.FormattingEnabled = true;
-            this.lBInvoices.Location = new System.Drawing.Point(11, 30);
+            this.lBInvoices.Location = new System.Drawing.Point(14, 30);
             this.lBInvoices.Name = "lBInvoices";
-            this.lBInvoices.Size = new System.Drawing.Size(177, 277);
+            this.lBInvoices.Size = new System.Drawing.Size(189, 277);
             this.lBInvoices.TabIndex = 0;
             this.lBInvoices.SelectedIndexChanged += new System.EventHandler(this.LBInvoices_SelectedIndexChanged);
             // 
@@ -130,7 +132,7 @@
             this.butBuild.BackColor = System.Drawing.Color.LimeGreen;
             this.butBuild.Enabled = false;
             this.butBuild.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butBuild.Location = new System.Drawing.Point(11, 323);
+            this.butBuild.Location = new System.Drawing.Point(14, 323);
             this.butBuild.Name = "butBuild";
             this.butBuild.Size = new System.Drawing.Size(94, 48);
             this.butBuild.TabIndex = 13;
@@ -144,9 +146,9 @@
             this.butDirectory.BackColor = System.Drawing.Color.BlueViolet;
             this.butDirectory.Enabled = false;
             this.butDirectory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butDirectory.Location = new System.Drawing.Point(11, 412);
+            this.butDirectory.Location = new System.Drawing.Point(14, 412);
             this.butDirectory.Name = "butDirectory";
-            this.butDirectory.Size = new System.Drawing.Size(176, 24);
+            this.butDirectory.Size = new System.Drawing.Size(188, 24);
             this.butDirectory.TabIndex = 2;
             this.butDirectory.Text = "Открыть папку с документом";
             this.butDirectory.UseVisualStyleBackColor = false;
@@ -158,9 +160,9 @@
             this.butDel.BackColor = System.Drawing.Color.Tomato;
             this.butDel.Enabled = false;
             this.butDel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butDel.Location = new System.Drawing.Point(11, 377);
+            this.butDel.Location = new System.Drawing.Point(14, 377);
             this.butDel.Name = "butDel";
-            this.butDel.Size = new System.Drawing.Size(176, 24);
+            this.butDel.Size = new System.Drawing.Size(188, 24);
             this.butDel.TabIndex = 12;
             this.butDel.Text = "Удалить счёт-фактуру";
             this.butDel.UseVisualStyleBackColor = false;
@@ -196,10 +198,10 @@
             this.butSave.Enabled = false;
             this.butSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butSave.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.butSave.Location = new System.Drawing.Point(564, 12);
+            this.butSave.Location = new System.Drawing.Point(518, 12);
             this.butSave.Margin = new System.Windows.Forms.Padding(5);
             this.butSave.Name = "butSave";
-            this.butSave.Size = new System.Drawing.Size(148, 31);
+            this.butSave.Size = new System.Drawing.Size(121, 43);
             this.butSave.TabIndex = 17;
             this.butSave.Text = "Сохранить счёт-фактуру";
             this.butSave.UseVisualStyleBackColor = false;
@@ -211,10 +213,10 @@
             this.butAddInvoice.BackColor = System.Drawing.Color.LimeGreen;
             this.butAddInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butAddInvoice.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.butAddInvoice.Location = new System.Drawing.Point(379, 12);
+            this.butAddInvoice.Location = new System.Drawing.Point(381, 12);
             this.butAddInvoice.Margin = new System.Windows.Forms.Padding(5);
             this.butAddInvoice.Name = "butAddInvoice";
-            this.butAddInvoice.Size = new System.Drawing.Size(175, 31);
+            this.butAddInvoice.Size = new System.Drawing.Size(127, 43);
             this.butAddInvoice.TabIndex = 16;
             this.butAddInvoice.Text = "Добавить новую счёт-фактуру";
             this.butAddInvoice.UseVisualStyleBackColor = false;
@@ -233,20 +235,20 @@
             this.pData.Controls.Add(this.label7);
             this.pData.Location = new System.Drawing.Point(23, 63);
             this.pData.Name = "pData";
-            this.pData.Size = new System.Drawing.Size(689, 61);
+            this.pData.Size = new System.Drawing.Size(616, 61);
             this.pData.TabIndex = 18;
             // 
             // tBNumber
             // 
-            this.tBNumber.Location = new System.Drawing.Point(463, 28);
+            this.tBNumber.Location = new System.Drawing.Point(424, 28);
             this.tBNumber.Name = "tBNumber";
-            this.tBNumber.Size = new System.Drawing.Size(213, 20);
+            this.tBNumber.Size = new System.Drawing.Size(174, 20);
             this.tBNumber.TabIndex = 44;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(459, 12);
+            this.label3.Location = new System.Drawing.Point(420, 12);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(116, 13);
             this.label3.TabIndex = 43;
@@ -262,9 +264,9 @@
             // 
             // dTPData
             // 
-            this.dTPData.Location = new System.Drawing.Point(240, 27);
+            this.dTPData.Location = new System.Drawing.Point(239, 28);
             this.dTPData.Name = "dTPData";
-            this.dTPData.Size = new System.Drawing.Size(213, 20);
+            this.dTPData.Size = new System.Drawing.Size(171, 20);
             this.dTPData.TabIndex = 32;
             // 
             // label8
@@ -297,7 +299,7 @@
             this.pProducts.Controls.Add(this.dGVProducts);
             this.pProducts.Location = new System.Drawing.Point(23, 130);
             this.pProducts.Name = "pProducts";
-            this.pProducts.Size = new System.Drawing.Size(689, 306);
+            this.pProducts.Size = new System.Drawing.Size(616, 306);
             this.pProducts.TabIndex = 19;
             // 
             // groupBox2
@@ -308,7 +310,7 @@
             this.groupBox2.Controls.Add(this.label);
             this.groupBox2.Location = new System.Drawing.Point(13, 263);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(657, 35);
+            this.groupBox2.Size = new System.Drawing.Size(584, 35);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             // 
@@ -320,7 +322,7 @@
             this.lSumm.ForeColor = System.Drawing.Color.Black;
             this.lSumm.Location = new System.Drawing.Point(323, 14);
             this.lSumm.Name = "lSumm";
-            this.lSumm.Size = new System.Drawing.Size(328, 13);
+            this.lSumm.Size = new System.Drawing.Size(255, 13);
             this.lSumm.TabIndex = 4;
             // 
             // label
@@ -337,7 +339,7 @@
             this.butCleanProducts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.butCleanProducts.BackColor = System.Drawing.Color.Tomato;
             this.butCleanProducts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butCleanProducts.Location = new System.Drawing.Point(580, 207);
+            this.butCleanProducts.Location = new System.Drawing.Point(507, 207);
             this.butCleanProducts.Name = "butCleanProducts";
             this.butCleanProducts.Size = new System.Drawing.Size(91, 50);
             this.butCleanProducts.TabIndex = 2;
@@ -350,7 +352,7 @@
             this.butAddProduct.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.butAddProduct.BackColor = System.Drawing.Color.LimeGreen;
             this.butAddProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butAddProduct.Location = new System.Drawing.Point(579, 13);
+            this.butAddProduct.Location = new System.Drawing.Point(506, 13);
             this.butAddProduct.Name = "butAddProduct";
             this.butAddProduct.Size = new System.Drawing.Size(91, 51);
             this.butAddProduct.TabIndex = 1;
@@ -386,7 +388,7 @@
             this.dGVProducts.Location = new System.Drawing.Point(14, 13);
             this.dGVProducts.Name = "dGVProducts";
             this.dGVProducts.ReadOnly = true;
-            this.dGVProducts.Size = new System.Drawing.Size(544, 244);
+            this.dGVProducts.Size = new System.Drawing.Size(471, 244);
             this.dGVProducts.TabIndex = 0;
             this.dGVProducts.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVProducts_CellClick);
             this.dGVProducts.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DGVProducts_RowsAdded);
@@ -444,12 +446,25 @@
             this.Delete.ReadOnly = true;
             this.Delete.Width = 5;
             // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(15, 136);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(187, 56);
+            this.lLoad.TabIndex = 16;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
+            // 
             // InvoicesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.ClientSize = new System.Drawing.Size(922, 450);
+            this.ClientSize = new System.Drawing.Size(879, 450);
             this.Controls.Add(this.pProducts);
             this.Controls.Add(this.pData);
             this.Controls.Add(this.lInvoice);
@@ -459,7 +474,7 @@
             this.Controls.Add(this.butAddInvoice);
             this.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(938, 489);
+            this.MinimumSize = new System.Drawing.Size(895, 489);
             this.Name = "InvoicesForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Счёт-фактуры";
@@ -509,5 +524,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Sum;
         private System.Windows.Forms.DataGridViewButtonColumn Delete;
         private System.Windows.Forms.Button butOpen;
+        private System.Windows.Forms.Label lLoad;
     }
 }

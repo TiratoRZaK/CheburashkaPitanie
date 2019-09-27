@@ -74,6 +74,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.cBMount = new System.Windows.Forms.ComboBox();
             this.cBYear = new System.Windows.Forms.ComboBox();
+            this.lLoad = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pNakl.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -328,6 +329,7 @@
             // 
             this.pAccumulate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.pAccumulate.Controls.Add(this.lLoad);
             this.pAccumulate.Controls.Add(this.label6);
             this.pAccumulate.Controls.Add(this.dGVProductsAll);
             this.pAccumulate.Enabled = false;
@@ -491,6 +493,19 @@
             this.cBYear.Size = new System.Drawing.Size(57, 21);
             this.cBYear.TabIndex = 55;
             // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.Color.Transparent;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(98, 234);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(175, 56);
+            this.lLoad.TabIndex = 56;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
+            // 
             // AccumulativeOnArrival
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -563,5 +578,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox cBMount;
         private System.Windows.Forms.ComboBox cBYear;
+        private System.Windows.Forms.Label lLoad;
     }
 }

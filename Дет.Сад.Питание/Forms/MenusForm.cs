@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Microsoft.Office.Interop.Word;
+using Word = Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,11 +14,11 @@ namespace Дет.Сад.Питание.Forms
 {
     public partial class MenusForm : Form
     {
-        public static Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-        public static string generalfile = System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны\\Меню.docx"; // файл-шаблон
+        public static Word.Application app = null;
+        public static Word.Document doc = null;
+        public static string generalfile = Application.StartupPath + "\\Документы\\Шаблоны\\Меню.docx"; // файл-шаблон
         public static Object fileName = generalfile;
-        public static Object missing = System.Type.Missing;
-        public static bool checkOpenDoc = false;
+        public static Object missing = Type.Missing;
 
         public MenuDTO menu = null;
         public List<ProductInMenu> addedProducts;
@@ -49,7 +49,7 @@ namespace Дет.Сад.Питание.Forms
 
         void InitializeListBoxes()
         {
-            Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны меню\\patterns.pat", FileMode.Open);
+            Stream stream = new FileStream(Application.StartupPath + "\\Документы\\Шаблоны меню\\patterns.pat", FileMode.Open);
             List<Pattern> patterns = new BinaryFormatter().Deserialize(stream) as List<Pattern>;
             cBPattern.Items.Clear();
             Pattern patternNull = new Pattern()
@@ -332,7 +332,7 @@ namespace Дет.Сад.Питание.Forms
                     Rukowoditel = tBRukov.Text,
                     Vrach = tBVrach.Text,
                     ProductBId = (cBProductB.SelectedItem as ProductDTO).Id,
-                    FileName = System.Windows.Forms.Application.StartupPath + "\\Документы\\Меню\\Файлы\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu"
+                    FileName = "\\Документы\\Меню\\Файлы\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu"
                 };
                 MainForm.DB.Menus.Create(menu);
                 foreach (ProductInMenu productInMenu in addedProducts)
@@ -356,7 +356,7 @@ namespace Дет.Сад.Питание.Forms
                 {
                     menuInFile.DishesP.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
                 }
-                string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\";
+                string path = Application.StartupPath + "\\Документы\\";
                 string subpath = "Меню\\Файлы\\";
                 DirectoryInfo dirInfo = new DirectoryInfo(path);
                 if (!dirInfo.Exists)
@@ -366,7 +366,7 @@ namespace Дет.Сад.Питание.Forms
                 if (Directory.Exists(path))
                 {
                     dirInfo.CreateSubdirectory(subpath);
-                    Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\Меню\\Файлы\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.CreateNew);
+                    Stream stream = new FileStream(Application.StartupPath + "\\Документы\\Меню\\Файлы\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.CreateNew);
                     var serializer = new BinaryFormatter();
                     serializer.Serialize(stream, menuInFile);
                     stream.Close();
@@ -439,7 +439,7 @@ namespace Дет.Сад.Питание.Forms
                     }
                 }
                 dGVProducts.Rows.Clear();
-                Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\Меню\\Файлы\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.Open);
+                Stream stream = new FileStream(Application.StartupPath + "\\Документы\\Меню\\Файлы\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.Open);
                 menuInFile = new BinaryFormatter().Deserialize(stream) as Models.Menu;
                 addedProducts = menuInFile.Products;
                 cLBZ.Items.Clear();
@@ -467,110 +467,126 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBMenus.SelectedItem != null)
             {
-                if (checkOpenDoc)
-                {
-                    app = new Microsoft.Office.Interop.Word.Application();
-                }
-                checkOpenDoc = true;
                 BuildDocument();
             }
         }
 
         private void BuildDocument()
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            OpenFile();
-            ReplaceStrings();
-            Document document = app.ActiveDocument;
-            Range range = document.Paragraphs[document.Paragraphs.Count].Range;
-            int i = 4;
-            int y = 3;
-            Dictionary<int, int> productsId = new Dictionary<int, int>(); 
-            foreach (DishDTO dishZ in menuInFile.DishesZ)
+            try
             {
-                document.Tables[1].Cell(i, 2).Range.Text = dishZ.Name;
-                foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x=>x.DishId == dishZ.Id))
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
                 {
-                    if (!productsId.Keys.Contains(productDish.ProductId))
+                    lLoad.Visible = true;
+                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
                     {
-                        productsId.Add(productDish.ProductId, y);
-                        document.Tables[1].Cell(2, y-1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
-                        document.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
-                        y++;
+                        proc.Kill();
                     }
-                    else
+                    app = new Word.Application();
+                    doc = app.Documents.Open(fileName);
+                    doc.Activate();
+                    ReplaceStrings();
+                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    int i = 4;
+                    int y = 3;
+                    Dictionary<int, int> productsId = new Dictionary<int, int>();
+                    foreach (DishDTO dishZ in menuInFile.DishesZ)
+                    {
+                        doc.Tables[1].Cell(i, 2).Range.Text = dishZ.Name;
+                        foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishZ.Id))
+                        {
+                            if (!productsId.Keys.Contains(productDish.ProductId))
+                            {
+                                productsId.Add(productDish.ProductId, y);
+                                doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
+                                doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
+                                y++;
+                            }
+                            else
+                            {
+                                int s;
+                                productsId.TryGetValue(productDish.ProductId, out s);
+                                doc.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
+                            }
+                        }
+                        i++;
+                    }
+                    i = 9;
+                    foreach (DishDTO dishO in menuInFile.DishesO)
+                    {
+                        doc.Tables[1].Cell(i, 2).Range.Text = dishO.Name;
+                        foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishO.Id))
+                        {
+                            if (!productsId.Keys.Contains(productDish.ProductId))
+                            {
+                                productsId.Add(productDish.ProductId, y);
+                                doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
+                                doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
+                                y++;
+                            }
+                            else
+                            {
+                                int s;
+                                productsId.TryGetValue(productDish.ProductId, out s);
+                                doc.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
+                            }
+                        }
+                        i++;
+                    }
+                    i = 15;
+                    foreach (DishDTO dishP in menuInFile.DishesP)
+                    {
+                        doc.Tables[1].Cell(i, 2).Range.Text = dishP.Name;
+                        foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishP.Id))
+                        {
+                            if (!productsId.Keys.Contains(productDish.ProductId))
+                            {
+                                productsId.Add(productDish.ProductId, y);
+                                doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
+                                doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
+                                y++;
+                            }
+                            else
+                            {
+                                int s;
+                                productsId.TryGetValue(productDish.ProductId, out s);
+                                doc.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
+                            }
+                        }
+                        i++;
+                    }
+                    foreach (ProductInMenu product in menuInFile.Products)
                     {
                         int s;
-                        productsId.TryGetValue(productDish.ProductId, out s);
-                        document.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
+                        productsId.TryGetValue(product.Id, out s);
+                        doc.Tables[1].Cell(20, s - 1).Range.Text = product.SumNorms.ToString();
+                        doc.Tables[1].Cell(21, s - 1).Range.Text = product.TotalOfKids.ToString();
+                        doc.Tables[1].Cell(22, s - 1).Range.Text = product.Price.ToString();
+                        if (product.Id != (cBProductB.SelectedItem as ProductDTO).Id)
+                        {
+                            doc.Tables[1].Cell(23, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
+                        }
+                        else
+                        {
+                            doc.Tables[1].Cell(24, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
+                        }
                     }
-                }
-                i++;
-            }
-            i = 9;
-            foreach (DishDTO dishO in menuInFile.DishesO)
-            {
-                document.Tables[1].Cell(i, 2).Range.Text = dishO.Name;
-                foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishO.Id))
-                {
-                    if (!productsId.Keys.Contains(productDish.ProductId))
-                    {
-                        productsId.Add(productDish.ProductId, y);
-                        document.Tables[1].Cell(2, y-1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
-                        document.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
-                        y++;
-                    }
-                    else
-                    {
-                        int s;
-                        productsId.TryGetValue(productDish.ProductId, out s);
-                        document.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
-                    }
-                }
-                i++;
-            }
-            i = 15;
-            foreach (DishDTO dishP in menuInFile.DishesP)
-            {
-                document.Tables[1].Cell(i, 2).Range.Text = dishP.Name;
-                foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishP.Id))
-                {
-                    if (!productsId.Keys.Contains(productDish.ProductId))
-                    {
-                        productsId.Add(productDish.ProductId, y);
-                        document.Tables[1].Cell(2, y-1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
-                        document.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
-                        y++;
-                    }
-                    else
-                    {
-                        int s;
-                        productsId.TryGetValue(productDish.ProductId, out s);
-                        document.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
-                    }
-                }
-                i++;
-            }
-            foreach (ProductInMenu product in menuInFile.Products)
-            {
-                int s;
-                productsId.TryGetValue(product.Id, out s);
-                document.Tables[1].Cell(20, s-1).Range.Text = product.SumNorms.ToString();
-                document.Tables[1].Cell(21, s-1).Range.Text = product.TotalOfKids.ToString();
-                document.Tables[1].Cell(22, s-1).Range.Text = product.Price.ToString();
-                if (product.Id != (cBProductB.SelectedItem as ProductDTO).Id) {
-                    document.Tables[1].Cell(23, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
-                }
-                else
-                {
-                    document.Tables[1].Cell(24, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
-                }
-            }
-            document.Tables[1].Cell(23, 2).Range.Text = lSumm.Text;
-            document.Tables[1].Cell(24, 2).Range.Text = lSummB.Text;
+                    doc.Tables[1].Cell(23, 2).Range.Text = lSumm.Text;
+                    doc.Tables[1].Cell(24, 2).Range.Text = lSummB.Text;
 
-            SaveFile(System.Windows.Forms.Application.StartupPath + "\\Документы\\Меню\\Меню на "+ dTPDate.Value.ToLongDateString() +".docx");
-
+                    SaveFile(Application.StartupPath + "\\Документы\\Меню\\Меню на " + dTPDate.Value.ToLongDateString() + ".docx");
+                    doc.Close();
+                    doc = null;
+                    lLoad.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                doc.Close();
+                doc = null;
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
 
         void ReplaceStrings()
@@ -584,12 +600,6 @@ namespace Дет.Сад.Питание.Forms
             FindReplace("{total}", (float.Parse(lSumm.Text)+ float.Parse(lSummB.Text)).ToString());
         }
 
-        public void OpenFile()
-        {
-            app.Documents.Open(ref fileName);
-            app.Visible = true;
-        }
-
         public void SaveFile(string fileName)
         {
             app.ActiveDocument.SaveAs(fileName);
@@ -597,14 +607,14 @@ namespace Дет.Сад.Питание.Forms
 
         public void FindReplace(string str_old, string str_new)
         {
-            Find find = app.Selection.Find;
+            Word.Find find = app.Selection.Find;
 
             find.Text = str_old; // текст поиска
             find.Replacement.Text = str_new; // текст замены
 
             find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: WdReplace.wdReplaceAll);
+                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
+                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
         }
 
         private void ButDel_Click(object sender, EventArgs e)
@@ -645,22 +655,32 @@ namespace Дет.Сад.Питание.Forms
                 MainForm.DB.Menus.Delete(menu.Id);
             }
             MainForm.DB.Save();
-            string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\Меню\\Файлы\\";
+            string path = Application.StartupPath + "\\Документы\\Меню\\Файлы\\";
             Directory.Delete(path,true);
             ReloadedMenus();
         }
 
         public void OpenDocument(string fileName)
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(fileName);
-            app.Visible = true;
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                lLoad.Visible = true;
+                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                {
+                    proc.Kill();
+                }
+                app = new Word.Application();
+                app.Documents.Open(fileName);
+                app.Visible = true;
+            }
+            lLoad.Visible = false;
         }
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
             if (lBMenus.SelectedItem != null)
-                OpenDocument(System.Windows.Forms.Application.StartupPath + "\\Документы\\Меню\\Меню на " + (lBMenus.SelectedItem as MenuDTO).Date.ToLongDateString() + ".docx");
+                OpenDocument(Application.StartupPath + "\\Документы\\Меню\\Меню на " + (lBMenus.SelectedItem as MenuDTO).Date.ToLongDateString() + ".docx");
         }
 
         private void CBPattern_SelectedIndexChanged(object sender, EventArgs e)

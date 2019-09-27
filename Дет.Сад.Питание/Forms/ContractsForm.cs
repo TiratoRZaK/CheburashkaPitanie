@@ -1,5 +1,4 @@
 ﻿using DAL.DTO;
-using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,16 +8,17 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class ContractsForm : Form
     {
-        public static Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-        public static string generalfile = System.Windows.Forms.Application.StartupPath+"\\Документы\\Шаблоны\\Договор.docx"; // файл-шаблон
+        public static Word.Application app = null;
+        public static Word.Document doc = null;
+        public static string generalfile = Application.StartupPath+"\\Документы\\Шаблоны\\Договор.docx"; // файл-шаблон
         public static Object fileName = generalfile;
-        public static Object missing = System.Type.Missing;
-        public static bool checkOpenDoc = false;
+        public static Object missing = Type.Missing;
 
         public ContractDTO contract = null;
         public List<ProductDTO> addedProducts;
@@ -27,7 +27,6 @@ namespace Дет.Сад.Питание.Forms
         public ContractsForm(MainForm main)
         {
             this.main = main;
-           
             InitializeComponent();
             InitializeListBoxes();
             ButAddContract_Click(this, EventArgs.Empty);
@@ -134,7 +133,7 @@ namespace Дет.Сад.Питание.Forms
                 cBCustomer.SelectedItem = (lBContracts.SelectedItem as ContractDTO).Customer;
                 cBSeller.SelectedItem = (lBContracts.SelectedItem as ContractDTO).Seller;
                 dGVProducts.Rows.Clear();
-                Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + "\\contract.cont", FileMode.Open);
+                Stream stream = new FileStream(Application.StartupPath + (lBContracts.SelectedItem as ContractDTO).FileName, FileMode.Open);
                 addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
                 stream.Close();
                 ReloadedData();
@@ -163,12 +162,12 @@ namespace Дет.Сад.Питание.Forms
                         CustomerId = (cBCustomer.SelectedItem as CustomerDTO).Id,
                         SellerId = (cBSeller.SelectedItem as SellerDTO).Id,
                         ResponsiblePerson = tBOtv.Text,
-                        FileName = System.Windows.Forms.Application.StartupPath + "\\Документы\\Контракт №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString()+"\\contract.cont",
+                        FileName = "\\Документы\\"+"Контракт №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString()+"\\contract.cont",
                         Total = (float)Math.Round(Total, 2)
                     };
                     MainForm.DB.Contracts.Create(contract);
                     MainForm.DB.Save();
-                    string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\";
+                    string path = Application.StartupPath + "\\Документы\\";
                     string subpath = contract.ToString();
                     DirectoryInfo dirInfo = new DirectoryInfo(path);
                     if (!dirInfo.Exists)
@@ -178,7 +177,7 @@ namespace Дет.Сад.Питание.Forms
                     if (!Directory.Exists(path + contract.ToString()))
                     {
                         dirInfo.CreateSubdirectory(subpath);
-                        Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + contract.ToString() + "\\contract.cont", FileMode.CreateNew);
+                        Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + contract.ToString() + "\\contract.cont", FileMode.CreateNew);
                         var serializer = new BinaryFormatter();
                         serializer.Serialize(stream, addedProducts);
                         stream.Close();
@@ -246,7 +245,7 @@ namespace Дет.Сад.Питание.Forms
                 var contr = MainForm.DB.Contracts.Get((lBContracts.SelectedItem as ContractDTO).Id);
                 if (MessageBox.Show("Вы уверены что хотите удалить договор №" + contr.Number.ToString() + "?", "Удаление договора", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\"+contr.ToString();
+                    string path = Application.StartupPath + "\\Документы\\"+contr.ToString();
                     DirectoryInfo dirInfo = new DirectoryInfo(path);
                     if (dirInfo.Exists)
                     {
@@ -261,15 +260,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButBuild_Click(object sender, EventArgs e)
         {
-            if (lBContracts.SelectedItem != null)
-            {
-                if(checkOpenDoc)
-                {
-                    app = new Microsoft.Office.Interop.Word.Application();
-                }
-                checkOpenDoc = true;
-                BuildContract();
-            }
+            BuildContract();
         }
 
         void BuildContract()
@@ -283,44 +274,65 @@ namespace Дет.Сад.Питание.Forms
                     types.Add(type);
                 }
             }
-
-            OpenFile();
-            ReplaceStrings();
-            Document document = app.ActiveDocument;
-            Range range = document.Paragraphs[document.Paragraphs.Count].Range;
-            int i = 1;
-            List<int> mergesRows = new List<int>();
-            foreach (string item in types)
+            try
             {
-                document.Tables[4].Rows.Add();
-                i++;
-                mergesRows.Add(i);
-                document.Tables[4].Rows[i].Range.Bold = 0;
-                document.Tables[4].Rows[i].Height = float.Parse("0,3");
-                document.Tables[4].Rows[i].Cells[1].Range.Text = item;
-                foreach (ProductDTO product in addedProducts.Where(x => MainForm.DB.Types.Get(x.TypeId).Name == item))
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'","ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
                 {
-                    document.Tables[4].Rows.Add();
-                    i++;
-                    document.Tables[4].Cell(i, 1).Range.Text = product.Name;
-                    document.Tables[4].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                    document.Tables[4].Cell(i, 3).Range.Text = product.Price.ToString();
-                    document.Tables[4].Cell(i, 4).Range.Text = "-";
-                    document.Tables[4].Cell(i, 5).Range.Text = product.Balance.ToString();
-                    document.Tables[4].Cell(i, 6).Range.Text = Math.Round((product.Price * product.Balance),2).ToString();
-                    document.Tables[4].Cell(i, 7).Range.Text = "0";
-                }
-            }
-            foreach(var item in mergesRows)
-               document.Tables[4].Rows[item].Cells[1].Merge(document.Tables[4].Rows[item].Cells[7]);
-            document.Tables[4].Rows.Add();
-            i++;
-            document.Tables[4].Rows[i].Range.Bold = 0;
-            document.Tables[4].Rows[i].Height = float.Parse("0,3");
-            document.Tables[4].Cell(i, 1).Range.Text = "Итого";
-            document.Tables[4].Cell(i, 6).Range.Text = lSumm.Text;
+                    lLoad.Visible = true;
+                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                    {
+                        proc.Kill();
+                    }
+                    app = new Word.Application();
+                    doc = app.Documents.Open(fileName);
+                    doc.Activate();
 
-            SaveFile(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + "\\"+ (lBContracts.SelectedItem as ContractDTO).ToString() + ".docx");
+                    ReplaceStrings();
+                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    int i = 1;
+                    List<int> mergesRows = new List<int>();
+                    foreach (string item in types)
+                    {
+                        doc.Tables[4].Rows.Add();
+                        i++;
+                        mergesRows.Add(i);
+                        doc.Tables[4].Rows[i].Range.Bold = 0;
+                        doc.Tables[4].Rows[i].Height = float.Parse("0,3");
+                        doc.Tables[4].Rows[i].Cells[1].Range.Text = item;
+                        foreach (ProductDTO product in addedProducts.Where(x => MainForm.DB.Types.Get(x.TypeId).Name == item))
+                        {
+                            doc.Tables[4].Rows.Add();
+                            i++;
+                            doc.Tables[4].Cell(i, 1).Range.Text = product.Name;
+                            doc.Tables[4].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                            doc.Tables[4].Cell(i, 3).Range.Text = product.Price.ToString();
+                            doc.Tables[4].Cell(i, 4).Range.Text = "-";
+                            doc.Tables[4].Cell(i, 5).Range.Text = product.Balance.ToString();
+                            doc.Tables[4].Cell(i, 6).Range.Text = Math.Round((product.Price * product.Balance), 2).ToString();
+                            doc.Tables[4].Cell(i, 7).Range.Text = "0";
+                        }
+                    }
+                    foreach (var item in mergesRows)
+                        doc.Tables[4].Rows[item].Cells[1].Merge(doc.Tables[4].Rows[item].Cells[7]);
+                    doc.Tables[4].Rows.Add();
+                    i++;
+                    doc.Tables[4].Rows[i].Range.Bold = 0;
+                    doc.Tables[4].Rows[i].Height = float.Parse("0,3");
+                    doc.Tables[4].Cell(i, 1).Range.Text = "Итого";
+                    doc.Tables[4].Cell(i, 6).Range.Text = lSumm.Text;
+                    SaveFile(Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + ".docx");
+
+                    doc.Close();
+                    doc = null;
+                    lLoad.Visible = false;
+                }
+            } catch(Exception ex)
+            {
+                doc.Close();
+                doc = null;
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
 
         void ReplaceStrings()
@@ -376,19 +388,37 @@ namespace Дет.Сад.Питание.Forms
                 FindReplace("{kopeiki}", "00");
             }
         }
-        
+
         public void OpenFile()
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(ref fileName);
-            app.Visible = true;
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                {
+                    proc.Kill();
+                }
+                app = new Word.Application();
+                doc = app.Documents.Open(ref fileName);
+                app.Visible = true;
+            }
         }
 
-        public void OpenDocument(string fileName)
+        public void OpenDocument(string path)
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(fileName);
-            app.Visible = true;
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                lLoad.Visible = true;
+                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                {
+                    proc.Kill();
+                }
+                app = new Word.Application();
+                app.Documents.Open(path);
+                app.Visible = true;
+            }
+            lLoad.Visible = false;
         }
 
         string ReplaceOfWord(float total)
@@ -396,28 +426,28 @@ namespace Дет.Сад.Питание.Forms
             return RusNumber.Str((int)total);
         }
 
-        public void SaveFile(string fileName)
+        public void SaveFile(string path)
         {
-            app.ActiveDocument.SaveAs(fileName);
+            doc.SaveAs(path);
         }
 
         public void FindReplace(string str_old, string str_new)
         {
-            Find find = app.Selection.Find;
+            Word.Find find = app.Selection.Find;
 
             find.Text = str_old; // текст поиска
             find.Replacement.Text = str_new; // текст замены
 
             find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: WdReplace.wdReplaceAll);
+                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
+                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
         }
 
         private void ButDirectory_Click(object sender, EventArgs e)
         {
             if (lBContracts.SelectedItem != null)
             {
-                string pathDir = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1);
+                string pathDir = Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1);
                 Process Proc = new Process();
                 Proc.StartInfo.FileName = "explorer";
                 Proc.StartInfo.Arguments = pathDir;
@@ -425,7 +455,7 @@ namespace Дет.Сад.Питание.Forms
             }
             else
             {
-                string pathDir = System.Windows.Forms.Application.StartupPath + "\\Документы\\";
+                string pathDir = Application.StartupPath + "\\Документы\\";
                 Process Proc = new Process();
                 Proc.StartInfo.FileName = "explorer";
                 Proc.StartInfo.Arguments = pathDir;
@@ -435,7 +465,12 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
-            OpenDocument(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1)+"\\"+ (lBContracts.SelectedItem as ContractDTO).ToString()+".docx");
+            OpenDocument(Application.StartupPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1)+"\\"+ (lBContracts.SelectedItem as ContractDTO).ToString()+".docx");
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+
         }
     }
     public class RusNumber

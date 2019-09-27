@@ -36,6 +36,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenusForm));
             this.pMenus = new System.Windows.Forms.Panel();
+            this.lLoad = new System.Windows.Forms.Label();
             this.butNewMounth = new System.Windows.Forms.Button();
             this.butOpen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -107,6 +108,7 @@
             // pMenus
             // 
             this.pMenus.BackColor = System.Drawing.Color.Gold;
+            this.pMenus.Controls.Add(this.lLoad);
             this.pMenus.Controls.Add(this.butNewMounth);
             this.pMenus.Controls.Add(this.butOpen);
             this.pMenus.Controls.Add(this.label1);
@@ -119,6 +121,19 @@
             this.pMenus.Name = "pMenus";
             this.pMenus.Size = new System.Drawing.Size(197, 527);
             this.pMenus.TabIndex = 16;
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(10, 195);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(175, 56);
+            this.lLoad.TabIndex = 17;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
             // 
             // butNewMounth
             // 
@@ -966,5 +981,6 @@
         private System.Windows.Forms.Label lSummB;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button butNewMounth;
+        private System.Windows.Forms.Label lLoad;
     }
 }

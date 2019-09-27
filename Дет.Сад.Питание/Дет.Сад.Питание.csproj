@@ -332,6 +332,7 @@
     <None Include="Resources\Шаблоны.png" />
     <None Include="Resources\Накладные.png" />
     <None Include="Resources\Папка.png" />
+    <None Include="Resources\загрузка.gif" />
     <Content Include="Resources\Чебурашка.ico" />
   </ItemGroup>
   <ItemGroup />

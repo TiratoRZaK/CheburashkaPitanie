@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Microsoft.Office.Interop.Word;
+using Word = Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,10 +13,11 @@ namespace Дет.Сад.Питание.Forms
 {
     public partial class DeliveryNotesForm : Form
     {
-        public static Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-        public static string generalfile = System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны\\Накладная.docx"; // файл-шаблон
+        public static Word.Application app = null;
+        public static Word.Document doc = null;
+        public static string generalfile = Application.StartupPath + "\\Документы\\Шаблоны\\Накладная.docx"; // файл-шаблон
         public static Object fileName = generalfile;
-        public static Object missing = System.Type.Missing;
+        public static Object missing = Type.Missing;
         public static bool checkOpenDoc = false;
 
         public DeliveryNoteDTO deliveryNote = null;
@@ -144,11 +145,11 @@ namespace Дет.Сад.Питание.Forms
                     InvoiceId = (cBInvoices.SelectedItem as InvoiceDTO).Id,
                     PriemName = tBPriemName.Text,
                     GruzName = tBGruzName.Text,
-                    FileName = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Файлы\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl"
+                    FileName = "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Файлы\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl"
                 };
                 MainForm.DB.DeliveryNotes.Create(deliveryNote);
                 MainForm.DB.Save();
-                string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString();
+                string path = Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString();
                 string subpath = "Файлы\\";
                 DirectoryInfo dirInfo = new DirectoryInfo(path);
                 if (!dirInfo.Exists)
@@ -158,7 +159,7 @@ namespace Дет.Сад.Питание.Forms
                 if (Directory.Exists(path))
                 {
                     dirInfo.CreateSubdirectory(subpath);
-                    Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Файлы\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl", FileMode.CreateNew);
+                    Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Файлы\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl", FileMode.CreateNew);
                     var serializer = new BinaryFormatter();
                     serializer.Serialize(stream, addedProducts);
                     stream.Close();
@@ -181,7 +182,7 @@ namespace Дет.Сад.Питание.Forms
             dbProduct.Balance = newBalance;
             MainForm.DB.Products.Update(dbProduct);
             MainForm.DB.Save();
-            Stream stream = new FileStream((cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.Open);
+            Stream stream = new FileStream(Application.StartupPath + (cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.Open);
             List<ProductDTO> listInvoiceProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
             ProductDTO productInInvoice = listInvoiceProducts.Single(x => x.Id == product.Id);
             productInInvoice.Balance -= product.Balance;
@@ -189,7 +190,7 @@ namespace Дет.Сад.Питание.Forms
             listInvoiceProducts.Add(productInInvoice);
             stream.Close();
 
-            stream = new FileStream((cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.OpenOrCreate);
+            stream = new FileStream(Application.StartupPath + (cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.OpenOrCreate);
             var serializer = new BinaryFormatter();
             serializer.Serialize(stream, listInvoiceProducts);
             stream.Close();
@@ -243,7 +244,7 @@ namespace Дет.Сад.Питание.Forms
                 var deliveryNote = MainForm.DB.DeliveryNotes.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
                 if (MessageBox.Show("Вы уверены что хотите удалить накладную №" + deliveryNote.Number.ToString() + "?", "Удаление накладной", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get(deliveryNote.InvoiceId).ContractId).ToString() + "\\Файлы\\Накладная №" + deliveryNote.Number.ToString() + " от " + deliveryNote.Date.ToLongDateString() + ".nakl";
+                    string path = Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get(deliveryNote.InvoiceId).ContractId).ToString() + "\\Файлы\\Накладная №" + deliveryNote.Number.ToString() + " от " + deliveryNote.Date.ToLongDateString() + ".nakl";
                     File.Delete(path);
                 }
                 MainForm.DB.DeliveryNotes.Delete(deliveryNote.Id);
@@ -256,45 +257,64 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
-                if (checkOpenDoc)
-                {
-                    app = new Microsoft.Office.Interop.Word.Application();
-                }
-                checkOpenDoc = true;
                 BuildDocument();
             }
         }
 
         private void BuildDocument()
         {
-            OpenFile();
-            ReplaceStrings();
-            Document document = app.ActiveDocument;
-            Range range = document.Paragraphs[document.Paragraphs.Count].Range;
-            int i = 3;
-            foreach (ProductDTO product in addedProducts)
+            try
             {
-                document.Tables[2].Rows.Add();
-                i++;
-                document.Tables[2].Cell(i,1).Range.Text = (i-3).ToString();
-                document.Tables[2].Cell(i,2).Range.Text = product.Name;
-                document.Tables[2].Cell(i,4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                document.Tables[2].Cell(i,10).Range.Text = product.Balance.ToString();
-                document.Tables[2].Cell(i,11).Range.Text = product.Price.ToString();
-                document.Tables[2].Cell(i,12).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
-                document.Tables[2].Cell(i,13).Range.Text = "БЕЗ НДС";
-                document.Tables[2].Cell(i,15).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
+                {
+                    lLoad.Visible = true;
+                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                    {
+                        proc.Kill();
+                    }
+                    app = new Word.Application();
+                    doc = app.Documents.Open(fileName);
+                    doc.Activate();
+
+                    ReplaceStrings();
+                    doc = app.ActiveDocument;
+                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    int i = 3;
+                    foreach (ProductDTO product in addedProducts)
+                    {
+                        doc.Tables[2].Rows.Add();
+                        i++;
+                        doc.Tables[2].Cell(i, 1).Range.Text = (i - 3).ToString();
+                        doc.Tables[2].Cell(i, 2).Range.Text = product.Name;
+                        doc.Tables[2].Cell(i, 4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                        doc.Tables[2].Cell(i, 10).Range.Text = product.Balance.ToString();
+                        doc.Tables[2].Cell(i, 11).Range.Text = product.Price.ToString();
+                        doc.Tables[2].Cell(i, 12).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
+                        doc.Tables[2].Cell(i, 13).Range.Text = "БЕЗ НДС";
+                        doc.Tables[2].Cell(i, 15).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
+                    }
+                    doc.Tables[2].Rows.Add();
+                    i++;
+                    doc.Tables[2].Cell(i, 1).Range.Text = "Итого";
+                    doc.Tables[2].Cell(i, 11).Range.Text = "X";
+                    doc.Tables[2].Cell(i, 12).Range.Text = lSumm.Text;
+                    doc.Tables[2].Cell(i, 13).Range.Text = "X";
+                    doc.Tables[2].Cell(i, 15).Range.Text = lSumm.Text;
+
+                    SaveFile(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
+
+                    doc.Close();
+                    doc = null;
+                    lLoad.Visible = false;
+                }
             }
-            document.Tables[2].Rows.Add();
-            i++;
-            document.Tables[2].Cell(i,1).Range.Text = "Итого";
-            document.Tables[2].Cell(i,11).Range.Text = "X";
-            document.Tables[2].Cell(i,12).Range.Text = lSumm.Text;
-            document.Tables[2].Cell(i,13).Range.Text = "X";
-            document.Tables[2].Cell(i,15).Range.Text = lSumm.Text;
-
-            SaveFile(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
-
+            catch (Exception ex)
+            {
+                doc.Close();
+                doc = null;
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
         void ReplaceStrings()
         {
@@ -350,16 +370,19 @@ namespace Дет.Сад.Питание.Forms
 
         public void OpenDocument(string fileName)
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(fileName);
-            app.Visible = true;
-        }
-
-        public void OpenFile()
-        {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(ref fileName);
-            app.Visible = true;
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                lLoad.Visible = true;
+                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                {
+                    proc.Kill();
+                }
+                app = new Word.Application();
+                app.Documents.Open(fileName);
+                app.Visible = true;
+            }
+            lLoad.Visible = false;
         }
 
         string ReplaceOfWord(float total)
@@ -374,21 +397,21 @@ namespace Дет.Сад.Питание.Forms
 
         public void FindReplace(string str_old, string str_new)
         {
-            Find find = app.Selection.Find;
+            Word.Find find = app.Selection.Find;
 
             find.Text = str_old; // текст поиска
             find.Replacement.Text = str_new; // текст замены
 
             find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: WdReplace.wdReplaceAll);
+                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
+                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
         }
 
         private void ButDirectory_Click(object sender, EventArgs e)
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
-                string pathDir = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1);
+                string pathDir = Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1);
                 Process Proc = new Process();
                 Proc.StartInfo.FileName = "explorer";
                 Proc.StartInfo.Arguments = pathDir;
@@ -398,19 +421,14 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButAddProduct_Click(object sender, EventArgs e)
         {
-            AddProductInDeliveryNote addProductInDeliveryNote = new AddProductInDeliveryNote(this, MainForm.DB.Invoices.Get((cBInvoices.SelectedItem as InvoiceDTO).Id).FileName);
+            AddProductInDeliveryNote addProductInDeliveryNote = new AddProductInDeliveryNote(this, Application.StartupPath + MainForm.DB.Invoices.Get((cBInvoices.SelectedItem as InvoiceDTO).Id).FileName);
             addProductInDeliveryNote.ShowDialog();
         }
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
             if(lBDeliveryNotes.SelectedItem != null)
-                OpenDocument(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1) + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
-        }
-
-        private void DeliveryNotesForm_Load(object sender, EventArgs e)
-        {
-
+                OpenDocument(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1) + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
         }
     }
 }

@@ -69,6 +69,7 @@
             this.butDel = new System.Windows.Forms.Button();
             this.butSave = new System.Windows.Forms.Button();
             this.butAddDeliveryNote = new System.Windows.Forms.Button();
+            this.lLoad = new System.Windows.Forms.Label();
             this.pProducts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
@@ -394,6 +395,7 @@
             // pDeliveryNotes
             // 
             this.pDeliveryNotes.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pDeliveryNotes.Controls.Add(this.lLoad);
             this.pDeliveryNotes.Controls.Add(this.butOpen);
             this.pDeliveryNotes.Controls.Add(this.label1);
             this.pDeliveryNotes.Controls.Add(this.lBDeliveryNotes);
@@ -523,6 +525,19 @@
             this.butAddDeliveryNote.UseVisualStyleBackColor = false;
             this.butAddDeliveryNote.Click += new System.EventHandler(this.ButAddDeliveryNote_Click);
             // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(14, 144);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(196, 56);
+            this.lLoad.TabIndex = 16;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
+            // 
             // DeliveryNotesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -544,7 +559,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Накладные";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DeliveryNotesForm_FormClosed);
-            this.Load += new System.EventHandler(this.DeliveryNotesForm_Load);
             this.pProducts.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -594,5 +608,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tBPriemName;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lLoad;
     }
 }

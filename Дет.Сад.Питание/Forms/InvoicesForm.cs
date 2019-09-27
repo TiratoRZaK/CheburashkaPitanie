@@ -1,5 +1,4 @@
 ﻿using DAL.DTO;
-using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,15 +7,17 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class InvoicesForm : Form
     {
-        public static Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-        public static string generalfile = System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны\\Счёт-фактура.docx"; // файл-шаблон
+        public static Word.Application app = null;
+        public static Word.Document doc = null;
+        public static string generalfile = Application.StartupPath + "\\Документы\\Шаблоны\\Счёт-фактура.docx"; // файл-шаблон
         public static Object fileName = generalfile;
-        public static Object missing = System.Type.Missing;
+        public static Object missing = Type.Missing;
         public static bool checkOpenDoc = false;
 
         public InvoiceDTO invoice = null;
@@ -119,7 +120,7 @@ namespace Дет.Сад.Питание.Forms
                 dTPData.Value = (lBInvoices.SelectedItem as InvoiceDTO).Date;
                 cBContracts.SelectedItem = MainForm.DB.Contracts.Get((lBInvoices.SelectedItem as InvoiceDTO).ContractId);
                 dGVProducts.Rows.Clear();
-                Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".invo", FileMode.Open);
+                Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".invo", FileMode.Open);
                 addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
                 stream.Close();
                 ReloadedData();
@@ -141,12 +142,12 @@ namespace Дет.Сад.Питание.Forms
                     Number = int.Parse(tBNumber.Text),
                     Date = dTPData.Value,
                     ContractId = (cBContracts.SelectedItem as ContractDTO).Id,
-                    FileName = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo",
+                    FileName = "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo",
                     Total = (float)Math.Round(Total, 2)
                 };
                 MainForm.DB.Invoices.Create(invoice);
                 MainForm.DB.Save();
-                string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString();
+                string path = Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString();
                 string subpath = "Файлы\\";
                 DirectoryInfo dirInfo = new DirectoryInfo(path);
                 if (!dirInfo.Exists)
@@ -156,7 +157,7 @@ namespace Дет.Сад.Питание.Forms
                 if (Directory.Exists(path))
                 {
                     dirInfo.CreateSubdirectory(subpath);
-                    Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo", FileMode.CreateNew);
+                    Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo", FileMode.CreateNew);
                     var serializer = new BinaryFormatter();
                     serializer.Serialize(stream, addedProducts);
                     stream.Close();
@@ -173,7 +174,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void AddProduct(ProductDTO product)
         {
-            Stream stream = new FileStream((cBContracts.SelectedItem as ContractDTO).FileName, FileMode.Open);
+            Stream stream = new FileStream(Application.StartupPath + (cBContracts.SelectedItem as ContractDTO).FileName, FileMode.Open);
             List<ProductDTO> listContractProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
             ProductDTO productInDb = listContractProducts.Single(x => x.Id == product.Id);
             productInDb.Balance -= product.Balance;
@@ -181,7 +182,7 @@ namespace Дет.Сад.Питание.Forms
             listContractProducts.Add(productInDb);
             stream.Close();
 
-            stream = new FileStream((cBContracts.SelectedItem as ContractDTO).FileName, FileMode.OpenOrCreate);
+            stream = new FileStream(Application.StartupPath + (cBContracts.SelectedItem as ContractDTO).FileName, FileMode.OpenOrCreate);
             var serializer = new BinaryFormatter();
             serializer.Serialize(stream, listContractProducts);
             stream.Close();
@@ -235,7 +236,7 @@ namespace Дет.Сад.Питание.Forms
                 var invoice = MainForm.DB.Invoices.Get((lBInvoices.SelectedItem as InvoiceDTO).Id);
                 if (MessageBox.Show("Вы уверены что хотите удалить счёт-фактуру №" + invoice.Number.ToString() + "?", "Удаление счёт-фактуры", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    string path = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + invoice.Contract.ToString() + "\\Файлы\\Счёт-фактура №" + invoice.Number.ToString() + " от " + invoice.Date.ToLongDateString() + ".invo";
+                    string path = Application.StartupPath + "\\Документы\\" + invoice.Contract.ToString() + "\\Файлы\\Счёт-фактура №" + invoice.Number.ToString() + " от " + invoice.Date.ToLongDateString() + ".invo";
                     File.Delete(path);
                 }
                 MainForm.DB.Invoices.Delete(invoice.Id);
@@ -259,9 +260,21 @@ namespace Дет.Сад.Питание.Forms
 
         private void BuildContract()
         {
-            OpenFile();
-            ReplaceStrings();
-            Document document = app.ActiveDocument;
+            try
+            {
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
+                {
+                    lLoad.Visible = true;
+                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                    {
+                        proc.Kill();
+                    }
+                    app = new Word.Application();
+                    doc = app.Documents.Open(fileName);
+                    doc.Activate();
+                    ReplaceStrings();
+            Word.Document document = app.ActiveDocument;
             int i = 1;
             foreach (ProductDTO product in addedProducts)
             {
@@ -281,8 +294,18 @@ namespace Дет.Сад.Питание.Forms
             document.Tables[1].Cell(i, 1).Range.Text = "Итого";
             document.Tables[1].Cell(i, 5).Range.Text = lSumm.Text;
 
-            SaveFile(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
-
+            SaveFile(Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
+                    doc.Close();
+                    doc = null;
+                    lLoad.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                doc.Close();
+                doc = null;
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
         void ReplaceStrings()
         {
@@ -320,13 +343,6 @@ namespace Дет.Сад.Питание.Forms
             }
         }
 
-        public void OpenFile()
-        {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(ref fileName);
-            app.Visible = true;
-        }
-
         string ReplaceOfWord(float total)
         {
             return RusNumber.Str((int)total);
@@ -339,21 +355,21 @@ namespace Дет.Сад.Питание.Forms
 
         public void FindReplace(string str_old, string str_new)
         {
-            Find find = app.Selection.Find;
+            Word.Find find = app.Selection.Find;
 
             find.Text = str_old; // текст поиска
             find.Replacement.Text = str_new; // текст замены
 
             find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: WdReplace.wdReplaceAll);
+                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
+                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
         }
 
         private void ButDirectory_Click(object sender, EventArgs e)
         {
             if (cBContracts.SelectedItem != null)
             {
-                string pathDir = System.Windows.Forms.Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (cBContracts.SelectedItem as ContractDTO).ToString().Length - 1);
+                string pathDir = Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (cBContracts.SelectedItem as ContractDTO).ToString().Length - 1);
                 Process Proc = new Process();
                 Proc.StartInfo.FileName = "explorer";
                 Proc.StartInfo.Arguments = pathDir;
@@ -363,20 +379,30 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButAddProduct_Click(object sender, EventArgs e)
         {
-            AddProductInInvoice addProductInInvoice = new AddProductInInvoice(this, (cBContracts.SelectedItem as ContractDTO).FileName);
+            AddProductInInvoice addProductInInvoice = new AddProductInInvoice(this, Application.StartupPath + (cBContracts.SelectedItem as ContractDTO).FileName);
             addProductInInvoice.ShowDialog();
         }
 
         public void OpenDocument(string fileName)
         {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(fileName);
-            app.Visible = true;
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                lLoad.Visible = true;
+                foreach (Process proc in Process.GetProcessesByName("WINWORD"))
+                {
+                    proc.Kill();
+                }
+                app = new Word.Application();
+                app.Documents.Open(fileName);
+                app.Visible = true;
+            }
+            lLoad.Visible = false;
         }
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
-            OpenDocument(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((lBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
+            OpenDocument(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((lBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
         }
     }
 

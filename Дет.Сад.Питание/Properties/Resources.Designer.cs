@@ -93,6 +93,16 @@ namespace Дет.Сад.Питание.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap загрузка {
+            get {
+                object obj = ResourceManager.GetObject("загрузка", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap меню {
             get {
                 object obj = ResourceManager.GetObject("меню", resourceCulture);

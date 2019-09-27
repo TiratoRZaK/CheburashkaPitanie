@@ -32,6 +32,7 @@
             this.clBMenus = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lLoad = new System.Windows.Forms.Label();
             this.cBYear = new System.Windows.Forms.ComboBox();
             this.cBMount = new System.Windows.Forms.ComboBox();
             this.butAddMenus = new System.Windows.Forms.Button();
@@ -58,6 +59,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.lLoad);
             this.panel1.Controls.Add(this.cBYear);
             this.panel1.Controls.Add(this.cBMount);
             this.panel1.Controls.Add(this.butAddMenus);
@@ -69,6 +71,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(300, 450);
             this.panel1.TabIndex = 2;
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.Color.White;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(61, 138);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(175, 56);
+            this.lLoad.TabIndex = 59;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
             // 
             // cBYear
             // 
@@ -142,5 +157,6 @@
         private System.Windows.Forms.ComboBox cBYear;
         private System.Windows.Forms.ComboBox cBMount;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lLoad;
     }
 }

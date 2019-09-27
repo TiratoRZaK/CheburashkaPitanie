@@ -73,6 +73,7 @@
             this.butDel = new System.Windows.Forms.Button();
             this.butBuild = new System.Windows.Forms.Button();
             this.pContracts = new System.Windows.Forms.Panel();
+            this.lLoad = new System.Windows.Forms.Label();
             this.butOpen = new System.Windows.Forms.Button();
             this.pData.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -87,9 +88,9 @@
             this.lBContracts.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lBContracts.FormattingEnabled = true;
-            this.lBContracts.Location = new System.Drawing.Point(7, 30);
+            this.lBContracts.Location = new System.Drawing.Point(6, 30);
             this.lBContracts.Name = "lBContracts";
-            this.lBContracts.Size = new System.Drawing.Size(206, 251);
+            this.lBContracts.Size = new System.Drawing.Size(207, 251);
             this.lBContracts.TabIndex = 0;
             this.lBContracts.SelectedIndexChanged += new System.EventHandler(this.LBContracts_SelectedIndexChanged);
             // 
@@ -522,6 +523,7 @@
             // pContracts
             // 
             this.pContracts.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pContracts.Controls.Add(this.lLoad);
             this.pContracts.Controls.Add(this.butOpen);
             this.pContracts.Controls.Add(this.label1);
             this.pContracts.Controls.Add(this.lBContracts);
@@ -534,6 +536,19 @@
             this.pContracts.Name = "pContracts";
             this.pContracts.Size = new System.Drawing.Size(222, 421);
             this.pContracts.TabIndex = 14;
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(7, 128);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(205, 56);
+            this.lLoad.TabIndex = 15;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
             // 
             // butOpen
             // 
@@ -562,6 +577,7 @@
             this.Controls.Add(this.pData);
             this.Controls.Add(this.butSave);
             this.Controls.Add(this.butAddContract);
+            this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -626,5 +642,6 @@
         private System.Windows.Forms.DateTimePicker dTPOkonch;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button butOpen;
+        private System.Windows.Forms.Label lLoad;
     }
 }

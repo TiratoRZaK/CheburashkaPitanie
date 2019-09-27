@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Microsoft.Office.Interop.Word;
+using Word = Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,11 +12,11 @@ namespace Дет.Сад.Питание.Forms
 {
     public partial class AccumulativeOnArrival : Form
     {
-        public static Microsoft.Office.Interop.Word.Application app = new Microsoft.Office.Interop.Word.Application();
-        public static string generalfile = System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны\\Накопительная по приходу.docx"; // файл-шаблон
+        public static Word.Application app = null;
+        public static Word.Document doc = null;
+        public static string generalfile = Application.StartupPath + "\\Документы\\Шаблоны\\Накопительная по приходу.docx"; // файл-шаблон
         public static Object fileName = generalfile;
-        public static Object missing = System.Type.Missing;
-        public static bool checkOpenDoc = false;
+        public static Object missing = Type.Missing;
 
         public List<ProductDTO> deliveryNotesProducts;
         public List<ProductDTO> accumulateProducts;
@@ -140,77 +140,93 @@ namespace Дет.Сад.Питание.Forms
         {
             if (dGVProductsAll.Rows.Count > 0)
             {
-                if (checkOpenDoc)
-                {
-                    app = new Microsoft.Office.Interop.Word.Application();
-                }
-                checkOpenDoc = true;
                 BuildDocument();
             }
         }
 
         public void BuildDocument()
         {
-            OpenFile();
-            ReplaceStrings();
-            Document document = app.ActiveDocument;
-            Range range = document.Paragraphs[document.Paragraphs.Count].Range;
-            int contractIndex = 3;
-            int naklIndex = 1;
-            float TotalAll = 0;
-            float TotalContract = 0;
-            List<ProductDTO> allProducts = new List<ProductDTO>();
-            List<DeliveryNoteDTO> deliveryNotes = new List<DeliveryNoteDTO>();
-            foreach(DeliveryNoteDTO deliveryNote in cLBDeliveryNotes.CheckedItems)
+            try
             {
-                deliveryNotes.Add(deliveryNote);
-            }
-            foreach (ContractDTO contract in cLBContracts.CheckedItems)
-            {
-                TotalContract = 0;
-                document.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
-                
-                foreach (DeliveryNoteDTO nakl in deliveryNotes.Where(x=>MainForm.DB.Invoices.Get(x.InvoiceId).ContractId == contract.Id))
+                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+                if (dialogResult == DialogResult.OK)
                 {
-                    Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + contract.ToString() + "\\Файлы\\" + nakl.ToString() + ".nakl", FileMode.Open);
-                    List<ProductDTO> productList = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
-                    stream.Close();
-                    float Total = 0;
-                    foreach (var item in productList)
+                    lLoad.Visible = true;
+                    foreach (Process proc in Process.GetProcessesByName("WINWORD"))
                     {
-                        Total += item.Balance * item.Price;
-                        if (allProducts.Where(x => x.Id == item.Id).Count() == 0)
-                        {
-                            allProducts.Add(item);
-                            document.Tables[2].Rows.Add();
-                            document.Tables[2].Cell((allProducts.FindIndex(x=>x.Id == item.Id) + 2), 1).Range.Text = item.Name;
-                            document.Tables[2].Cell((allProducts.FindIndex(x=>x.Id == item.Id) + 2), 2).Range.Text = MainForm.DB.Units.Get(item.UnitId).Name;
-                            document.Tables[2].Cell((allProducts.FindIndex(x=>x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
-                            document.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
-                        }                           
-                        else
-                        {
-                            document.Tables[2].Cell((allProducts.FindIndex(x=>x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
-                            document.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
-                        }
-
+                        proc.Kill();
                     }
-                    TotalContract += Total;
-                    document.Tables[1].Cell(1, naklIndex+2).Range.Text = "От " + (nakl as DeliveryNoteDTO).Date.ToLongDateString();
-                    document.Tables[1].Cell(2, naklIndex+2).Range.Text = "Накл. №" + (nakl as DeliveryNoteDTO).Number.ToString();
-                    document.Tables[1].Cell(contractIndex, naklIndex+2).Range.Text = Math.Round(Total, 2).ToString();
-                    
-                    naklIndex++;
+                    app = new Word.Application();
+                    doc = app.Documents.Open(fileName);
+                    doc.Activate();
+                    ReplaceStrings();
+                    Word.Range range = doc.Paragraphs[doc.Paragraphs.Count].Range;
+                    int contractIndex = 3;
+                    int naklIndex = 1;
+                    float TotalAll = 0;
+                    float TotalContract = 0;
+                    List<ProductDTO> allProducts = new List<ProductDTO>();
+                    List<DeliveryNoteDTO> deliveryNotes = new List<DeliveryNoteDTO>();
+                    foreach (DeliveryNoteDTO deliveryNote in cLBDeliveryNotes.CheckedItems)
+                    {
+                        deliveryNotes.Add(deliveryNote);
+                    }
+                    foreach (ContractDTO contract in cLBContracts.CheckedItems)
+                    {
+                        TotalContract = 0;
+                        doc.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
+
+                        foreach (DeliveryNoteDTO nakl in deliveryNotes.Where(x => MainForm.DB.Invoices.Get(x.InvoiceId).ContractId == contract.Id))
+                        {
+                            Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + contract.ToString() + "\\Файлы\\" + nakl.ToString() + ".nakl", FileMode.Open);
+                            List<ProductDTO> productList = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+                            stream.Close();
+                            float Total = 0;
+                            foreach (var item in productList)
+                            {
+                                Total += item.Balance * item.Price;
+                                if (allProducts.Where(x => x.Id == item.Id).Count() == 0)
+                                {
+                                    allProducts.Add(item);
+                                    doc.Tables[2].Rows.Add();
+                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 1).Range.Text = item.Name;
+                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 2).Range.Text = MainForm.DB.Units.Get(item.UnitId).Name;
+                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
+                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
+                                }
+                                else
+                                {
+                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = item.Balance.ToString();
+                                    doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Balance * item.Price, 2).ToString();
+                                }
+
+                            }
+                            TotalContract += Total;
+                            doc.Tables[1].Cell(1, naklIndex + 2).Range.Text = "От " + (nakl as DeliveryNoteDTO).Date.ToLongDateString();
+                            doc.Tables[1].Cell(2, naklIndex + 2).Range.Text = "Накл. №" + (nakl as DeliveryNoteDTO).Number.ToString();
+                            doc.Tables[1].Cell(contractIndex, naklIndex + 2).Range.Text = Math.Round(Total, 2).ToString();
+
+                            naklIndex++;
+                        }
+                        doc.Tables[1].Cell(contractIndex, 12).Range.Text = Math.Round(TotalContract, 2).ToString();
+                        doc.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
+                        TotalAll += TotalContract;
+                        contractIndex++;
+                    }
+                    doc.Tables[1].Cell(13, 12).Range.Text = Math.Round(TotalAll, 2).ToString();
+
+                    SaveFile(Application.StartupPath + "\\Документы\\Накопительные по приходу\\Накопительная по приходу за " + cBMount.SelectedItem.ToString() + " " + cBYear.SelectedItem.ToString() + ".docx");
+                    app.Visible = true;
+                    doc = null;
+                    lLoad.Visible = false;
                 }
-                document.Tables[1].Cell(contractIndex, 12).Range.Text = Math.Round(TotalContract, 2).ToString();
-                document.Tables[1].Cell(contractIndex, 2).Range.Text = MainForm.DB.Sellers.Get(contract.SellerId).NameCompany;
-                TotalAll += TotalContract;
-                contractIndex++;
             }
-            document.Tables[1].Cell(13, 12).Range.Text = Math.Round(TotalAll, 2).ToString();
-
-            SaveFile(System.Windows.Forms.Application.StartupPath + "\\Документы\\Накопительные по приходу\\Накопительная по приходу за "+ cBMount.SelectedItem.ToString() + " " + cBYear.SelectedItem.ToString() + ".docx");
-
+            catch (Exception ex)
+            {
+                doc.Close();
+                doc = null;
+                throw new Exception("Во время выполнения произошла ошибка!");
+            }
         }
 
         void ReplaceStrings()
@@ -221,13 +237,6 @@ namespace Дет.Сад.Питание.Forms
             FindReplace("{nameCustomer}", (cBCustomer.SelectedItem as CustomerDTO).NameCustomer);
         }
 
-        public void OpenFile()
-        {
-            app = new Microsoft.Office.Interop.Word.Application();
-            app.Documents.Open(ref fileName);
-            app.Visible = true;
-        }
-
         public void SaveFile(string fileName)
         {
             app.ActiveDocument.SaveAs(fileName);
@@ -235,19 +244,19 @@ namespace Дет.Сад.Питание.Forms
 
         public void FindReplace(string str_old, string str_new)
         {
-            Find find = app.Selection.Find;
+            Word.Find find = app.Selection.Find;
 
             find.Text = str_old; // текст поиска
             find.Replacement.Text = str_new; // текст замены
 
             find.Execute(FindText: System.Type.Missing, MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
-                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: WdFindWrap.wdFindContinue,
-                        Format: false, ReplaceWith: missing, Replace: WdReplace.wdReplaceAll);
+                        MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true, Wrap: Word.WdFindWrap.wdFindContinue,
+                        Format: false, ReplaceWith: missing, Replace: Word.WdReplace.wdReplaceAll);
         }
 
         private void ButDirectory_Click(object sender, EventArgs e)
         {
-            string pathDir = System.Windows.Forms.Application.StartupPath + "\\Документы\\Накопительные по приходу\\";
+            string pathDir = Application.StartupPath + "\\Документы\\Накопительные по приходу\\";
             Process Proc = new Process();
             Proc.StartInfo.FileName = "explorer";
             Proc.StartInfo.Arguments = pathDir;
