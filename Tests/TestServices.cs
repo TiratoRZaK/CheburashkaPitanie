@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Tests
 {
-    public class Class1
+    public class TestServices
     {
         [Fact]
         public void TestPlus()
