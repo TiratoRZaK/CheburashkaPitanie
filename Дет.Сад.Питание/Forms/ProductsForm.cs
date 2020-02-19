@@ -1,29 +1,31 @@
 ﻿using DAL.DTO;
 using Servises.WordWorker;
 using System;
-using Word = Microsoft.Office.Interop.Word;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Forms;
+using Дет.Сад.Питание.Services;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание
 {
     public partial class ProductsForm : Form
     {
-        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Остатки продуктов.docx");
         public MainForm main;
+        public WordWorker WordWorker;
 
         public ProductsForm(MainForm main)
         {
             this.main = main;
+            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Остатки продуктов.docx");
             InitializeComponent();
         }
 
         private void ButAddProduct_Click(object sender, EventArgs e)
         {
             AddEditProductForm addForm = new AddEditProductForm(this);
-            addForm.Show();            
+            addForm.Show();
         }
 
         private void ProductsForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -38,10 +40,10 @@ namespace Дет.Сад.Питание
 
         public void ReloadData()
         {
-            if(tBSearch.Text.Trim().Length>0)
+            if (tBSearch.Text.Trim().Length > 0)
             {
                 //search data
-                PopulateData(MainForm.DB.Products.GetAll().Where(x=>x.Name.ToLower().Contains(tBSearch.Text.ToLower())));
+                PopulateData(MainForm.DB.Products.GetAll().Where(x => x.Name.ToLower().Contains(tBSearch.Text.ToLower())));
             }
             else
             {
@@ -52,14 +54,14 @@ namespace Дет.Сад.Питание
         private void PopulateData(IEnumerable<ProductDTO> products)
         {
             dGVProductsList.Rows.Clear();
-            foreach(var item in products)
+            foreach (var item in products)
             {
                 dGVProductsList.Rows.Add(new object[] {
                     item.Name,
                     item.Unit.ToString(),
                     item.Type.ToString(),
                     item.Norm.ToString(),
-                    item.Price.ToString(),
+                    item.Sum.ToString(),
                     item.Balance.ToString(),
                     "Изменить",
                     "Удалить"
@@ -81,7 +83,7 @@ namespace Дет.Сад.Питание
 
         private void DGVProductsList_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.ColumnIndex == 6)
+            if (e.ColumnIndex == 6)
             {
                 AddEditProductForm addEdit = new AddEditProductForm((ProductDTO)dGVProductsList.CurrentRow.Tag, this);
                 addEdit.Show();
@@ -93,6 +95,7 @@ namespace Дет.Сад.Питание
                 {
                     MainForm.DB.Products.Delete(product.Id);
                     MainForm.DB.Save();
+                    LoggingService.AddLog("Удаление продукта: " + product.ToString());
                     ReloadData();
                 }
             }
@@ -100,21 +103,14 @@ namespace Дет.Сад.Питание
 
         private void ButBuild_Click(object sender, EventArgs e)
         {
-            try
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
             {
-                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
-                if (dialogResult == DialogResult.OK)
-                {
-                    lLoad.Visible = true;
-                    BuildDocument();
-                    lLoad.Visible = false;
-                }
+                lLoad.Visible = true;
+                BuildDocument();
+                lLoad.Visible = false;
             }
-            catch (Exception ex)
-            {
-                WordWorker.Close();
-                throw new Exception("Во время выполнения произошла ошибка!");
-            }
+            WordWorker.Close();
         }
 
         private void BuildDocument()
@@ -130,17 +126,19 @@ namespace Дет.Сад.Питание
                 WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
                 WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
                 WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = product.Balance.ToString();
-                WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.Price.ToString();
-                WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Balance* product.Price, 2).ToString();
-                summ += product.Balance * product.Price;
+                WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.getPrice().ToString();
+                WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Sum, 2).ToString();
+                summ += product.Sum;
             }
             WordWorker.doc.Tables[1].Rows.Add();
             i++;
             WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = "Итого";
-            WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = summ.ToString();
-            WordWorker.Save(Application.StartupPath + "\\Документы\\Остатки продуктов на складе.docx");
+            WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(summ,2).ToString();
+            DateTime now = DateTime.Now;
+            WordWorker.Save(MainForm.DataPath + "\\Документы\\Остатки продуктов на "+ (now.ToString("g")).Replace('.','-').Replace(':', '-') + ".docx");
             WordWorker.Close();
-            WordWorker.Open(Application.StartupPath + "\\Документы\\Остатки продуктов на складе.docx");
+            WordWorker.Open(MainForm.DataPath + "\\Документы\\Остатки продуктов на " + (now.ToString("g")).Replace('.', '-').Replace(':', '-') + ".docx");
+            LoggingService.AddLog("Распечатка остатков на " + (now.ToString("g")).Replace('.', '-').Replace(':', '-') + " в файл по пути: " + MainForm.DataPath + "\\Документы\\");
         }
     }
 }

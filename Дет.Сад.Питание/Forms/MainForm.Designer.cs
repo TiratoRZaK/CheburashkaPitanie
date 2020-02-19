@@ -39,6 +39,7 @@
             this.butMenus = new System.Windows.Forms.Button();
             this.butDishes = new System.Windows.Forms.Button();
             this.butProducts = new System.Windows.Forms.Button();
+            this.fBDialogPath = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // butDirectory
@@ -46,15 +47,15 @@
             this.butDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.butDirectory.BackgroundImage = global::Дет.Сад.Питание.Properties.Resources.Папка;
-            this.butDirectory.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.butDirectory.BackgroundImage = global::Дет.Сад.Питание.Properties.Resources.configuration_settings;
+            this.butDirectory.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.butDirectory.Cursor = System.Windows.Forms.Cursors.Hand;
             this.butDirectory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butDirectory.Location = new System.Drawing.Point(590, 145);
             this.butDirectory.Name = "butDirectory";
             this.butDirectory.Size = new System.Drawing.Size(115, 105);
             this.butDirectory.TabIndex = 9;
-            this.butDirectory.Text = "Открыть документы";
+            this.butDirectory.Text = "Настройки";
             this.butDirectory.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.butDirectory.UseVisualStyleBackColor = true;
             this.butDirectory.Click += new System.EventHandler(this.ButDirectory_Click);
@@ -222,6 +223,10 @@
             this.butProducts.UseVisualStyleBackColor = false;
             this.butProducts.Click += new System.EventHandler(this.ButProducts_Click);
             // 
+            // fBDialogPath
+            // 
+            this.fBDialogPath.Description = "Выберите папку для загрузки и сохранения документов";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -248,6 +253,8 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Главное меню программы";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 
         }
@@ -264,6 +271,7 @@
         private System.Windows.Forms.Button butIncome;
         private System.Windows.Forms.Button butOverhead;
         private System.Windows.Forms.Button butDirectory;
+        private System.Windows.Forms.FolderBrowserDialog fBDialogPath;
     }
 }
 

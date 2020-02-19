@@ -6,14 +6,15 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
+using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class AddProductInInvoice : Form
     {
-        public ProductDTO _Product = null;
+        public ProductArrival _Product = null;
         public InvoicesForm main;
-        public List<ProductDTO> addedProducts;
+        public List<ProductArrival> addedProducts;
 
         public AddProductInInvoice(InvoicesForm main, string fileContractPath)
         {
@@ -26,13 +27,15 @@ namespace Дет.Сад.Питание.Forms
         private void InitializeProducts(string filePath)
         {
             Stream stream = new FileStream(filePath, FileMode.Open);
-            addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+            addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
             stream.Close();
         }
 
         void InitializeToProduct()
         {
             tBBalance.Text = _Product.Balance.ToString();
+            tBOldPrice.Text = MainForm.DB.Products.Get(_Product.Id).getPrice().ToString();
+            tBNewPrice.Text = _Product.Price.ToString();
         }
         void InitializeComdoBoxes()
         {
@@ -47,30 +50,43 @@ namespace Дет.Сад.Питание.Forms
             }
             else
             {
-                if (main.addedProducts.Where(x => x.Name == (cBProduct.SelectedItem as ProductDTO).Name).Count() == 0)
+                if (main.addedProducts.Where(x => x.Name == (cBProduct.SelectedItem as ProductArrival).Name).Count() == 0)
                 {
-                    ProductDTO productInDb = addedProducts.Single(x=>x.Id == (cBProduct.SelectedItem as ProductDTO).Id);
-                    ProductDTO product = new ProductDTO();
-                    product.Id = productInDb.Id;
-                    product.Name = productInDb.Name;
-                    product.Balance = (float)Math.Round(float.Parse(tBBalance.Text), 2);
-                    product.Price = productInDb.Price;
-                    product.Carbohydrate = productInDb.Carbohydrate;
-                    product.Fat = productInDb.Fat;
-                    product.Norm = productInDb.Norm;
-                    product.ProductsDishes = productInDb.ProductsDishes;
-                    product.Protein = productInDb.Protein;
-                    product.Type = productInDb.Type;
-                    product.TypeId = productInDb.TypeId;
-                    product.Unit = productInDb.Unit;
-                    product.UnitId = productInDb.UnitId;
-                    product.Vitamine_C = productInDb.Vitamine_C;
+                    ProductArrival productInContract = addedProducts.Single(x=>x.Id == (cBProduct.SelectedItem as ProductArrival).Id);
+                    ProductArrival product = new ProductArrival();
+                    product.Id = productInContract.Id;
+                    product.Name = productInContract.Name;
+                    product.Balance = float.Parse(tBBalance.Text);
+                    product.Price = productInContract.Price;
+                    product.TypeId = productInContract.TypeId;
+                    product.UnitId = productInContract.UnitId;
 
                     main.addedProducts.Add(product);
                     MessageBox.Show("Продукт успешно добавлен");
                     this.Close();
                 }
                 ShowError("Продукт с данным именем уже в списке!");
+            }
+        }
+
+
+        private void TBPrice_TextChanged(object sender, EventArgs e)
+        {
+            if (tBBalance.Text != "")
+            {
+                if (MainForm.DB.Products.Get(_Product.Id).getPrice() != _Product.Price)
+                {
+                    if (MainForm.DB.Products.Get(_Product.Id).Balance != 0)
+                    {
+                        tBNewPrice.Text = (((MainForm.DB.Products.Get(_Product.Id).Sum) + (float.Parse(tBBalance.Text) * _Product.Price)) / (double)(float.Parse(tBBalance.Text) + MainForm.DB.Products.Get(_Product.Id).Balance)).ToString();
+                    }
+                    else
+                    {
+                        tBNewPrice.Text = _Product.Price.ToString();
+                    }
+                }
+                else
+                    tBNewPrice.Text = _Product.Price.ToString();
             }
         }
 
@@ -88,7 +104,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void CBProduct_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _Product = cBProduct.SelectedItem as ProductDTO;
+            _Product = cBProduct.SelectedItem as ProductArrival;
             InitializeToProduct();
         }
 

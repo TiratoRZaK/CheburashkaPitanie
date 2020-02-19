@@ -2,18 +2,53 @@
 using DAL.Repositories;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Forms;
+using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание
 {
     public partial class MainForm : Form
     {
         public static IUnitOfWork DB;
+        public static String DataPath = Properties.Settings.Default.DataPath;
+        public static String LogsPath = Properties.Settings.Default.LogsPath;
         public MainForm()
         {
-            DB = new EFUnitOfWork();
+            DB = EFUnitOfWork.GetInstance();
             InitializeComponent();
+            LoggingService.StartLogging();
+        }
+
+        private void checkValidDirectory()
+        {
+            if (!Directory.Exists(DataPath))
+            {
+                DialogResult result = MessageBox.Show("Путь к созданым ранее документам недоступен! Указать новый путь или использовать путь по умолчанию?", "Использовать новый путь?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    fBDialogPath = new FolderBrowserDialog();
+                    fBDialogPath.Description = "Выберите папку для загрузки и сохранения документов";
+                    fBDialogPath.ShowDialog();
+                    if (!Directory.Exists(fBDialogPath.SelectedPath))
+                    {
+                        checkValidDirectory();
+                    }
+                    else
+                    {
+                        DataPath = fBDialogPath.SelectedPath;
+                    }
+                }
+                else
+                {
+                    DataPath = Application.StartupPath;
+                }
+
+            }
+            this.WindowState = FormWindowState.Normal;
+            this.Focus();
+            LoggingService.AddLog("Выбран путь: "+ DataPath);
         }
 
         private void ButProducts_Click(object sender, EventArgs e)
@@ -21,6 +56,7 @@ namespace Дет.Сад.Питание
             ProductsForm productsForm = new ProductsForm(this);
             productsForm.Show();
             this.WindowState = FormWindowState.Minimized;
+
         }
 
         private void ButDishes_Click(object sender, EventArgs e)
@@ -39,11 +75,8 @@ namespace Дет.Сад.Питание
 
         private void ButDirectory_Click(object sender, EventArgs e)
         {
-            string pathDir = System.Windows.Forms.Application.StartupPath + "\\Документы\\";
-            Process Proc = new Process();
-            Proc.StartInfo.FileName = "explorer";
-            Proc.StartInfo.Arguments = pathDir;
-            Proc.Start();
+            SettingsForm settingsForm = new SettingsForm(this);
+            settingsForm.Show();
             this.WindowState = FormWindowState.Minimized;
         }
 
@@ -87,6 +120,25 @@ namespace Дет.Сад.Питание
             PatternsForm patternsForm = new PatternsForm(this);
             patternsForm.Show();
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.DataPath = MainForm.DataPath;
+            Properties.Settings.Default.LogsPath = MainForm.LogsPath;
+            Properties.Settings.Default.Save();
+            LoggingService.StopLogging();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            checkValidDirectory();
+            if (!Directory.Exists(Properties.Settings.Default.LogsPath))
+            {
+                Properties.Settings.Default.LogsPath = Application.StartupPath + "\\Local Data\\";
+                LogsPath = Application.StartupPath + "\\Local Data\\";
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }

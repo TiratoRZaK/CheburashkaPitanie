@@ -6,12 +6,12 @@ namespace Дет.Сад.Питание.Forms
     public partial class SetNorm : Form
     {
         public AddEditDishForm main;
-        public string key;
+        public string nameProduct;
 
-        public SetNorm(AddEditDishForm main, string key)
+        public SetNorm(AddEditDishForm main, string nameProduct)
         {
             this.main = main;
-            this.key = key;
+            this.nameProduct = nameProduct;
             InitializeComponent();
         }
 
@@ -20,7 +20,7 @@ namespace Дет.Сад.Питание.Forms
             char ch = e.KeyChar;
             if (e.KeyChar == '\r')
             {
-                main.norms.Add(key, float.Parse(tBNorm.Text));
+                main.norms.Add(nameProduct, float.Parse(tBNorm.Text));
                 this.Close();
             }
             if (!Char.IsDigit(ch) && ch != ',' && ch != 8 && !ch.Equals(Keys.Enter))

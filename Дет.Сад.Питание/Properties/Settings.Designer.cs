@@ -13,7 +13,7 @@ namespace Дет.Сад.Питание.Properties {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
@@ -26,10 +26,34 @@ namespace Дет.Сад.Питание.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=desktop-0qfjf5m;Initial Catalog=PitanieDB;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\CheburashkaDB.db3;Version=3;")]
         public string PitanieDBConnectionString {
             get {
                 return ((string)(this["PitanieDBConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DataPath {
+            get {
+                return ((string)(this["DataPath"]));
+            }
+            set {
+                this["DataPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("F:\\Архив\\source\\repos\\Дет.Сад.Питание\\Дет.Сад.Питание\\bin\\Debug\\Local Data")]
+        public string LogsPath {
+            get {
+                return ((string)(this["LogsPath"]));
+            }
+            set {
+                this["LogsPath"] = value;
             }
         }
     }

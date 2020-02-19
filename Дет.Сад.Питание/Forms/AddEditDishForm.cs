@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Forms;
+using Дет.Сад.Питание.Models;
+using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -114,9 +116,11 @@ namespace Дет.Сад.Питание.Forms
                         {
                             dish.Vitamine_C = int.Parse(tBVitamine.Text);
                         }
-
                         MainForm.DB.Dishes.Create(dish);
                         MainForm.DB.Save();
+                        List<ActionDescription> actions = new List<ActionDescription>();
+                        actions.Add(new ActionDescription("Характеристики блюда: " + dish.Name, "Норма = " + dish.Norm.ToString(), "Углеводы: " + dish.Carbohydrate.ToString(), "Жиры: " + dish.Fat.ToString(), "Белки: "+dish.Protein.ToString(), "Витамин С: "+dish.Vitamine_C.ToString()));
+
                         DishDTO dishNew = MainForm.DB.Dishes.GetAll().Last();
                         foreach (var item in products)
                         {
@@ -131,7 +135,9 @@ namespace Дет.Сад.Питание.Forms
                                 Norm = temp
                             });
                             MainForm.DB.Save();
+                            actions.Add(new ActionDescription("Добавление продукта " + item.Name, "Норма = " + temp.ToString()));
                         }
+                        LoggingService.AddLog("Добавление нового блюда: "+dish.ToString(), actions.ToArray());
                     }
                     else
                     {
@@ -161,6 +167,9 @@ namespace Дет.Сад.Питание.Forms
                             MainForm.DB.ProductDishes.Delete(item.Id);
                         }
                         MainForm.DB.Save();
+                        List<ActionDescription> actions = new List<ActionDescription>();
+                        actions.Add(new ActionDescription("Характеристики блюда: " + dish.Name, "Норма = " + dish.Norm.ToString(), "Углеводы: " + dish.Carbohydrate.ToString(), "Жиры: " + dish.Fat.ToString(), "Белки: " + dish.Protein.ToString(), "Витамин С: " + dish.Vitamine_C.ToString()));
+
                         foreach (var item in products)
                         {
                             float temp;
@@ -174,7 +183,9 @@ namespace Дет.Сад.Питание.Forms
                                 Norm = temp
                             });
                             MainForm.DB.Save();
+                            actions.Add(new ActionDescription("Добавление продукта " + item.Name, "Норма = " + temp.ToString()));
                         }
+                        LoggingService.AddLog("Изменение блюда: " + dish.ToString(), actions.ToArray());
                     }
                     MainForm.DB.Save();
                     MessageBox.Show("Блюдо успешно сохранено");
@@ -191,6 +202,7 @@ namespace Дет.Сад.Питание.Forms
             {
                 MainForm.DB.Dishes.Delete(_Dish.Id);
                 MainForm.DB.Save();
+                LoggingService.AddLog("Удаление блюда: " + _Dish.ToString());
                 MessageBox.Show("Блюдо успешно удалено");
                 this.Close();
                 main.ReloadData();
@@ -214,6 +226,7 @@ namespace Дет.Сад.Питание.Forms
                 SetNorm set = new SetNorm(this, ((ProductDTO)lBProducts.SelectedItem).Name);
                 set.ShowDialog();
                 products.Add((ProductDTO)lBProducts.SelectedItem);
+                
                 ReloadeData();
             }
         }
@@ -254,6 +267,13 @@ namespace Дет.Сад.Питание.Forms
             {
                 lBProducts.Items.Add(item);
             }
+        }
+
+        private void lBSostav_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            float norm;
+            norms.TryGetValue(lBSostav.Text, out norm); 
+            tTListBoxSostav.SetToolTip(lBSostav, norm.ToString());
         }
     }
 }

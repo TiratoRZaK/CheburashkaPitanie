@@ -16,7 +16,7 @@ namespace DAL.DTO
         public string PsevdoName { get; set; }
         public int UnitId { get; set; }
         public float Norm { get; set; }           //Норма продукта на человека в день, которая делится на все блюда в менюшке
-        public float Price { get; set; }
+        public float Sum { get; set; }
         public int? Vitamine_C { get; set; }
         public int? Protein { get; set; }
         public int? Fat { get; set; }
@@ -31,6 +31,18 @@ namespace DAL.DTO
         public override string ToString()
         {
             return Name;
+        }
+
+        public float getPrice()
+        {
+            if (Balance != 0)
+            {
+                return Sum / Balance;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

@@ -32,10 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddProductInDeliveryNote));
             this.labelError = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tBNewPrice = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.tBOldPrice = new System.Windows.Forms.TextBox();
             this.cBProduct = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -62,58 +58,14 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.tBNewPrice);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.tBOldPrice);
             this.panel1.Controls.Add(this.cBProduct);
             this.panel1.Controls.Add(this.label13);
             this.panel1.Controls.Add(this.label12);
             this.panel1.Controls.Add(this.tBBalance);
             this.panel1.Location = new System.Drawing.Point(12, 39);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(280, 189);
+            this.panel1.Size = new System.Drawing.Size(280, 137);
             this.panel1.TabIndex = 57;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Enabled = false;
-            this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(148, 123);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(69, 13);
-            this.label2.TabIndex = 54;
-            this.label2.Text = "Новая цена:";
-            // 
-            // tBNewPrice
-            // 
-            this.tBNewPrice.Enabled = false;
-            this.tBNewPrice.ForeColor = System.Drawing.Color.Black;
-            this.tBNewPrice.Location = new System.Drawing.Point(151, 139);
-            this.tBNewPrice.Name = "tBNewPrice";
-            this.tBNewPrice.Size = new System.Drawing.Size(116, 20);
-            this.tBNewPrice.TabIndex = 55;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Enabled = false;
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(21, 123);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 13);
-            this.label1.TabIndex = 52;
-            this.label1.Text = "Цена остатка:";
-            // 
-            // tBOldPrice
-            // 
-            this.tBOldPrice.Enabled = false;
-            this.tBOldPrice.ForeColor = System.Drawing.Color.Black;
-            this.tBOldPrice.Location = new System.Drawing.Point(24, 139);
-            this.tBOldPrice.Name = "tBOldPrice";
-            this.tBOldPrice.Size = new System.Drawing.Size(119, 20);
-            this.tBOldPrice.TabIndex = 53;
             // 
             // cBProduct
             // 
@@ -149,7 +101,6 @@
             this.tBBalance.Name = "tBBalance";
             this.tBBalance.Size = new System.Drawing.Size(243, 20);
             this.tBBalance.TabIndex = 45;
-            this.tBBalance.TextChanged += new System.EventHandler(this.TBPrice_TextChanged);
             this.tBBalance.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TBBalance_KeyPress);
             // 
             // butDel
@@ -158,7 +109,7 @@
             this.butDel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.butDel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butDel.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.butDel.Location = new System.Drawing.Point(160, 236);
+            this.butDel.Location = new System.Drawing.Point(160, 184);
             this.butDel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.butDel.Name = "butDel";
             this.butDel.Size = new System.Drawing.Size(132, 42);
@@ -172,7 +123,7 @@
             this.butSave.BackColor = System.Drawing.Color.LimeGreen;
             this.butSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butSave.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.butSave.Location = new System.Drawing.Point(12, 236);
+            this.butSave.Location = new System.Drawing.Point(12, 184);
             this.butSave.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.butSave.Name = "butSave";
             this.butSave.Size = new System.Drawing.Size(140, 42);
@@ -191,7 +142,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(304, 292);
+            this.ClientSize = new System.Drawing.Size(304, 236);
             this.Controls.Add(this.labelError);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.butDel);
@@ -222,9 +173,5 @@
         private System.Windows.Forms.Button butDel;
         private System.Windows.Forms.Button butSave;
         private System.Windows.Forms.Timer timError;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tBNewPrice;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox tBOldPrice;
     }
 }

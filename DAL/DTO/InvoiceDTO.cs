@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Interfaces;
+using System;
 
 namespace DAL.DTO
 {
@@ -18,4 +19,6 @@ namespace DAL.DTO
             return "Счёт-фактура №" + Number.ToString() + " от " + Date.ToLongDateString();
         }
     }
+
+    
 }

@@ -7,6 +7,8 @@ namespace DAL.Repositories
 {
     public class EFUnitOfWork : IUnitOfWork
     {
+        private static EFUnitOfWork eFUnitOfWork;
+
         private PitanieContext db;
         private ProductRepository productRepository;
         private DishRepository dishRepository;
@@ -19,9 +21,18 @@ namespace DAL.Repositories
         private MenuRepository menuRepository;
         private InvoiceRepository invoiceRepository;
         private DeliveryNoteRepository deliveryNoteRepository; 
-        public EFUnitOfWork()
+        private EFUnitOfWork()
         {
-            db = new PitanieContext(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename='"+ AppDomain.CurrentDomain.BaseDirectory + "CheburashkaDB.mdf';Integrated Security=True");
+            db = new PitanieContext();
+        }
+
+        public static EFUnitOfWork GetInstance()
+        {
+            if(eFUnitOfWork == null)
+            {
+                eFUnitOfWork = new EFUnitOfWork();
+            }
+            return eFUnitOfWork;
         }
 
         public EFUnitOfWork(string connectionString)

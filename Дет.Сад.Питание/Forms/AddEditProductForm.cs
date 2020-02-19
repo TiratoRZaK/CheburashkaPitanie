@@ -1,20 +1,27 @@
 ﻿using DAL.DTO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using Дет.Сад.Питание.Models;
+using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class AddEditProductForm : Form
     {
-        public ProductDTO _Product = null;
-        public ProductsForm main;
+        private ProductDTO _Product = null;
+        private ProductsForm main;
+        private List<ActionDescription> actions = new List<ActionDescription>();
+        private StringBuilder logMessage;
 
         public AddEditProductForm(ProductsForm main)
         {
             this.main = main;
             InitializeComponent();
             InitializeComdoBoxes();
+            logMessage = new StringBuilder("Добавление нового продукта: ");
         }
         public AddEditProductForm(ProductDTO product, ProductsForm main)
         {
@@ -26,15 +33,16 @@ namespace Дет.Сад.Питание.Forms
             butSave.Text = "Обновить продукт";
             this.Text = "Обновление продукта " + product.Name;
             butDel.Visible = true;
+            logMessage = new StringBuilder("Изменение продукта: ");
         }
 
         void InitializeTextBoxes()
         {
             tBName.Text = _Product.Name.ToString();
-            tBPsevdoName.Text = _Product.Name.ToString();
+            tBPsevdoName.Text = _Product.PsevdoName.ToString();
             tBNorm.Text = _Product.Norm.ToString();
             tBBalance.Text = _Product.Balance.ToString();
-            tBPrice.Text = _Product.Price.ToString();
+            tBSum.Text = _Product.Sum.ToString();
             tBFat.Text = _Product.Fat.ToString();
             tBCarbo.Text = _Product.Carbohydrate.ToString();
             tBProtein.Text = _Product.Protein.ToString();
@@ -43,9 +51,17 @@ namespace Дет.Сад.Питание.Forms
         void InitializeComdoBoxes()
         {
             cBType.DataSource = MainForm.DB.Types.GetAll();
-            cBType.SelectedItem = MainForm.DB.Types.GetAll().First();
             cBUnit.DataSource = MainForm.DB.Units.GetAll();
-            cBUnit.SelectedItem = MainForm.DB.Units.GetAll().First();
+            if (_Product != null)
+            {
+                cBType.SelectedItem = _Product.Type;
+                cBUnit.SelectedItem = _Product.Unit;
+            }
+            else
+            {
+                cBType.SelectedIndex = 0;
+                cBUnit.SelectedIndex = 0;
+            }
         }
 
         void ShowError(string message)
@@ -78,9 +94,9 @@ namespace Дет.Сад.Питание.Forms
                     {
                         product.Norm = float.Parse(tBNorm.Text);
                     }
-                    if (tBPrice.Text != "")
+                    if (tBSum.Text != "")
                     {
-                        product.Price = float.Parse(tBPrice.Text);
+                        product.Sum = float.Parse(tBSum.Text);
                     }
                     if (tBBalance.Text != "")
                     {
@@ -108,9 +124,9 @@ namespace Дет.Сад.Питание.Forms
                     UnitDTO unit = MainForm.DB.Units.GetAll().Where(x => x.Name == cBUnit.SelectedValue.ToString()).First();
                     product.Unit = unit;
                     product.UnitId = unit.Id;
-
-                    //validation
                     MainForm.DB.Products.Create(product);
+                    actions.Add(new ActionDescription("Характеристики продукта: " + product.Name, "Псевдоним: " + product.PsevdoName, "Ед. изм.: "+product.Unit.Name, "Тип: "+product.Type.Name, "Сумма: " + product.Sum.ToString(), "Количество: " + product.Balance.ToString(), "Норма = " + product.Norm.ToString(), "Углеводы: " + product.Carbohydrate.ToString(), "Жиры: " + product.Fat.ToString(), "Белки: " + product.Protein.ToString(), "Витамин С: " + product.Vitamine_C.ToString()));
+                    logMessage.Append(product.Name);
                 }
                 else
                 {
@@ -129,9 +145,9 @@ namespace Дет.Сад.Питание.Forms
                     {
                         product.Protein = int.Parse(tBProtein.Text);
                     }
-                    if (tBPrice.Text != "")
+                    if (tBSum.Text != "")
                     {
-                        product.Price = float.Parse(tBPrice.Text);
+                        product.Sum = float.Parse(tBSum.Text);
                     }
                     if (tBBalance.Text != "")
                     {
@@ -151,13 +167,15 @@ namespace Дет.Сад.Питание.Forms
                     UnitDTO unit = MainForm.DB.Units.GetAll().Where(x => x.Name == cBUnit.SelectedValue.ToString()).First();
                     product.Unit = unit;
                     product.UnitId = unit.Id;
-                    //validation
+
                     MainForm.DB.Products.Update(product);
+                    actions.Add(new ActionDescription("Характеристики продукта: " + product.Name, "Псевдоним: " + product.PsevdoName, "Ед. изм.: " + product.Unit.Name, "Тип: " + product.Type.Name, "Cумма: " + product.Sum.ToString(), "Количество: " + product.Balance.ToString(), "Норма = " + product.Norm.ToString(), "Углеводы: " + product.Carbohydrate.ToString(), "Жиры: " + product.Fat.ToString(), "Белки: " + product.Protein.ToString(), "Витамин С: " + product.Vitamine_C.ToString()));
+                    logMessage.Append(product.Name);
                 }
                 MainForm.DB.Save();
                 MessageBox.Show("Продукт успешно сохранён");
+                LoggingService.AddLog(logMessage.ToString(), actions.ToArray());
                 this.Close();
-                main.ReloadData();
             }
         }
 
@@ -167,7 +185,9 @@ namespace Дет.Сад.Питание.Forms
             if (result == DialogResult.Yes)
             {
                 MainForm.DB.Products.Delete(_Product.Id);
+                MainForm.DB.Save();
                 MessageBox.Show("Продукт успешно удалён");
+                LoggingService.AddLog("Удаление продукта: "+_Product.Name);
                 this.Close();
                 main.ReloadData();
             }         

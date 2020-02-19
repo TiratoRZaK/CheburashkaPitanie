@@ -32,6 +32,8 @@
             this.clBMenus = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.butCheckClear = new System.Windows.Forms.Button();
+            this.butCheckAll = new System.Windows.Forms.Button();
             this.lLoad = new System.Windows.Forms.Label();
             this.cBYear = new System.Windows.Forms.ComboBox();
             this.cBMount = new System.Windows.Forms.ComboBox();
@@ -45,7 +47,7 @@
             this.clBMenus.FormattingEnabled = true;
             this.clBMenus.Location = new System.Drawing.Point(17, 24);
             this.clBMenus.Name = "clBMenus";
-            this.clBMenus.Size = new System.Drawing.Size(264, 304);
+            this.clBMenus.Size = new System.Drawing.Size(264, 274);
             this.clBMenus.TabIndex = 0;
             // 
             // label1
@@ -59,6 +61,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.butCheckClear);
+            this.panel1.Controls.Add(this.butCheckAll);
             this.panel1.Controls.Add(this.lLoad);
             this.panel1.Controls.Add(this.cBYear);
             this.panel1.Controls.Add(this.cBMount);
@@ -71,6 +75,29 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(300, 450);
             this.panel1.TabIndex = 2;
+            // 
+            // butCheckClear
+            // 
+            this.butCheckClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckClear.ForeColor = System.Drawing.Color.Black;
+            this.butCheckClear.Location = new System.Drawing.Point(157, 304);
+            this.butCheckClear.Name = "butCheckClear";
+            this.butCheckClear.Size = new System.Drawing.Size(124, 23);
+            this.butCheckClear.TabIndex = 61;
+            this.butCheckClear.Text = "Снять все";
+            this.butCheckClear.UseVisualStyleBackColor = true;
+            this.butCheckClear.Click += new System.EventHandler(this.butCheckClear_Click);
+            // 
+            // butCheckAll
+            // 
+            this.butCheckAll.ForeColor = System.Drawing.Color.Black;
+            this.butCheckAll.Location = new System.Drawing.Point(17, 304);
+            this.butCheckAll.Name = "butCheckAll";
+            this.butCheckAll.Size = new System.Drawing.Size(134, 23);
+            this.butCheckAll.TabIndex = 60;
+            this.butCheckAll.Text = "Выбрать все";
+            this.butCheckAll.UseVisualStyleBackColor = true;
+            this.butCheckAll.Click += new System.EventHandler(this.butCheckAll_Click);
             // 
             // lLoad
             // 
@@ -87,20 +114,19 @@
             // 
             // cBYear
             // 
-            this.cBYear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cBYear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cBYear.FormattingEnabled = true;
-            this.cBYear.Location = new System.Drawing.Point(114, 352);
+            this.cBYear.Location = new System.Drawing.Point(157, 353);
             this.cBYear.Name = "cBYear";
-            this.cBYear.Size = new System.Drawing.Size(57, 21);
+            this.cBYear.Size = new System.Drawing.Size(124, 21);
             this.cBYear.TabIndex = 58;
             // 
             // cBMount
             // 
-            this.cBMount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cBMount.FormattingEnabled = true;
             this.cBMount.Location = new System.Drawing.Point(21, 353);
             this.cBMount.Name = "cBMount";
-            this.cBMount.Size = new System.Drawing.Size(83, 21);
+            this.cBMount.Size = new System.Drawing.Size(130, 21);
             this.cBMount.TabIndex = 57;
             // 
             // butAddMenus
@@ -158,5 +184,7 @@
         private System.Windows.Forms.ComboBox cBMount;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label lLoad;
+        private System.Windows.Forms.Button butCheckClear;
+        private System.Windows.Forms.Button butCheckAll;
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
+using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -20,13 +21,13 @@ namespace Дет.Сад.Питание.Forms
         void InitializeToProduct()
         {
             tBBalance.Text = _Product.Balance.ToString();
-            tBPrice.Text = _Product.Price.ToString();
+            tBPrice.Text = _Product.getPrice().ToString();
             tBUnit.Text = MainForm.DB.Units.Get(_Product.UnitId).Name;
 
         }
         void InitializeComdoBoxes()
         {
-            cBProduct.DataSource = MainForm.DB.Products.GetAll();
+            cBProduct.DataSource = MainForm.DB.Products.GetAll().ToList();
         }
 
         void ShowError(string message)
@@ -74,22 +75,14 @@ namespace Дет.Сад.Питание.Forms
                 if (main.addedProducts.Where(x => x.Name == (cBProduct.SelectedItem as ProductDTO).Name).Count() == 0)
                 {
                     ProductDTO productInDb = MainForm.DB.Products.Get((cBProduct.SelectedItem as ProductDTO).Id);
-                    ProductDTO product = new ProductDTO();
+                    ProductArrival product = new ProductArrival();
                     product.Id = productInDb.Id;
                     product.Name = productInDb.Name;
-                    product.Balance = (float)Math.Round(float.Parse(tBBalance.Text), 2);
-                    product.Price = (float)Math.Round(float.Parse(tBPrice.Text), 2);
-                    product.Carbohydrate = productInDb.Carbohydrate;
-                    product.Fat = productInDb.Fat;
-                    product.Norm = productInDb.Norm;
-                    product.ProductsDishes = productInDb.ProductsDishes;
-                    product.Protein = productInDb.Protein;
-                    product.Type = productInDb.Type;
+                    product.Balance = float.Parse(tBBalance.Text);
+                    product.Price = float.Parse(tBPrice.Text);
                     product.TypeId = productInDb.TypeId;
-                    product.Unit = productInDb.Unit;
                     product.UnitId = productInDb.UnitId;
-                    product.Vitamine_C = productInDb.Vitamine_C;
-
+                    
                     main.addedProducts.Add(product);
                     MessageBox.Show("Продукт успешно добавлен");
                     this.Close();

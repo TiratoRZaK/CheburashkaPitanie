@@ -117,50 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="configuration_settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\configuration-settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="search" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\search.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Блюда" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\блюда.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Договора" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\договора.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="загрузка" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\загрузка.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="меню" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\меню.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Накладные" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\накладные.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Папка" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\папка.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Приход" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\приход.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Продукты" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Продукты.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Расход" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\расход.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Счёт_фактура" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\счёт-фактура.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Чебурашка" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\чебурашка.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Чебурашка1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\чебурашка.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Шаблоны" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\images\шаблоны.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
+  <metadata name="fBDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

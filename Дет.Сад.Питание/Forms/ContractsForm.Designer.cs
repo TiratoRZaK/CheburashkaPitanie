@@ -40,15 +40,14 @@
             this.butSave = new System.Windows.Forms.Button();
             this.butAddContract = new System.Windows.Forms.Button();
             this.pData = new System.Windows.Forms.Panel();
+            this.cBTypeProducts = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.dTPOkonch = new System.Windows.Forms.DateTimePicker();
             this.label5 = new System.Windows.Forms.Label();
             this.cBSeller = new System.Windows.Forms.ComboBox();
             this.cBCustomer = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rBChet = new System.Windows.Forms.RadioButton();
-            this.rBPol = new System.Windows.Forms.RadioButton();
             this.dTPData = new System.Windows.Forms.DateTimePicker();
             this.tBOtv = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -73,14 +72,16 @@
             this.butDel = new System.Windows.Forms.Button();
             this.butBuild = new System.Windows.Forms.Button();
             this.pContracts = new System.Windows.Forms.Panel();
+            this.pCheckDoc = new System.Windows.Forms.Panel();
+            this.lCheckDoc = new System.Windows.Forms.Label();
             this.lLoad = new System.Windows.Forms.Label();
             this.butOpen = new System.Windows.Forms.Button();
             this.pData.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.pProducts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pContracts.SuspendLayout();
+            this.pCheckDoc.SuspendLayout();
             this.SuspendLayout();
             // 
             // lBContracts
@@ -90,7 +91,7 @@
             this.lBContracts.FormattingEnabled = true;
             this.lBContracts.Location = new System.Drawing.Point(6, 30);
             this.lBContracts.Name = "lBContracts";
-            this.lBContracts.Size = new System.Drawing.Size(207, 251);
+            this.lBContracts.Size = new System.Drawing.Size(207, 225);
             this.lBContracts.TabIndex = 0;
             this.lBContracts.SelectedIndexChanged += new System.EventHandler(this.LBContracts_SelectedIndexChanged);
             // 
@@ -141,13 +142,14 @@
             this.pData.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pData.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.pData.Controls.Add(this.cBTypeProducts);
+            this.pData.Controls.Add(this.label6);
             this.pData.Controls.Add(this.dTPOkonch);
             this.pData.Controls.Add(this.label5);
             this.pData.Controls.Add(this.cBSeller);
             this.pData.Controls.Add(this.cBCustomer);
             this.pData.Controls.Add(this.label4);
             this.pData.Controls.Add(this.label3);
-            this.pData.Controls.Add(this.groupBox1);
             this.pData.Controls.Add(this.dTPData);
             this.pData.Controls.Add(this.tBOtv);
             this.pData.Controls.Add(this.label9);
@@ -158,6 +160,32 @@
             this.pData.Name = "pData";
             this.pData.Size = new System.Drawing.Size(649, 136);
             this.pData.TabIndex = 9;
+            // 
+            // cBTypeProducts
+            // 
+            this.cBTypeProducts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cBTypeProducts.FormattingEnabled = true;
+            this.cBTypeProducts.Items.AddRange(new object[] {
+            "(хлеб и хлебобулочные изделия)",
+            "(мясо говядина)",
+            "(мясо кур)",
+            "(яйцо)",
+            "(рыба мороженная)",
+            "(продукты питания)"});
+            this.cBTypeProducts.Location = new System.Drawing.Point(339, 106);
+            this.cBTypeProducts.Name = "cBTypeProducts";
+            this.cBTypeProducts.Size = new System.Drawing.Size(292, 21);
+            this.cBTypeProducts.TabIndex = 43;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(336, 93);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(69, 13);
+            this.label6.TabIndex = 42;
+            this.label6.Text = "Тип товара:";
             // 
             // dTPOkonch
             // 
@@ -212,42 +240,6 @@
             this.label3.Size = new System.Drawing.Size(75, 13);
             this.label3.TabIndex = 36;
             this.label3.Text = "Получатель:";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.groupBox1.Controls.Add(this.rBChet);
-            this.groupBox1.Controls.Add(this.rBPol);
-            this.groupBox1.ForeColor = System.Drawing.Color.Black;
-            this.groupBox1.Location = new System.Drawing.Point(339, 90);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(292, 39);
-            this.groupBox1.TabIndex = 33;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Срок заключения:";
-            // 
-            // rBChet
-            // 
-            this.rBChet.AutoSize = true;
-            this.rBChet.Location = new System.Drawing.Point(162, 16);
-            this.rBChet.Name = "rBChet";
-            this.rBChet.Size = new System.Drawing.Size(69, 17);
-            this.rBChet.TabIndex = 1;
-            this.rBChet.Text = "Квартал";
-            this.rBChet.UseVisualStyleBackColor = true;
-            // 
-            // rBPol
-            // 
-            this.rBPol.AutoSize = true;
-            this.rBPol.Checked = true;
-            this.rBPol.Location = new System.Drawing.Point(8, 16);
-            this.rBPol.Name = "rBPol";
-            this.rBPol.Size = new System.Drawing.Size(72, 17);
-            this.rBPol.TabIndex = 0;
-            this.rBPol.TabStop = true;
-            this.rBPol.Text = "Полгода";
-            this.rBPol.UseVisualStyleBackColor = true;
             // 
             // dTPData
             // 
@@ -433,10 +425,10 @@
             this.Delete});
             this.dGVProducts.Location = new System.Drawing.Point(14, 13);
             this.dGVProducts.Name = "dGVProducts";
-            this.dGVProducts.ReadOnly = true;
             this.dGVProducts.Size = new System.Drawing.Size(504, 141);
             this.dGVProducts.TabIndex = 0;
             this.dGVProducts.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVProducts_CellClick);
+            this.dGVProducts.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVProducts_CellValueChanged);
             this.dGVProducts.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DGVProducts_RowsAdded);
             this.dGVProducts.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DGVProducts_RowsRemoved);
             // 
@@ -447,7 +439,6 @@
             this.NameProduct.DefaultCellStyle = dataGridViewCellStyle2;
             this.NameProduct.HeaderText = "Наименование";
             this.NameProduct.Name = "NameProduct";
-            this.NameProduct.ReadOnly = true;
             this.NameProduct.Width = 114;
             // 
             // Price
@@ -457,7 +448,6 @@
             this.Price.DefaultCellStyle = dataGridViewCellStyle3;
             this.Price.HeaderText = "Цена";
             this.Price.Name = "Price";
-            this.Price.ReadOnly = true;
             this.Price.Width = 60;
             // 
             // Balance
@@ -466,7 +456,6 @@
             this.Balance.DefaultCellStyle = dataGridViewCellStyle4;
             this.Balance.HeaderText = "Количество";
             this.Balance.Name = "Balance";
-            this.Balance.ReadOnly = true;
             this.Balance.Width = 96;
             // 
             // Sum
@@ -475,7 +464,6 @@
             this.Sum.DefaultCellStyle = dataGridViewCellStyle5;
             this.Sum.HeaderText = "Сумма";
             this.Sum.Name = "Sum";
-            this.Sum.ReadOnly = true;
             this.Sum.Width = 69;
             // 
             // Delete
@@ -489,7 +477,6 @@
             this.Delete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.Delete.HeaderText = "";
             this.Delete.Name = "Delete";
-            this.Delete.ReadOnly = true;
             this.Delete.Width = 5;
             // 
             // butDel
@@ -523,6 +510,7 @@
             // pContracts
             // 
             this.pContracts.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pContracts.Controls.Add(this.pCheckDoc);
             this.pContracts.Controls.Add(this.lLoad);
             this.pContracts.Controls.Add(this.butOpen);
             this.pContracts.Controls.Add(this.label1);
@@ -536,6 +524,27 @@
             this.pContracts.Name = "pContracts";
             this.pContracts.Size = new System.Drawing.Size(222, 421);
             this.pContracts.TabIndex = 14;
+            // 
+            // pCheckDoc
+            // 
+            this.pCheckDoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pCheckDoc.BackColor = System.Drawing.Color.Transparent;
+            this.pCheckDoc.Controls.Add(this.lCheckDoc);
+            this.pCheckDoc.Location = new System.Drawing.Point(6, 265);
+            this.pCheckDoc.Name = "pCheckDoc";
+            this.pCheckDoc.Size = new System.Drawing.Size(204, 18);
+            this.pCheckDoc.TabIndex = 19;
+            this.pCheckDoc.Visible = false;
+            // 
+            // lCheckDoc
+            // 
+            this.lCheckDoc.AutoSize = true;
+            this.lCheckDoc.ForeColor = System.Drawing.Color.White;
+            this.lCheckDoc.Location = new System.Drawing.Point(42, 2);
+            this.lCheckDoc.Name = "lCheckDoc";
+            this.lCheckDoc.Size = new System.Drawing.Size(126, 13);
+            this.lCheckDoc.TabIndex = 0;
+            this.lCheckDoc.Text = "Документ отсутствует";
             // 
             // lLoad
             // 
@@ -588,14 +597,14 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ContractsForm_FormClosed);
             this.pData.ResumeLayout(false);
             this.pData.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.pProducts.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).EndInit();
             this.pContracts.ResumeLayout(false);
             this.pContracts.PerformLayout();
+            this.pCheckDoc.ResumeLayout(false);
+            this.pCheckDoc.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -616,9 +625,6 @@
         private System.Windows.Forms.Button butDirectory;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel pProducts;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton rBChet;
-        private System.Windows.Forms.RadioButton rBPol;
         private System.Windows.Forms.DateTimePicker dTPData;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
@@ -643,5 +649,9 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button butOpen;
         private System.Windows.Forms.Label lLoad;
+        private System.Windows.Forms.ComboBox cBTypeProducts;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel pCheckDoc;
+        private System.Windows.Forms.Label lCheckDoc;
     }
 }

@@ -42,7 +42,7 @@ namespace DAL.Repositories
 
         public IEnumerable<MenuDTO> GetAll()
         {
-            return db.Menus.ToList();
+            return from a in db.Menus orderby a.Date select a;
         }
 
         public void Update(MenuDTO item)

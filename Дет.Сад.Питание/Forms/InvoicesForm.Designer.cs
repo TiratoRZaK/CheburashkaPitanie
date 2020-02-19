@@ -36,6 +36,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InvoicesForm));
             this.pInvoices = new System.Windows.Forms.Panel();
+            this.lLoad = new System.Windows.Forms.Label();
             this.butOpen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lBInvoices = new System.Windows.Forms.ListBox();
@@ -65,17 +66,20 @@
             this.Balance = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Sum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Delete = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.lLoad = new System.Windows.Forms.Label();
+            this.pCheckDoc = new System.Windows.Forms.Panel();
+            this.lCheckDoc = new System.Windows.Forms.Label();
             this.pInvoices.SuspendLayout();
             this.pData.SuspendLayout();
             this.pProducts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
+            this.pCheckDoc.SuspendLayout();
             this.SuspendLayout();
             // 
             // pInvoices
             // 
             this.pInvoices.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pInvoices.Controls.Add(this.pCheckDoc);
             this.pInvoices.Controls.Add(this.lLoad);
             this.pInvoices.Controls.Add(this.butOpen);
             this.pInvoices.Controls.Add(this.label1);
@@ -89,6 +93,19 @@
             this.pInvoices.Name = "pInvoices";
             this.pInvoices.Size = new System.Drawing.Size(219, 450);
             this.pInvoices.TabIndex = 15;
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(15, 136);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(187, 56);
+            this.lLoad.TabIndex = 16;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
             // 
             // butOpen
             // 
@@ -122,7 +139,7 @@
             this.lBInvoices.FormattingEnabled = true;
             this.lBInvoices.Location = new System.Drawing.Point(14, 30);
             this.lBInvoices.Name = "lBInvoices";
-            this.lBInvoices.Size = new System.Drawing.Size(189, 277);
+            this.lBInvoices.Size = new System.Drawing.Size(189, 264);
             this.lBInvoices.TabIndex = 0;
             this.lBInvoices.SelectedIndexChanged += new System.EventHandler(this.LBInvoices_SelectedIndexChanged);
             // 
@@ -446,18 +463,26 @@
             this.Delete.ReadOnly = true;
             this.Delete.Width = 5;
             // 
-            // lLoad
+            // pCheckDoc
             // 
-            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lLoad.ForeColor = System.Drawing.Color.Black;
-            this.lLoad.Location = new System.Drawing.Point(15, 136);
-            this.lLoad.Name = "lLoad";
-            this.lLoad.Size = new System.Drawing.Size(187, 56);
-            this.lLoad.TabIndex = 16;
-            this.lLoad.Text = "Загрузка ...";
-            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lLoad.Visible = false;
+            this.pCheckDoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pCheckDoc.BackColor = System.Drawing.Color.Transparent;
+            this.pCheckDoc.Controls.Add(this.lCheckDoc);
+            this.pCheckDoc.Location = new System.Drawing.Point(14, 299);
+            this.pCheckDoc.Name = "pCheckDoc";
+            this.pCheckDoc.Size = new System.Drawing.Size(188, 18);
+            this.pCheckDoc.TabIndex = 19;
+            this.pCheckDoc.Visible = false;
+            // 
+            // lCheckDoc
+            // 
+            this.lCheckDoc.AutoSize = true;
+            this.lCheckDoc.ForeColor = System.Drawing.Color.White;
+            this.lCheckDoc.Location = new System.Drawing.Point(33, 2);
+            this.lCheckDoc.Name = "lCheckDoc";
+            this.lCheckDoc.Size = new System.Drawing.Size(121, 13);
+            this.lCheckDoc.TabIndex = 0;
+            this.lCheckDoc.Text = "Документ отсутствует";
             // 
             // InvoicesForm
             // 
@@ -487,6 +512,8 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).EndInit();
+            this.pCheckDoc.ResumeLayout(false);
+            this.pCheckDoc.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -525,5 +552,7 @@
         private System.Windows.Forms.DataGridViewButtonColumn Delete;
         private System.Windows.Forms.Button butOpen;
         private System.Windows.Forms.Label lLoad;
+        private System.Windows.Forms.Panel pCheckDoc;
+        private System.Windows.Forms.Label lCheckDoc;
     }
 }

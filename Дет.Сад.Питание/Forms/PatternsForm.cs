@@ -29,8 +29,12 @@ namespace Дет.Сад.Питание.Forms
         public void InitializeListBoxes()
         {
             lBPatterns.Items.Clear();
-            Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны меню\\patterns.pat", FileMode.Open);
-            patterns = new BinaryFormatter().Deserialize(stream) as List<Pattern>;
+            if (File.Exists(Application.StartupPath + "\\Local Data\\patterns.pat"))
+            {
+                Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\patterns.pat", FileMode.Open);
+                patterns = new BinaryFormatter().Deserialize(stream) as List<Pattern>;
+                stream.Close();
+            }
             lBPatterns.Items.Add(new Pattern
             {
                 Name = "Новый вариант меню"
@@ -38,9 +42,8 @@ namespace Дет.Сад.Питание.Forms
             foreach (Pattern pattern in patterns)
                 lBPatterns.Items.Add(pattern);
             lBPatterns.SelectedIndex = 0;
-            stream.Close();
             cLBDishes.Items.Clear();
-            foreach(DishDTO dish in MainForm.DB.Dishes.GetAll())
+            foreach (DishDTO dish in MainForm.DB.Dishes.GetAll())
                 cLBDishes.Items.Add(dish);
         }
 
@@ -106,11 +109,11 @@ namespace Дет.Сад.Питание.Forms
 
         public void SavePatterns()
         {
-            if (File.Exists(System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны меню\\patterns.pat"))
+            if (File.Exists(Application.StartupPath + "\\Local Data\\patterns.pat"))
             {
-                File.Delete(System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны меню\\patterns.pat");
+                File.Delete(Application.StartupPath + "\\Local Data\\patterns.pat");
             }
-            Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\Шаблоны меню\\patterns.pat", FileMode.CreateNew);
+            Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\patterns.pat", FileMode.CreateNew);
             var serializer = new BinaryFormatter();
             serializer.Serialize(stream, patterns);
             stream.Close();

@@ -61,6 +61,7 @@
             this.cLBDeliveryNotes = new System.Windows.Forms.CheckedListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.pAccumulate = new System.Windows.Forms.Panel();
+            this.lLoad = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.dGVProductsAll = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -74,7 +75,10 @@
             this.label10 = new System.Windows.Forms.Label();
             this.cBMount = new System.Windows.Forms.ComboBox();
             this.cBYear = new System.Windows.Forms.ComboBox();
-            this.lLoad = new System.Windows.Forms.Label();
+            this.butCheckClearD = new System.Windows.Forms.Button();
+            this.butCheckAllD = new System.Windows.Forms.Button();
+            this.butCheckClearC = new System.Windows.Forms.Button();
+            this.butCheckAllC = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pNakl.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -85,7 +89,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 179);
+            this.label1.Location = new System.Drawing.Point(7, 196);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(161, 13);
             this.label1.TabIndex = 1;
@@ -284,6 +288,10 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.butCheckClearC);
+            this.panel1.Controls.Add(this.butCheckAllC);
+            this.panel1.Controls.Add(this.butCheckClearD);
+            this.panel1.Controls.Add(this.butCheckAllD);
             this.panel1.Controls.Add(this.cLBContracts);
             this.panel1.Controls.Add(this.cLBDeliveryNotes);
             this.panel1.Controls.Add(this.label1);
@@ -308,9 +316,9 @@
             this.cLBDeliveryNotes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.cLBDeliveryNotes.FormattingEnabled = true;
-            this.cLBDeliveryNotes.Location = new System.Drawing.Point(10, 199);
+            this.cLBDeliveryNotes.Location = new System.Drawing.Point(10, 212);
             this.cLBDeliveryNotes.Name = "cLBDeliveryNotes";
-            this.cLBDeliveryNotes.Size = new System.Drawing.Size(182, 394);
+            this.cLBDeliveryNotes.Size = new System.Drawing.Size(182, 364);
             this.cLBDeliveryNotes.TabIndex = 52;
             this.cLBDeliveryNotes.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CLBDeliveryNotes_ItemCheck);
             this.cLBDeliveryNotes.SelectedIndexChanged += new System.EventHandler(this.CLBDeliveryNotes_SelectedIndexChanged);
@@ -337,6 +345,19 @@
             this.pAccumulate.Name = "pAccumulate";
             this.pAccumulate.Size = new System.Drawing.Size(374, 485);
             this.pAccumulate.TabIndex = 31;
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.Color.Transparent;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(98, 234);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(175, 56);
+            this.lLoad.TabIndex = 56;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
             // 
             // label6
             // 
@@ -493,18 +514,57 @@
             this.cBYear.Size = new System.Drawing.Size(57, 21);
             this.cBYear.TabIndex = 55;
             // 
-            // lLoad
+            // butCheckClearD
             // 
-            this.lLoad.BackColor = System.Drawing.Color.Transparent;
-            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lLoad.ForeColor = System.Drawing.Color.Black;
-            this.lLoad.Location = new System.Drawing.Point(98, 234);
-            this.lLoad.Name = "lLoad";
-            this.lLoad.Size = new System.Drawing.Size(175, 56);
-            this.lLoad.TabIndex = 56;
-            this.lLoad.Text = "Загрузка ...";
-            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lLoad.Visible = false;
+            this.butCheckClearD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckClearD.ForeColor = System.Drawing.Color.Black;
+            this.butCheckClearD.Location = new System.Drawing.Point(96, 582);
+            this.butCheckClearD.Name = "butCheckClearD";
+            this.butCheckClearD.Size = new System.Drawing.Size(96, 23);
+            this.butCheckClearD.TabIndex = 63;
+            this.butCheckClearD.Text = "Снять все";
+            this.butCheckClearD.UseVisualStyleBackColor = true;
+            this.butCheckClearD.Click += new System.EventHandler(this.butCheckClearD_Click);
+            // 
+            // butCheckAllD
+            // 
+            this.butCheckAllD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckAllD.ForeColor = System.Drawing.Color.Black;
+            this.butCheckAllD.Location = new System.Drawing.Point(8, 582);
+            this.butCheckAllD.Name = "butCheckAllD";
+            this.butCheckAllD.Size = new System.Drawing.Size(82, 23);
+            this.butCheckAllD.TabIndex = 62;
+            this.butCheckAllD.Text = "Выбрать все";
+            this.butCheckAllD.UseVisualStyleBackColor = true;
+            this.butCheckAllD.Click += new System.EventHandler(this.butCheckAllD_Click);
+            // 
+            // butCheckClearC
+            // 
+            this.butCheckClearC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckClearC.ForeColor = System.Drawing.Color.Black;
+            this.butCheckClearC.Location = new System.Drawing.Point(96, 170);
+            this.butCheckClearC.Name = "butCheckClearC";
+            this.butCheckClearC.Size = new System.Drawing.Size(96, 23);
+            this.butCheckClearC.TabIndex = 65;
+            this.butCheckClearC.Text = "Снять все";
+            this.butCheckClearC.UseVisualStyleBackColor = true;
+            this.butCheckClearC.Click += new System.EventHandler(this.butCheckClearC_Click);
+            // 
+            // butCheckAllC
+            // 
+            this.butCheckAllC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckAllC.ForeColor = System.Drawing.Color.Black;
+            this.butCheckAllC.Location = new System.Drawing.Point(8, 170);
+            this.butCheckAllC.Name = "butCheckAllC";
+            this.butCheckAllC.Size = new System.Drawing.Size(82, 23);
+            this.butCheckAllC.TabIndex = 64;
+            this.butCheckAllC.Text = "Выбрать все";
+            this.butCheckAllC.UseVisualStyleBackColor = true;
+            this.butCheckAllC.Click += new System.EventHandler(this.butCheckAllC_Click);
             // 
             // AccumulativeOnArrival
             // 
@@ -579,5 +639,9 @@
         private System.Windows.Forms.ComboBox cBMount;
         private System.Windows.Forms.ComboBox cBYear;
         private System.Windows.Forms.Label lLoad;
+        private System.Windows.Forms.Button butCheckClearC;
+        private System.Windows.Forms.Button butCheckAllC;
+        private System.Windows.Forms.Button butCheckClearD;
+        private System.Windows.Forms.Button butCheckAllD;
     }
 }

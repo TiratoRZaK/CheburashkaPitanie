@@ -32,20 +32,20 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProductsForm));
             this.dGVProductsList = new System.Windows.Forms.DataGridView();
-            this.NameProduct = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Norm = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Price = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Balance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Edit = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Delete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.butAddProduct = new System.Windows.Forms.Button();
             this.tBSearch = new System.Windows.Forms.TextBox();
             this.butRefresh = new System.Windows.Forms.Button();
             this.pBSearch = new System.Windows.Forms.PictureBox();
             this.butBuild = new System.Windows.Forms.Button();
             this.lLoad = new System.Windows.Forms.Label();
+            this.NameProduct = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Norm = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Sum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Balance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Edit = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Delete = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProductsList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pBSearch)).BeginInit();
             this.SuspendLayout();
@@ -66,7 +66,7 @@
             this.Unit,
             this.Type,
             this.Norm,
-            this.Price,
+            this.Sum,
             this.Balance,
             this.Edit,
             this.Delete});
@@ -78,77 +78,6 @@
             this.dGVProductsList.Size = new System.Drawing.Size(1008, 478);
             this.dGVProductsList.TabIndex = 0;
             this.dGVProductsList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVProductsList_CellClick);
-            // 
-            // NameProduct
-            // 
-            this.NameProduct.HeaderText = "Наименование";
-            this.NameProduct.Name = "NameProduct";
-            this.NameProduct.ReadOnly = true;
-            // 
-            // Unit
-            // 
-            this.Unit.FillWeight = 35.52061F;
-            this.Unit.HeaderText = "Ед.изм.";
-            this.Unit.Name = "Unit";
-            this.Unit.ReadOnly = true;
-            // 
-            // Type
-            // 
-            this.Type.FillWeight = 35.52061F;
-            this.Type.HeaderText = "Тип продукта";
-            this.Type.Name = "Type";
-            this.Type.ReadOnly = true;
-            // 
-            // Norm
-            // 
-            this.Norm.FillWeight = 35F;
-            this.Norm.HeaderText = "Норма";
-            this.Norm.Name = "Norm";
-            this.Norm.ReadOnly = true;
-            // 
-            // Price
-            // 
-            this.Price.FillWeight = 35.52061F;
-            this.Price.HeaderText = "Цена";
-            this.Price.Name = "Price";
-            this.Price.ReadOnly = true;
-            // 
-            // Balance
-            // 
-            this.Balance.FillWeight = 35.52061F;
-            this.Balance.HeaderText = "Кол-во";
-            this.Balance.Name = "Balance";
-            this.Balance.ReadOnly = true;
-            // 
-            // Edit
-            // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.Lime;
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.Lime;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
-            this.Edit.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Edit.FillWeight = 35.52061F;
-            this.Edit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Edit.HeaderText = "";
-            this.Edit.Name = "Edit";
-            this.Edit.ReadOnly = true;
-            this.Edit.Text = "Изменить";
-            // 
-            // Delete
-            // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.Tomato;
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Tomato;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
-            this.Delete.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Delete.FillWeight = 35.52061F;
-            this.Delete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.Delete.HeaderText = "";
-            this.Delete.Name = "Delete";
-            this.Delete.ReadOnly = true;
-            this.Delete.Text = "Удалить";
             // 
             // butAddProduct
             // 
@@ -201,7 +130,6 @@
             // 
             // butBuild
             // 
-            this.butBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.butBuild.BackColor = System.Drawing.Color.PeachPuff;
             this.butBuild.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butBuild.Font = new System.Drawing.Font("Segoe UI", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -227,6 +155,77 @@
             this.lLoad.Text = "Загрузка ...";
             this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lLoad.Visible = false;
+            // 
+            // NameProduct
+            // 
+            this.NameProduct.HeaderText = "Наименование";
+            this.NameProduct.Name = "NameProduct";
+            this.NameProduct.ReadOnly = true;
+            // 
+            // Unit
+            // 
+            this.Unit.FillWeight = 35.52061F;
+            this.Unit.HeaderText = "Ед.изм.";
+            this.Unit.Name = "Unit";
+            this.Unit.ReadOnly = true;
+            // 
+            // Type
+            // 
+            this.Type.FillWeight = 35.52061F;
+            this.Type.HeaderText = "Тип продукта";
+            this.Type.Name = "Type";
+            this.Type.ReadOnly = true;
+            // 
+            // Norm
+            // 
+            this.Norm.FillWeight = 35F;
+            this.Norm.HeaderText = "Норма";
+            this.Norm.Name = "Norm";
+            this.Norm.ReadOnly = true;
+            // 
+            // Sum
+            // 
+            this.Sum.FillWeight = 35.52061F;
+            this.Sum.HeaderText = "Сумма";
+            this.Sum.Name = "Sum";
+            this.Sum.ReadOnly = true;
+            // 
+            // Balance
+            // 
+            this.Balance.FillWeight = 35.52061F;
+            this.Balance.HeaderText = "Кол-во";
+            this.Balance.Name = "Balance";
+            this.Balance.ReadOnly = true;
+            // 
+            // Edit
+            // 
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.Lime;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.Lime;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            this.Edit.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Edit.FillWeight = 35.52061F;
+            this.Edit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Edit.HeaderText = "";
+            this.Edit.Name = "Edit";
+            this.Edit.ReadOnly = true;
+            this.Edit.Text = "Изменить";
+            // 
+            // Delete
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.Tomato;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Tomato;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
+            this.Delete.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Delete.FillWeight = 35.52061F;
+            this.Delete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Delete.HeaderText = "";
+            this.Delete.Name = "Delete";
+            this.Delete.ReadOnly = true;
+            this.Delete.Text = "Удалить";
             // 
             // ProductsForm
             // 
@@ -266,14 +265,14 @@
         private System.Windows.Forms.PictureBox pBSearch;
         private System.Windows.Forms.Button butRefresh;
         private System.Windows.Forms.Button butBuild;
+        private System.Windows.Forms.Label lLoad;
         private System.Windows.Forms.DataGridViewTextBoxColumn NameProduct;
         private System.Windows.Forms.DataGridViewTextBoxColumn Unit;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Norm;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Price;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Sum;
         private System.Windows.Forms.DataGridViewTextBoxColumn Balance;
         private System.Windows.Forms.DataGridViewButtonColumn Edit;
         private System.Windows.Forms.DataGridViewButtonColumn Delete;
-        private System.Windows.Forms.Label lLoad;
     }
 }

@@ -54,6 +54,7 @@
             this.timError = new System.Windows.Forms.Timer(this.components);
             this.pBSearch = new System.Windows.Forms.PictureBox();
             this.tBSearch = new System.Windows.Forms.TextBox();
+            this.tTListBoxSostav = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pBSearch)).BeginInit();
             this.SuspendLayout();
             // 
@@ -207,6 +208,7 @@
             this.lBSostav.Name = "lBSostav";
             this.lBSostav.Size = new System.Drawing.Size(146, 108);
             this.lBSostav.TabIndex = 15;
+            this.lBSostav.SelectedIndexChanged += new System.EventHandler(this.lBSostav_SelectedIndexChanged);
             // 
             // butPlus
             // 
@@ -375,5 +377,6 @@
         private System.Windows.Forms.Timer timError;
         private System.Windows.Forms.PictureBox pBSearch;
         private System.Windows.Forms.TextBox tBSearch;
+        private System.Windows.Forms.ToolTip tTListBoxSostav;
     }
 }

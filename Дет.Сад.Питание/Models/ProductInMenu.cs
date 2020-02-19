@@ -54,8 +54,10 @@ namespace Дет.Сад.Питание.Models
         {
             double norms = 0;
             foreach (double norm in Norms.Values)
-                norms += norm;
-            return Math.Round(norms,3);
+            {
+                norms = norms + norm;
+            }
+            return Math.Round( norms , 3 );
         }
     }
 }

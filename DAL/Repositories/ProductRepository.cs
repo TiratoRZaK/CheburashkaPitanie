@@ -42,7 +42,7 @@ namespace DAL.Repositories
 
         public IEnumerable<ProductDTO> GetAll()
         {
-            return db.Products.ToList();
+            return from a in db.Products select a;
         }
 
         public void Update(ProductDTO item)

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DAL.DTO;
+using System;
 using System.Diagnostics;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace Servises.WordWorker
@@ -22,7 +22,10 @@ namespace Servises.WordWorker
 
         public void Close()
         {
-            doc.Close();
+            if (doc != null)
+            {
+                doc.Close();
+            }
             doc = null;
         }
 
@@ -33,12 +36,30 @@ namespace Servises.WordWorker
                 proc.Kill();
             }
             app = new Word.Application();
-            app.Documents.Open(path);
-            app.Visible = true;
+            try
+            {
+                app.Documents.Open(path);
+                app.Visible = true;
+            }
+            catch (Exception)
+            {
+                app.Quit();
+                MessageBox.Show("Документ ещё не сформирован!");
+            }
         }
 
         public void Save(string path)
         {
+            String[] directories = path.Split('\\');
+            StringBuilder buildedPath = new StringBuilder(directories[0]);
+            for (int i = 1; i < directories.Length-1; i++)
+            {
+                buildedPath.Append("\\" + directories[i]);
+                if (!Directory.Exists(buildedPath.ToString()))
+                {
+                    Directory.CreateDirectory(buildedPath.ToString());
+                }
+            }
             doc.SaveAs(path);
         }
 
@@ -65,7 +86,7 @@ namespace Servises.WordWorker
             doc.Activate();
         }
 
-        public string ReplaceOfWord(float total)
+        public string ReplaceOfWord(double total)
         {
             return RusNumber.Str((int)total);
         }

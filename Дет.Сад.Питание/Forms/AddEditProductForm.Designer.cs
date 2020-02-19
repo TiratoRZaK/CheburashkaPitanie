@@ -53,7 +53,7 @@
             this.panBalancePrice = new System.Windows.Forms.Panel();
             this.tBBalance = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.tBPrice = new System.Windows.Forms.TextBox();
+            this.tBSum = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.butEditPanel = new System.Windows.Forms.Button();
             this.tBPsevdoName = new System.Windows.Forms.TextBox();
@@ -249,7 +249,7 @@
             this.panBalancePrice.BackColor = System.Drawing.Color.Tomato;
             this.panBalancePrice.Controls.Add(this.tBBalance);
             this.panBalancePrice.Controls.Add(this.label10);
-            this.panBalancePrice.Controls.Add(this.tBPrice);
+            this.panBalancePrice.Controls.Add(this.tBSum);
             this.panBalancePrice.Controls.Add(this.label4);
             this.panBalancePrice.Enabled = false;
             this.panBalancePrice.Location = new System.Drawing.Point(151, 188);
@@ -275,13 +275,13 @@
             this.label10.TabIndex = 25;
             this.label10.Text = "Количество";
             // 
-            // tBPrice
+            // tBSum
             // 
-            this.tBPrice.Location = new System.Drawing.Point(31, 29);
-            this.tBPrice.Name = "tBPrice";
-            this.tBPrice.Size = new System.Drawing.Size(144, 20);
-            this.tBPrice.TabIndex = 24;
-            this.tBPrice.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TBNorm_KeyPress);
+            this.tBSum.Location = new System.Drawing.Point(31, 29);
+            this.tBSum.Name = "tBSum";
+            this.tBSum.Size = new System.Drawing.Size(144, 20);
+            this.tBSum.TabIndex = 24;
+            this.tBSum.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TBNorm_KeyPress);
             // 
             // label4
             // 
@@ -289,9 +289,9 @@
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(28, 11);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(33, 13);
+            this.label4.Size = new System.Drawing.Size(41, 13);
             this.label4.TabIndex = 23;
-            this.label4.Text = "Цена";
+            this.label4.Text = "Сумма";
             // 
             // butEditPanel
             // 
@@ -301,7 +301,7 @@
             this.butEditPanel.Name = "butEditPanel";
             this.butEditPanel.Size = new System.Drawing.Size(119, 52);
             this.butEditPanel.TabIndex = 25;
-            this.butEditPanel.Text = "Установить цену или количество продукта на складе";
+            this.butEditPanel.Text = "Изменить количество и сумму продукта";
             this.butEditPanel.UseVisualStyleBackColor = false;
             this.butEditPanel.Click += new System.EventHandler(this.ButEditPanel_Click);
             // 
@@ -389,7 +389,7 @@
         private System.Windows.Forms.Button butEditPanel;
         private System.Windows.Forms.TextBox tBBalance;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox tBPrice;
+        private System.Windows.Forms.TextBox tBSum;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox tBPsevdoName;
         private System.Windows.Forms.Label label11;

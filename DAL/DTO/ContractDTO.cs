@@ -14,6 +14,7 @@ namespace DAL.DTO
         public int PeriodInMonths { get; set; }
         public string FileName { get; set; }
         public float Total { get; set; }
+        public string TypeSpec { get; set; }
 
         public SellerDTO Seller { get; set; }
         public CustomerDTO Customer { get; set; }

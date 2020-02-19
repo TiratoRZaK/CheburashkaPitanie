@@ -61,6 +61,7 @@
             this.lDeliveryNote = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pDeliveryNotes = new System.Windows.Forms.Panel();
+            this.lLoad = new System.Windows.Forms.Label();
             this.butOpen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lBDeliveryNotes = new System.Windows.Forms.ListBox();
@@ -69,12 +70,14 @@
             this.butDel = new System.Windows.Forms.Button();
             this.butSave = new System.Windows.Forms.Button();
             this.butAddDeliveryNote = new System.Windows.Forms.Button();
-            this.lLoad = new System.Windows.Forms.Label();
+            this.pCheckDoc = new System.Windows.Forms.Panel();
+            this.lCheckDoc = new System.Windows.Forms.Label();
             this.pProducts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pData.SuspendLayout();
             this.pDeliveryNotes.SuspendLayout();
+            this.pCheckDoc.SuspendLayout();
             this.SuspendLayout();
             // 
             // pProducts
@@ -281,7 +284,7 @@
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(231, 45);
+            this.label5.Location = new System.Drawing.Point(231, 44);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(72, 13);
@@ -300,7 +303,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 45);
+            this.label4.Location = new System.Drawing.Point(8, 44);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(77, 13);
@@ -319,7 +322,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(520, 9);
+            this.label3.Location = new System.Drawing.Point(520, 7);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(101, 13);
@@ -350,7 +353,7 @@
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(231, 9);
+            this.label8.Location = new System.Drawing.Point(231, 7);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(87, 13);
@@ -360,7 +363,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 8);
+            this.label7.Location = new System.Drawing.Point(8, 6);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(129, 13);
@@ -395,6 +398,7 @@
             // pDeliveryNotes
             // 
             this.pDeliveryNotes.BackColor = System.Drawing.SystemColors.GrayText;
+            this.pDeliveryNotes.Controls.Add(this.pCheckDoc);
             this.pDeliveryNotes.Controls.Add(this.lLoad);
             this.pDeliveryNotes.Controls.Add(this.butOpen);
             this.pDeliveryNotes.Controls.Add(this.label1);
@@ -409,6 +413,19 @@
             this.pDeliveryNotes.Name = "pDeliveryNotes";
             this.pDeliveryNotes.Size = new System.Drawing.Size(222, 490);
             this.pDeliveryNotes.TabIndex = 22;
+            // 
+            // lLoad
+            // 
+            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lLoad.ForeColor = System.Drawing.Color.Black;
+            this.lLoad.Location = new System.Drawing.Point(14, 144);
+            this.lLoad.Name = "lLoad";
+            this.lLoad.Size = new System.Drawing.Size(196, 56);
+            this.lLoad.TabIndex = 16;
+            this.lLoad.Text = "Загрузка ...";
+            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lLoad.Visible = false;
             // 
             // butOpen
             // 
@@ -445,7 +462,7 @@
             this.lBDeliveryNotes.Location = new System.Drawing.Point(12, 22);
             this.lBDeliveryNotes.Margin = new System.Windows.Forms.Padding(2);
             this.lBDeliveryNotes.Name = "lBDeliveryNotes";
-            this.lBDeliveryNotes.Size = new System.Drawing.Size(199, 316);
+            this.lBDeliveryNotes.Size = new System.Drawing.Size(199, 290);
             this.lBDeliveryNotes.TabIndex = 0;
             this.lBDeliveryNotes.SelectedIndexChanged += new System.EventHandler(this.LBDeliveryNotes_SelectedIndexChanged);
             // 
@@ -525,18 +542,26 @@
             this.butAddDeliveryNote.UseVisualStyleBackColor = false;
             this.butAddDeliveryNote.Click += new System.EventHandler(this.ButAddDeliveryNote_Click);
             // 
-            // lLoad
+            // pCheckDoc
             // 
-            this.lLoad.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lLoad.Font = new System.Drawing.Font("Segoe Script", 20.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lLoad.ForeColor = System.Drawing.Color.Black;
-            this.lLoad.Location = new System.Drawing.Point(14, 144);
-            this.lLoad.Name = "lLoad";
-            this.lLoad.Size = new System.Drawing.Size(196, 56);
-            this.lLoad.TabIndex = 16;
-            this.lLoad.Text = "Загрузка ...";
-            this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lLoad.Visible = false;
+            this.pCheckDoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pCheckDoc.BackColor = System.Drawing.Color.Transparent;
+            this.pCheckDoc.Controls.Add(this.lCheckDoc);
+            this.pCheckDoc.Location = new System.Drawing.Point(12, 322);
+            this.pCheckDoc.Name = "pCheckDoc";
+            this.pCheckDoc.Size = new System.Drawing.Size(199, 18);
+            this.pCheckDoc.TabIndex = 20;
+            this.pCheckDoc.Visible = false;
+            // 
+            // lCheckDoc
+            // 
+            this.lCheckDoc.AutoSize = true;
+            this.lCheckDoc.ForeColor = System.Drawing.Color.White;
+            this.lCheckDoc.Location = new System.Drawing.Point(40, 2);
+            this.lCheckDoc.Name = "lCheckDoc";
+            this.lCheckDoc.Size = new System.Drawing.Size(121, 13);
+            this.lCheckDoc.TabIndex = 0;
+            this.lCheckDoc.Text = "Документ отсутствует";
             // 
             // DeliveryNotesForm
             // 
@@ -567,6 +592,8 @@
             this.pData.PerformLayout();
             this.pDeliveryNotes.ResumeLayout(false);
             this.pDeliveryNotes.PerformLayout();
+            this.pCheckDoc.ResumeLayout(false);
+            this.pCheckDoc.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -609,5 +636,7 @@
         private System.Windows.Forms.TextBox tBPriemName;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lLoad;
+        private System.Windows.Forms.Panel pCheckDoc;
+        private System.Windows.Forms.Label lCheckDoc;
     }
 }

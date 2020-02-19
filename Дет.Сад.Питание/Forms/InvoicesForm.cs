@@ -8,19 +8,22 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Word = Microsoft.Office.Interop.Word;
+using Дет.Сад.Питание.Models;
+using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class InvoicesForm : Form
     {
-        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Счёт-фактура.docx");        public InvoiceDTO invoice = null;
-        public List<ProductDTO> addedProducts;
+        public WordWorker WordWorker;
+        public InvoiceDTO invoice = null;
+        public List<ProductArrival> addedProducts;
         public MainForm main;
 
         public InvoicesForm(MainForm main)
         {
             this.main = main;
+            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Счёт-фактура.docx");
             InitializeComponent();
             InitializeListBoxes();
             ButAddInvoice_Click(this, new EventArgs());
@@ -33,6 +36,7 @@ namespace Дет.Сад.Питание.Forms
                 lBInvoices.Items.Add(item);
             }
             cBContracts.DataSource = MainForm.DB.Contracts.GetAll();
+            dTPData.Value = DateTime.Now;
         }
 
         private void InvoicesForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -49,7 +53,7 @@ namespace Дет.Сад.Питание.Forms
                     item.Name,
                     item.Price.ToString(),
                     item.Balance.ToString(),
-                    Math.Round((item.Price * item.Balance),2).ToString(),
+                    item.getSumRound().ToString(),
                     "Удалить"
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
@@ -60,7 +64,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (e.ColumnIndex == 4)
             {
-                ProductDTO product = (ProductDTO)dGVProducts.CurrentRow.Tag;
+                ProductArrival product = (ProductArrival)dGVProducts.CurrentRow.Tag;
                 if (MessageBox.Show("Удалить " + product.Name + " ?", "Подтверждение удаления", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     addedProducts.Remove(product);
@@ -75,7 +79,6 @@ namespace Дет.Сад.Питание.Forms
             {
                 pInvoices.Enabled = false;
                 pData.Enabled = true;
-                pProducts.Enabled = true;
                 butAddInvoice.BackColor = Color.Blue;
                 butAddInvoice.Text = "Отменить добавление";
                 lBInvoices.Enabled = false;
@@ -83,14 +86,13 @@ namespace Дет.Сад.Питание.Forms
                 lInvoice.Enabled = false;
                 butSave.Enabled = true;
                 invoice = new InvoiceDTO();
-                addedProducts = new List<ProductDTO>();
+                addedProducts = new List<ProductArrival>();
                 ReloadedData();
             }
             else
             {
                 pInvoices.Enabled = true;
                 pData.Enabled = false;
-                pProducts.Enabled = false;
                 butAddInvoice.BackColor = Color.LimeGreen;
                 butAddInvoice.Text = "Добавить новую счёт-фактуру";
                 lBInvoices.Enabled = true;
@@ -105,6 +107,15 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBInvoices.SelectedItem != null)
             {
+                pCheckDoc.Visible = true;
+                if (File.Exists(MainForm.DataPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx"))
+                {
+                    lCheckDoc.Text = "Документ сформирован";
+                }
+                else
+                {
+                    lCheckDoc.Text = "Документ отсутствует";
+                }
                 butBuild.Enabled = true;
                 butDirectory.Enabled = true;
                 butDel.Enabled = true;
@@ -114,8 +125,8 @@ namespace Дет.Сад.Питание.Forms
                 dTPData.Value = (lBInvoices.SelectedItem as InvoiceDTO).Date;
                 cBContracts.SelectedItem = MainForm.DB.Contracts.Get((lBInvoices.SelectedItem as InvoiceDTO).ContractId);
                 dGVProducts.Rows.Clear();
-                Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".invo", FileMode.Open);
-                addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+                Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".invo", FileMode.Open);
+                addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
                 stream.Close();
                 ReloadedData();
             }
@@ -128,7 +139,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.Balance * item.Price;
+                    Total += item.getSumRound();
                     AddProduct(item);
                 }
                 invoice = new InvoiceDTO
@@ -136,13 +147,13 @@ namespace Дет.Сад.Питание.Forms
                     Number = int.Parse(tBNumber.Text),
                     Date = dTPData.Value,
                     ContractId = (cBContracts.SelectedItem as ContractDTO).Id,
-                    FileName = "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo",
+                    FileName = (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo",
                     Total = (float)Math.Round(Total, 2)
                 };
                 MainForm.DB.Invoices.Create(invoice);
                 MainForm.DB.Save();
-                string path = Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString();
-                string subpath = "Файлы\\";
+                string path = MainForm.DataPath + "\\Документы\\";
+                string subpath = (cBContracts.SelectedItem as ContractDTO).ToString() + "\\";
                 DirectoryInfo dirInfo = new DirectoryInfo(path);
                 if (!dirInfo.Exists)
                 {
@@ -151,7 +162,7 @@ namespace Дет.Сад.Питание.Forms
                 if (Directory.Exists(path))
                 {
                     dirInfo.CreateSubdirectory(subpath);
-                    Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Файлы\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo", FileMode.CreateNew);
+                    Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\Счёт-фактура №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".invo", FileMode.CreateNew);
                     var serializer = new BinaryFormatter();
                     serializer.Serialize(stream, addedProducts);
                     stream.Close();
@@ -166,17 +177,23 @@ namespace Дет.Сад.Питание.Forms
             }
         }
 
-        private void AddProduct(ProductDTO product)
+        private void AddProduct(ProductArrival product)
         {
-            Stream stream = new FileStream(Application.StartupPath + (cBContracts.SelectedItem as ContractDTO).FileName, FileMode.Open);
-            List<ProductDTO> listContractProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
-            ProductDTO productInDb = listContractProducts.Single(x => x.Id == product.Id);
-            productInDb.Balance -= product.Balance;
+            ProductDTO dbProduct = MainForm.DB.Products.Get(product.Id);
+            float newBalance = (float)(dbProduct.Balance + product.Balance);
+            dbProduct.Sum = (float)Math.Round(product.getSumRound() + dbProduct.Sum, 2);
+            dbProduct.Balance = newBalance;
+            MainForm.DB.Products.Update(dbProduct);
+            MainForm.DB.Save();
+            Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (cBContracts.SelectedItem as ContractDTO).FileName, FileMode.Open);
+            List<ProductArrival> listContractProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
+            ProductArrival productInContract = listContractProducts.Single(x => x.Id == product.Id);
+            productInContract.Balance = (float)(productInContract.Balance - product.Balance);
             listContractProducts.Remove(listContractProducts.Single(x => x.Id == product.Id));
-            listContractProducts.Add(productInDb);
+            listContractProducts.Add(productInContract);
             stream.Close();
 
-            stream = new FileStream(Application.StartupPath + (cBContracts.SelectedItem as ContractDTO).FileName, FileMode.OpenOrCreate);
+            stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (cBContracts.SelectedItem as ContractDTO).FileName, FileMode.OpenOrCreate);
             var serializer = new BinaryFormatter();
             serializer.Serialize(stream, listContractProducts);
             stream.Close();
@@ -204,7 +221,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.Balance * item.Price;
+                    Total += item.getSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -217,7 +234,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.Balance * item.Price;
+                    Total += item.getSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -227,14 +244,8 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBInvoices.SelectedItem != null)
             {
-                var invoice = MainForm.DB.Invoices.Get((lBInvoices.SelectedItem as InvoiceDTO).Id);
-                if (MessageBox.Show("Вы уверены что хотите удалить счёт-фактуру №" + invoice.Number.ToString() + "?", "Удаление счёт-фактуры", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    string path = Application.StartupPath + "\\Документы\\" + invoice.Contract.ToString() + "\\Файлы\\Счёт-фактура №" + invoice.Number.ToString() + " от " + invoice.Date.ToLongDateString() + ".invo";
-                    File.Delete(path);
-                }
-                MainForm.DB.Invoices.Delete(invoice.Id);
-                MainForm.DB.Save();
+                InvoiceService.Delete((lBInvoices.SelectedItem as InvoiceDTO).Id);
+
                 ReloadedInvoices();
             }
         }
@@ -249,43 +260,38 @@ namespace Дет.Сад.Питание.Forms
 
         private void BuildContract()
         {
-            try
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
             {
-                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
-                if (dialogResult == DialogResult.OK)
+                lLoad.Visible = true;
+                WordWorker.Load();
+                ReplaceStrings();
+                int i = 1;
+                foreach (ProductArrival product in addedProducts)
                 {
-                    lLoad.Visible = true;
-                    WordWorker.Load();
-                    ReplaceStrings();
-                    int i = 1;
-                    foreach (ProductDTO product in addedProducts)
-                    {
-                        WordWorker.doc.Tables[1].Rows.Add();
-                        i++;
-                        WordWorker.doc.Tables[1].Rows[i].Height = (float)12;
-                        WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
-                        WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                        WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.Balance.ToString();
-                        WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = product.Price.ToString();
-                        WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
-                        WordWorker.doc.Tables[1].Cell(i, 7).Range.Text = "БЕЗ НДС";
-                    }
                     WordWorker.doc.Tables[1].Rows.Add();
                     i++;
-                    WordWorker.doc.Tables[1].Rows[i].Range.Bold = 1;
-                    WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = "Итого";
-                    WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = lSumm.Text;
-
-                    WordWorker.Save(Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
-                    WordWorker.Close();
-                    lLoad.Visible = false;
+                    WordWorker.doc.Tables[1].Rows[i].Height = (float)12;
+                    WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
+                    WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                    WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = Math.Round(product.Balance, 2).ToString();
+                    WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = Math.Round(product.Price, 2).ToString();
+                    WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.getSum(), 2).ToString();
+                    WordWorker.doc.Tables[1].Cell(i, 9).Range.Text = Math.Round(product.getSum(), 2).ToString();
                 }
-            }
-            catch (Exception ex)
-            {
+                WordWorker.doc.Tables[1].Rows.Add();
+                i++;
+                WordWorker.doc.Tables[1].Rows[i].Range.Bold = 1;
+                WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = "Итого";
+                WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(float.Parse(lSumm.Text), 2).ToString();
+                WordWorker.doc.Tables[1].Cell(i, 9).Range.Text = Math.Round(float.Parse(lSumm.Text), 2).ToString();
+
+                WordWorker.Save(MainForm.DataPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
                 WordWorker.Close();
-                throw new Exception("Во время выполнения произошла ошибка!");
+                lLoad.Visible = false;
             }
+
+            WordWorker.Close();
         }
         void ReplaceStrings()
         {
@@ -302,7 +308,7 @@ namespace Дет.Сад.Питание.Forms
             WordWorker.FindReplace("{innSeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).INN.ToString());
             WordWorker.FindReplace("{kppCustomer}", MainForm.DB.Customers.Get((cBContracts.SelectedItem as ContractDTO).CustomerId).KPP.ToString());
             WordWorker.FindReplace("{kppSeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).KPP.ToString());
-            string replacedOfWord = WordWorker.ReplaceOfWord(float.Parse(lSumm.Text));
+            string replacedOfWord = WordWorker.ReplaceOfWord(Math.Round(float.Parse(lSumm.Text), 2));
             if (lSumm.Text.Contains(','))
             {
                 if (lSumm.Text.Substring(lSumm.Text.IndexOf(',')).Length - 1 == 2)
@@ -327,7 +333,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (cBContracts.SelectedItem != null)
             {
-                string pathDir = Application.StartupPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (cBContracts.SelectedItem as ContractDTO).ToString().Length - 1);
+                string pathDir = MainForm.DataPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (cBContracts.SelectedItem as ContractDTO).ToString().Length - 1);
                 Process Proc = new Process();
                 Proc.StartInfo.FileName = "explorer";
                 Proc.StartInfo.Arguments = pathDir;
@@ -337,7 +343,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButAddProduct_Click(object sender, EventArgs e)
         {
-            AddProductInInvoice addProductInInvoice = new AddProductInInvoice(this, Application.StartupPath + (cBContracts.SelectedItem as ContractDTO).FileName);
+            AddProductInInvoice addProductInInvoice = new AddProductInInvoice(this, Application.StartupPath + "\\Local Data\\" + (cBContracts.SelectedItem as ContractDTO).FileName);
             addProductInInvoice.ShowDialog();
         }
 
@@ -354,7 +360,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
-            OpenDocument(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((lBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
+            OpenDocument(MainForm.DataPath + "\\Документы\\" + MainForm.DB.Contracts.Get((lBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
         }
     }
 

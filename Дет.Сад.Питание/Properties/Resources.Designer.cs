@@ -63,6 +63,16 @@ namespace Дет.Сад.Питание.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap configuration_settings {
+            get {
+                object obj = ResourceManager.GetObject("configuration_settings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap search {
             get {
                 object obj = ResourceManager.GetObject("search", resourceCulture);
@@ -176,6 +186,16 @@ namespace Дет.Сад.Питание.Properties {
         internal static System.Drawing.Icon Чебурашка {
             get {
                 object obj = ResourceManager.GetObject("Чебурашка", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon Чебурашка1 {
+            get {
+                object obj = ResourceManager.GetObject("Чебурашка1", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

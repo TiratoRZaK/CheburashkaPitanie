@@ -37,7 +37,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenusForm));
             this.pMenus = new System.Windows.Forms.Panel();
             this.lLoad = new System.Windows.Forms.Label();
-            this.butNewMounth = new System.Windows.Forms.Button();
             this.butOpen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lBMenus = new System.Windows.Forms.ListBox();
@@ -96,20 +95,27 @@
             this.butAddMenu = new System.Windows.Forms.Button();
             this.lZ = new System.Windows.Forms.Label();
             this.pInfo = new System.Windows.Forms.Panel();
+            this.label22 = new System.Windows.Forms.Label();
+            this.tBOtdelenie = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.tBUchregdenie = new System.Windows.Forms.TextBox();
             this.butSaveSetting = new System.Windows.Forms.Button();
+            this.pCheckDoc = new System.Windows.Forms.Panel();
+            this.lCheckDoc = new System.Windows.Forms.Label();
             this.pMenus.SuspendLayout();
             this.pProducts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pDishes.SuspendLayout();
             this.pInfo.SuspendLayout();
+            this.pCheckDoc.SuspendLayout();
             this.SuspendLayout();
             // 
             // pMenus
             // 
             this.pMenus.BackColor = System.Drawing.Color.Gold;
+            this.pMenus.Controls.Add(this.pCheckDoc);
             this.pMenus.Controls.Add(this.lLoad);
-            this.pMenus.Controls.Add(this.butNewMounth);
             this.pMenus.Controls.Add(this.butOpen);
             this.pMenus.Controls.Add(this.label1);
             this.pMenus.Controls.Add(this.lBMenus);
@@ -135,21 +141,6 @@
             this.lLoad.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lLoad.Visible = false;
             // 
-            // butNewMounth
-            // 
-            this.butNewMounth.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.butNewMounth.BackColor = System.Drawing.Color.Tomato;
-            this.butNewMounth.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.butNewMounth.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.butNewMounth.ForeColor = System.Drawing.Color.Black;
-            this.butNewMounth.Location = new System.Drawing.Point(10, 9);
-            this.butNewMounth.Name = "butNewMounth";
-            this.butNewMounth.Size = new System.Drawing.Size(176, 24);
-            this.butNewMounth.TabIndex = 15;
-            this.butNewMounth.Text = "Новый месяц";
-            this.butNewMounth.UseVisualStyleBackColor = false;
-            this.butNewMounth.Click += new System.EventHandler(this.ButNewMounth_Click);
-            // 
             // butOpen
             // 
             this.butOpen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -172,7 +163,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
             this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(8, 35);
+            this.label1.Location = new System.Drawing.Point(8, 13);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(115, 17);
             this.label1.TabIndex = 1;
@@ -183,7 +174,7 @@
             this.lBMenus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lBMenus.FormattingEnabled = true;
-            this.lBMenus.Location = new System.Drawing.Point(9, 55);
+            this.lBMenus.Location = new System.Drawing.Point(9, 33);
             this.lBMenus.Name = "lBMenus";
             this.lBMenus.Size = new System.Drawing.Size(178, 342);
             this.lBMenus.TabIndex = 0;
@@ -338,6 +329,7 @@
             this.dGVProducts.Name = "dGVProducts";
             this.dGVProducts.Size = new System.Drawing.Size(540, 203);
             this.dGVProducts.TabIndex = 0;
+            this.dGVProducts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVProducts_CellContentClick);
             this.dGVProducts.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVProducts_CellValueChanged);
             this.dGVProducts.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DGVProducts_RowsAdded);
             this.dGVProducts.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DGVProducts_RowsRemoved);
@@ -403,7 +395,7 @@
             this.label12.BackColor = System.Drawing.Color.LightCoral;
             this.label12.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label12.ForeColor = System.Drawing.Color.Black;
-            this.label12.Location = new System.Drawing.Point(16, 17);
+            this.label12.Location = new System.Drawing.Point(16, 5);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(122, 17);
             this.label12.TabIndex = 54;
@@ -416,7 +408,7 @@
             this.label4.BackColor = System.Drawing.Color.LightCoral;
             this.label4.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.ForeColor = System.Drawing.Color.Black;
-            this.label4.Location = new System.Drawing.Point(374, 57);
+            this.label4.Location = new System.Drawing.Point(374, 45);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(152, 17);
             this.label4.TabIndex = 45;
@@ -429,7 +421,7 @@
             this.label5.BackColor = System.Drawing.Color.LightCoral;
             this.label5.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label5.ForeColor = System.Drawing.Color.Black;
-            this.label5.Location = new System.Drawing.Point(374, 102);
+            this.label5.Location = new System.Drawing.Point(374, 90);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(139, 17);
             this.label5.TabIndex = 47;
@@ -443,7 +435,7 @@
             this.label8.BackColor = System.Drawing.Color.LightCoral;
             this.label8.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label8.ForeColor = System.Drawing.Color.Black;
-            this.label8.Location = new System.Drawing.Point(199, 18);
+            this.label8.Location = new System.Drawing.Point(199, 6);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(127, 17);
             this.label8.TabIndex = 50;
@@ -452,7 +444,7 @@
             // dTPDate
             // 
             this.dTPDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.dTPDate.Location = new System.Drawing.Point(377, 37);
+            this.dTPDate.Location = new System.Drawing.Point(377, 25);
             this.dTPDate.Name = "dTPDate";
             this.dTPDate.Size = new System.Drawing.Size(170, 20);
             this.dTPDate.TabIndex = 58;
@@ -464,7 +456,7 @@
             this.label15.BackColor = System.Drawing.Color.LightCoral;
             this.label15.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label15.ForeColor = System.Drawing.Color.Black;
-            this.label15.Location = new System.Drawing.Point(16, 102);
+            this.label15.Location = new System.Drawing.Point(20, 138);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(209, 17);
             this.label15.TabIndex = 59;
@@ -478,7 +470,7 @@
             this.label9.BackColor = System.Drawing.Color.LightCoral;
             this.label9.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(16, 57);
+            this.label9.Location = new System.Drawing.Point(16, 45);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(100, 17);
             this.label9.TabIndex = 52;
@@ -492,7 +484,7 @@
             this.label13.BackColor = System.Drawing.Color.LightCoral;
             this.label13.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label13.ForeColor = System.Drawing.Color.Black;
-            this.label13.Location = new System.Drawing.Point(199, 58);
+            this.label13.Location = new System.Drawing.Point(199, 46);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(98, 17);
             this.label13.TabIndex = 55;
@@ -505,7 +497,7 @@
             this.label14.BackColor = System.Drawing.Color.LightCoral;
             this.label14.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label14.ForeColor = System.Drawing.Color.Black;
-            this.label14.Location = new System.Drawing.Point(374, 17);
+            this.label14.Location = new System.Drawing.Point(374, 5);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(92, 17);
             this.label14.TabIndex = 57;
@@ -514,7 +506,7 @@
             // tBKids
             // 
             this.tBKids.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBKids.Location = new System.Drawing.Point(377, 77);
+            this.tBKids.Location = new System.Drawing.Point(377, 65);
             this.tBKids.Name = "tBKids";
             this.tBKids.Size = new System.Drawing.Size(170, 20);
             this.tBKids.TabIndex = 46;
@@ -523,7 +515,7 @@
             // tBKidsB
             // 
             this.tBKidsB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBKidsB.Location = new System.Drawing.Point(377, 123);
+            this.tBKidsB.Location = new System.Drawing.Point(377, 111);
             this.tBKidsB.Name = "tBKidsB";
             this.tBKidsB.Size = new System.Drawing.Size(170, 20);
             this.tBKidsB.TabIndex = 48;
@@ -534,7 +526,7 @@
             this.cBProductB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cBProductB.FormattingEnabled = true;
-            this.cBProductB.Location = new System.Drawing.Point(18, 122);
+            this.cBProductB.Location = new System.Drawing.Point(18, 158);
             this.cBProductB.Name = "cBProductB";
             this.cBProductB.Size = new System.Drawing.Size(331, 21);
             this.cBProductB.TabIndex = 60;
@@ -543,7 +535,7 @@
             // 
             this.tBRukov.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBRukov.Location = new System.Drawing.Point(197, 78);
+            this.tBRukov.Location = new System.Drawing.Point(197, 66);
             this.tBRukov.Name = "tBRukov";
             this.tBRukov.Size = new System.Drawing.Size(152, 20);
             this.tBRukov.TabIndex = 56;
@@ -552,7 +544,7 @@
             // tBPovar
             // 
             this.tBPovar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tBPovar.Location = new System.Drawing.Point(18, 78);
+            this.tBPovar.Location = new System.Drawing.Point(18, 66);
             this.tBPovar.Name = "tBPovar";
             this.tBPovar.Size = new System.Drawing.Size(141, 20);
             this.tBPovar.TabIndex = 53;
@@ -562,7 +554,7 @@
             // 
             this.tBKlad.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tBKlad.Location = new System.Drawing.Point(197, 38);
+            this.tBKlad.Location = new System.Drawing.Point(197, 26);
             this.tBKlad.Name = "tBKlad";
             this.tBKlad.Size = new System.Drawing.Size(152, 20);
             this.tBKlad.TabIndex = 51;
@@ -571,7 +563,7 @@
             // tBVrach
             // 
             this.tBVrach.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tBVrach.Location = new System.Drawing.Point(16, 38);
+            this.tBVrach.Location = new System.Drawing.Point(16, 26);
             this.tBVrach.Name = "tBVrach";
             this.tBVrach.Size = new System.Drawing.Size(141, 20);
             this.tBVrach.TabIndex = 49;
@@ -840,6 +832,10 @@
             this.pInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pInfo.BackColor = System.Drawing.Color.LightCoral;
+            this.pInfo.Controls.Add(this.label22);
+            this.pInfo.Controls.Add(this.tBOtdelenie);
+            this.pInfo.Controls.Add(this.label20);
+            this.pInfo.Controls.Add(this.tBUchregdenie);
             this.pInfo.Controls.Add(this.butSaveSetting);
             this.pInfo.Controls.Add(this.label12);
             this.pInfo.Controls.Add(this.tBKidsB);
@@ -863,22 +859,89 @@
             this.pInfo.Size = new System.Drawing.Size(568, 192);
             this.pInfo.TabIndex = 50;
             // 
+            // label22
+            // 
+            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label22.AutoSize = true;
+            this.label22.BackColor = System.Drawing.Color.LightCoral;
+            this.label22.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label22.ForeColor = System.Drawing.Color.Black;
+            this.label22.Location = new System.Drawing.Point(197, 90);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(77, 17);
+            this.label22.TabIndex = 64;
+            this.label22.Text = "Отделение";
+            // 
+            // tBOtdelenie
+            // 
+            this.tBOtdelenie.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tBOtdelenie.Location = new System.Drawing.Point(197, 111);
+            this.tBOtdelenie.Name = "tBOtdelenie";
+            this.tBOtdelenie.Size = new System.Drawing.Size(152, 20);
+            this.tBOtdelenie.TabIndex = 63;
+            this.tBOtdelenie.Text = "п. Советский";
+            // 
+            // label20
+            // 
+            this.label20.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label20.AutoSize = true;
+            this.label20.BackColor = System.Drawing.Color.LightCoral;
+            this.label20.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label20.ForeColor = System.Drawing.Color.Black;
+            this.label20.Location = new System.Drawing.Point(19, 90);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(88, 17);
+            this.label20.TabIndex = 62;
+            this.label20.Text = "Учреждение";
+            // 
+            // tBUchregdenie
+            // 
+            this.tBUchregdenie.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.tBUchregdenie.Location = new System.Drawing.Point(19, 111);
+            this.tBUchregdenie.Name = "tBUchregdenie";
+            this.tBUchregdenie.Size = new System.Drawing.Size(140, 20);
+            this.tBUchregdenie.TabIndex = 61;
+            this.tBUchregdenie.Text = "МДОУ детский сад \"Чебурашка\"";
+            // 
             // butSaveSetting
             // 
-            this.butSaveSetting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butSaveSetting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.butSaveSetting.BackColor = System.Drawing.Color.LimeGreen;
             this.butSaveSetting.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.butSaveSetting.Font = new System.Drawing.Font("Segoe UI Semibold", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.butSaveSetting.ForeColor = System.Drawing.Color.Black;
-            this.butSaveSetting.Location = new System.Drawing.Point(177, 152);
+            this.butSaveSetting.Location = new System.Drawing.Point(377, 140);
             this.butSaveSetting.Margin = new System.Windows.Forms.Padding(5);
             this.butSaveSetting.Name = "butSaveSetting";
-            this.butSaveSetting.Size = new System.Drawing.Size(218, 30);
+            this.butSaveSetting.Size = new System.Drawing.Size(170, 39);
             this.butSaveSetting.TabIndex = 51;
             this.butSaveSetting.Text = "Высчитать нормы продуктов";
             this.butSaveSetting.UseVisualStyleBackColor = false;
             this.butSaveSetting.Click += new System.EventHandler(this.ButSaveSetting_Click);
+            // 
+            // pCheckDoc
+            // 
+            this.pCheckDoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pCheckDoc.BackColor = System.Drawing.Color.Transparent;
+            this.pCheckDoc.Controls.Add(this.lCheckDoc);
+            this.pCheckDoc.Location = new System.Drawing.Point(9, 382);
+            this.pCheckDoc.Name = "pCheckDoc";
+            this.pCheckDoc.Size = new System.Drawing.Size(176, 18);
+            this.pCheckDoc.TabIndex = 18;
+            this.pCheckDoc.Visible = false;
+            // 
+            // lCheckDoc
+            // 
+            this.lCheckDoc.AutoSize = true;
+            this.lCheckDoc.ForeColor = System.Drawing.Color.Black;
+            this.lCheckDoc.Location = new System.Drawing.Point(28, 2);
+            this.lCheckDoc.Name = "lCheckDoc";
+            this.lCheckDoc.Size = new System.Drawing.Size(121, 13);
+            this.lCheckDoc.TabIndex = 0;
+            this.lCheckDoc.Text = "Документ отсутствует";
             // 
             // MenusForm
             // 
@@ -913,6 +976,8 @@
             this.pDishes.PerformLayout();
             this.pInfo.ResumeLayout(false);
             this.pInfo.PerformLayout();
+            this.pCheckDoc.ResumeLayout(false);
+            this.pCheckDoc.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -980,7 +1045,12 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label lSummB;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button butNewMounth;
         private System.Windows.Forms.Label lLoad;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.TextBox tBOtdelenie;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox tBUchregdenie;
+        private System.Windows.Forms.Panel pCheckDoc;
+        private System.Windows.Forms.Label lCheckDoc;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Word = Microsoft.Office.Interop.Word;
+using Servises.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,20 +8,23 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Servises.WordWorker;
+using Дет.Сад.Питание.Models;
+using Дет.Сад.Питание.Services;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class DeliveryNotesForm : Form
     {
-        public WordWorker WordWorker = new WordWorker(Application.StartupPath + "\\Документы\\Шаблоны\\Накладная.docx");
+        public WordWorker WordWorker;
 
         public DeliveryNoteDTO deliveryNote = null;
-        public List<ProductDTO> addedProducts;
+        public List<ProductArrival> addedProducts;
         public MainForm main;
         public DeliveryNotesForm(MainForm main)
         {
             this.main = main;
+            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Накладная.docx");
             InitializeComponent();
             InitializeListBoxes();
             ButAddDeliveryNote_Click(this, new EventArgs());
@@ -50,7 +53,7 @@ namespace Дет.Сад.Питание.Forms
                     item.Name,
                     item.Price.ToString(),
                     item.Balance.ToString(),
-                    Math.Round((item.Price * item.Balance),2).ToString(),
+                    item.getSumRound().ToString(),
                     "Удалить"
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
@@ -61,7 +64,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (e.ColumnIndex == 4)
             {
-                ProductDTO product = (ProductDTO)dGVProducts.CurrentRow.Tag;
+                ProductArrival product = (ProductArrival)dGVProducts.CurrentRow.Tag;
                 if (MessageBox.Show("Удалить " + product.Name + " ?", "Подтверждение удаления", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     addedProducts.Remove(product);
@@ -76,7 +79,6 @@ namespace Дет.Сад.Питание.Forms
             {
                 pDeliveryNotes.Enabled = false;
                 pData.Enabled = true;
-                pProducts.Enabled = true;
                 butAddDeliveryNote.BackColor = Color.Blue;
                 butAddDeliveryNote.Text = "Отменить добавление";
                 lBDeliveryNotes.Enabled = false;
@@ -84,14 +86,13 @@ namespace Дет.Сад.Питание.Forms
                 lDeliveryNote.Enabled = false;
                 butSave.Enabled = true;
                 deliveryNote = new DeliveryNoteDTO();
-                addedProducts = new List<ProductDTO>();
+                addedProducts = new List<ProductArrival>();
                 ReloadedData();
             }
             else
             {
                 pDeliveryNotes.Enabled = true;
                 pData.Enabled = false;
-                pProducts.Enabled = false;
                 butAddDeliveryNote.BackColor = Color.LimeGreen;
                 butAddDeliveryNote.Text = "Добавить новую накладную";
                 lBDeliveryNotes.Enabled = true;
@@ -106,6 +107,15 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
+                pCheckDoc.Visible = true;
+                if (File.Exists(MainForm.DataPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx"))
+                {
+                    lCheckDoc.Text = "Документ сформирован";
+                }
+                else
+                {
+                    lCheckDoc.Text = "Документ отсутствует";
+                }
                 butOpen.Enabled = true;
                 butDirectory.Enabled = true;
                 butDel.Enabled = true;
@@ -117,8 +127,8 @@ namespace Дет.Сад.Питание.Forms
                 tBGruzName.Text = (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).GruzName;
                 cBInvoices.SelectedItem = MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId);
                 dGVProducts.Rows.Clear();
-                Stream stream = new FileStream(System.Windows.Forms.Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\Файлы\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".nakl", FileMode.Open);
-                addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+                Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".nakl", FileMode.Open);
+                addedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
                 stream.Close();
                 ReloadedData();
             }
@@ -131,7 +141,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.Balance * item.Price;
+                    Total += item.getSumRound();
                     AddProduct(item);
                 }
                 deliveryNote = new DeliveryNoteDTO
@@ -141,12 +151,12 @@ namespace Дет.Сад.Питание.Forms
                     InvoiceId = (cBInvoices.SelectedItem as InvoiceDTO).Id,
                     PriemName = tBPriemName.Text,
                     GruzName = tBGruzName.Text,
-                    FileName = "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Файлы\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl"
+                    FileName = MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl"
                 };
                 MainForm.DB.DeliveryNotes.Create(deliveryNote);
                 MainForm.DB.Save();
-                string path = Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString();
-                string subpath = "Файлы\\";
+                string path = Application.StartupPath + "\\Local Data\\";
+                string subpath = MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\";
                 DirectoryInfo dirInfo = new DirectoryInfo(path);
                 if (!dirInfo.Exists)
                 {
@@ -155,7 +165,7 @@ namespace Дет.Сад.Питание.Forms
                 if (Directory.Exists(path))
                 {
                     dirInfo.CreateSubdirectory(subpath);
-                    Stream stream = new FileStream(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Файлы\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl", FileMode.CreateNew);
+                    Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + MainForm.DB.Contracts.Get((cBInvoices.SelectedItem as InvoiceDTO).ContractId).ToString() + "\\Накладная №" + tBNumber.Text + " от " + dTPData.Value.ToLongDateString() + ".nakl", FileMode.CreateNew);
                     var serializer = new BinaryFormatter();
                     serializer.Serialize(stream, addedProducts);
                     stream.Close();
@@ -170,23 +180,17 @@ namespace Дет.Сад.Питание.Forms
             }
         }
 
-        private void AddProduct(ProductDTO product)
+        private void AddProduct(ProductArrival product)
         {
-            ProductDTO dbProduct = MainForm.DB.Products.Get(product.Id);
-            float newBalance = (dbProduct.Balance + product.Balance);
-            dbProduct.Price = (float)Math.Round(((double)((dbProduct.Price * dbProduct.Balance) + (product.Balance * product.Price)) / newBalance), 2);
-            dbProduct.Balance = newBalance;
-            MainForm.DB.Products.Update(dbProduct);
-            MainForm.DB.Save();
-            Stream stream = new FileStream(Application.StartupPath + (cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.Open);
-            List<ProductDTO> listInvoiceProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
-            ProductDTO productInInvoice = listInvoiceProducts.Single(x => x.Id == product.Id);
+            Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.Open);
+            List<ProductArrival> listInvoiceProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
+            ProductArrival productInInvoice = listInvoiceProducts.Single(x => x.Id == product.Id);
             productInInvoice.Balance -= product.Balance;
             listInvoiceProducts.Remove(listInvoiceProducts.Single(x => x.Id == product.Id));
             listInvoiceProducts.Add(productInInvoice);
             stream.Close();
 
-            stream = new FileStream(Application.StartupPath + (cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.OpenOrCreate);
+            stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (cBInvoices.SelectedItem as InvoiceDTO).FileName, FileMode.OpenOrCreate);
             var serializer = new BinaryFormatter();
             serializer.Serialize(stream, listInvoiceProducts);
             stream.Close();
@@ -214,7 +218,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.Balance * item.Price;
+                    Total += item.getSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -227,7 +231,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.Balance * item.Price;
+                    Total += item.getSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -237,14 +241,8 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
-                var deliveryNote = MainForm.DB.DeliveryNotes.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
-                if (MessageBox.Show("Вы уверены что хотите удалить накладную №" + deliveryNote.Number.ToString() + "?", "Удаление накладной", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    string path = Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get(deliveryNote.InvoiceId).ContractId).ToString() + "\\Файлы\\Накладная №" + deliveryNote.Number.ToString() + " от " + deliveryNote.Date.ToLongDateString() + ".nakl";
-                    File.Delete(path);
-                }
-                MainForm.DB.DeliveryNotes.Delete(deliveryNote.Id);
-                MainForm.DB.Save();
+                DeliveryNotesService.Delete((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
+
                 ReloadedDeliveryNotes();
             }
         }
@@ -259,49 +257,42 @@ namespace Дет.Сад.Питание.Forms
 
         private void BuildDocument()
         {
-            try
+            DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
             {
-                DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
-                if (dialogResult == DialogResult.OK)
-                {
-                    lLoad.Visible = true;
-                    WordWorker.Load();
+                lLoad.Visible = true;
+                WordWorker.Load();
 
-                    ReplaceStrings();
-                    Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
-                    int i = 3;
-                    foreach (ProductDTO product in addedProducts)
-                    {
-                        WordWorker.doc.Tables[2].Rows.Add();
-                        i++;
-                        WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = (i - 3).ToString();
-                        WordWorker.doc.Tables[2].Cell(i, 2).Range.Text = product.Name;
-                        WordWorker.doc.Tables[2].Cell(i, 4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                        WordWorker.doc.Tables[2].Cell(i, 10).Range.Text = product.Balance.ToString();
-                        WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = product.Price.ToString();
-                        WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
-                        WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "БЕЗ НДС";
-                        WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = Math.Round(product.Balance * product.Price, 2).ToString();
-                    }
+                ReplaceStrings();
+                Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
+                int i = 3;
+                foreach (ProductArrival product in addedProducts)
+                {
                     WordWorker.doc.Tables[2].Rows.Add();
                     i++;
-                    WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = "Итого";
-                    WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = "X";
-                    WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = lSumm.Text;
-                    WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "X";
-                    WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = lSumm.Text;
-
-                    WordWorker.Save(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
-
-                    WordWorker.Close();
-                    lLoad.Visible = false;
+                    WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = (i - 3).ToString();
+                    WordWorker.doc.Tables[2].Cell(i, 2).Range.Text = product.Name;
+                    WordWorker.doc.Tables[2].Cell(i, 4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                    WordWorker.doc.Tables[2].Cell(i, 10).Range.Text = Math.Round(product.Balance, 2).ToString();
+                    WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = Math.Round(product.Price, 2).ToString();
+                    WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = product.getSumRound().ToString();
+                    WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "БЕЗ НДС";
+                    WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = product.getSumRound().ToString();
                 }
-            }
-            catch (Exception ex)
-            {
+                WordWorker.doc.Tables[2].Rows.Add();
+                i++;
+                WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = "Итого";
+                WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = "X";
+                WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = Math.Round(float.Parse(lSumm.Text)).ToString();
+                WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "X";
+                WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = Math.Round(float.Parse(lSumm.Text)).ToString();
+
+                WordWorker.Save(MainForm.DataPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
+
                 WordWorker.Close();
-                throw new Exception("Во время выполнения произошла ошибка!");
+                lLoad.Visible = false;
             }
+            WordWorker.Close();
         }
         void ReplaceStrings()
         {
@@ -370,7 +361,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
-                string pathDir = Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1);
+                string pathDir = MainForm.DataPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1);
                 Process Proc = new Process();
                 Proc.StartInfo.FileName = "explorer";
                 Proc.StartInfo.Arguments = pathDir;
@@ -380,14 +371,14 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButAddProduct_Click(object sender, EventArgs e)
         {
-            AddProductInDeliveryNote addProductInDeliveryNote = new AddProductInDeliveryNote(this, Application.StartupPath + MainForm.DB.Invoices.Get((cBInvoices.SelectedItem as InvoiceDTO).Id).FileName);
+            AddProductInDeliveryNote addProductInDeliveryNote = new AddProductInDeliveryNote(this, Application.StartupPath + "\\Local Data\\" + MainForm.DB.Invoices.Get((cBInvoices.SelectedItem as InvoiceDTO).Id).FileName);
             addProductInDeliveryNote.ShowDialog();
         }
 
         private void ButOpen_Click(object sender, EventArgs e)
         {
-            if(lBDeliveryNotes.SelectedItem != null)
-                OpenDocument(Application.StartupPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1) + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
+            if (lBDeliveryNotes.SelectedItem != null)
+                OpenDocument(MainForm.DataPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Substring(0, MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString().Length - 1) + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
         }
     }
 }
