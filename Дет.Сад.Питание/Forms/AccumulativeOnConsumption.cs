@@ -1,5 +1,4 @@
 ﻿using DAL.DTO;
-using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Models;
+using Дет.Сад.Питание.Services.WordService;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание.Forms

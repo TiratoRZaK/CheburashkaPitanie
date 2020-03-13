@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DAL.Interfaces;
+using System;
 
 namespace DAL.DTO
 {
-    public class DeliveryNoteDTO 
+    public class DeliveryNoteDTO
     {
         public int Id { get; set; }
         public int Number { get; set; }

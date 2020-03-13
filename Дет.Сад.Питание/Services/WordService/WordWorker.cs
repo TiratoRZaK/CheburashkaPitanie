@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
 
-namespace Дет.Сад.Питание.Services.WordWorker
+namespace Дет.Сад.Питание.Services.WordService
 {
     public class WordWorker
     {

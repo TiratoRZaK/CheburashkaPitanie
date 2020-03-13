@@ -1,5 +1,4 @@
 ﻿using DAL.DTO;
-using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,13 +9,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Models;
 using Дет.Сад.Питание.Services;
-using Word = Microsoft.Office.Interop.Word;
+using Дет.Сад.Питание.Services.WordService;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class DeliveryNotesForm : Form
     {
-        public WordWorker WordWorker;
+        IDocumentService service = new DeliveryNotesService();
 
         public DeliveryNoteDTO deliveryNote = null;
         public List<ProductArrival> addedProducts;
@@ -24,7 +23,6 @@ namespace Дет.Сад.Питание.Forms
         public DeliveryNotesForm(MainForm main)
         {
             this.main = main;
-            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Накладная.docx");
             InitializeComponent();
             InitializeListBoxes();
             ButAddDeliveryNote_Click(this, new EventArgs());
@@ -241,7 +239,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
-                DeliveryNotesService.Delete((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
+                service.Delete((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
 
                 ReloadedDeliveryNotes();
             }
@@ -261,88 +259,8 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                WordWorker.Load();
-
-                ReplaceStrings();
-                Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
-                int i = 3;
-                foreach (ProductArrival product in addedProducts)
-                {
-                    WordWorker.doc.Tables[2].Rows.Add();
-                    i++;
-                    WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = (i - 3).ToString();
-                    WordWorker.doc.Tables[2].Cell(i, 2).Range.Text = product.Name;
-                    WordWorker.doc.Tables[2].Cell(i, 4).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                    WordWorker.doc.Tables[2].Cell(i, 10).Range.Text = Math.Round(product.Balance, 2).ToString();
-                    WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = Math.Round(product.Price, 2).ToString();
-                    WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = product.getSumRound().ToString();
-                    WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "БЕЗ НДС";
-                    WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = product.getSumRound().ToString();
-                }
-                WordWorker.doc.Tables[2].Rows.Add();
-                i++;
-                WordWorker.doc.Tables[2].Cell(i, 1).Range.Text = "Итого";
-                WordWorker.doc.Tables[2].Cell(i, 11).Range.Text = "X";
-                WordWorker.doc.Tables[2].Cell(i, 12).Range.Text = Math.Round(float.Parse(lSumm.Text)).ToString();
-                WordWorker.doc.Tables[2].Cell(i, 13).Range.Text = "X";
-                WordWorker.doc.Tables[2].Cell(i, 15).Range.Text = Math.Round(float.Parse(lSumm.Text)).ToString();
-
-                WordWorker.Save(MainForm.DataPath + "\\Документы\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".docx");
-
-                WordWorker.Close();
+                service.BuildDocument((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
                 lLoad.Visible = false;
-            }
-            WordWorker.Close();
-        }
-        void ReplaceStrings()
-        {
-            ContractDTO contract = MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId);
-            InvoiceDTO invoice = MainForm.DB.Invoices.Get((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId);
-            WordWorker.FindReplace("{dateNakl}", dTPData.Value.ToShortDateString());
-            WordWorker.FindReplace("{contractName}", contract.ToString());
-            WordWorker.FindReplace("{invoiceName}", invoice.ToString());
-            WordWorker.FindReplace("{numberNakl}", tBNumber.Text.ToString());
-            WordWorker.FindReplace("{nameCompanySeller}", MainForm.DB.Sellers.Get(contract.SellerId).NameCompany);
-            WordWorker.FindReplace("{nameCompanyCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).NameCompany);
-            WordWorker.FindReplace("{fullNameCompanySeller}", MainForm.DB.Sellers.Get(contract.SellerId).FullNameCompany);
-            WordWorker.FindReplace("{fullNameCompanyCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).FullNameCompany);
-            WordWorker.FindReplace("{nameSeller}", MainForm.DB.Sellers.Get(contract.SellerId).NameSeller);
-            WordWorker.FindReplace("{addressCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).AddressCompany);
-            WordWorker.FindReplace("{addressSeller}", MainForm.DB.Sellers.Get(contract.SellerId).AddressCompany);
-            WordWorker.FindReplace("{innCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).INN.ToString());
-            WordWorker.FindReplace("{innSeller}", MainForm.DB.Sellers.Get(contract.SellerId).INN.ToString());
-            WordWorker.FindReplace("{kppCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).KPP.ToString());
-            WordWorker.FindReplace("{kppSeller}", MainForm.DB.Sellers.Get(contract.SellerId).KPP.ToString());
-            WordWorker.FindReplace("{personalAccountCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).PersonalAccount);
-            WordWorker.FindReplace("{corespAccountSeller}", MainForm.DB.Sellers.Get(contract.SellerId).CorrespondentAccount);
-            WordWorker.FindReplace("{bikCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BIK.ToString());
-            WordWorker.FindReplace("{bikSeller}", MainForm.DB.Sellers.Get(contract.SellerId).BIK.ToString());
-            WordWorker.FindReplace("{bikCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BIK.ToString());
-            WordWorker.FindReplace("{bankCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).Bank);
-            WordWorker.FindReplace("{bankSeller}", MainForm.DB.Sellers.Get(contract.SellerId).Bank);
-            WordWorker.FindReplace("{bankAccountCustomer}", MainForm.DB.Customers.Get(contract.CustomerId).BankAccount);
-            WordWorker.FindReplace("{bankAccountSeller}", MainForm.DB.Sellers.Get(contract.SellerId).BankAccount);
-            WordWorker.FindReplace("{priemName}", tBPriemName.Text);
-            WordWorker.FindReplace("{gruzName}", tBGruzName.Text);
-
-            string replacedOfWord = WordWorker.ReplaceOfWord(float.Parse(lSumm.Text));
-            if (lSumm.Text.Contains(','))
-            {
-                if (lSumm.Text.Substring(lSumm.Text.IndexOf(',')).Length - 1 == 2)
-                {
-                    WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1));
-                }
-                else
-                {
-                    WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1) + "0");
-                }
-            }
-            else
-            {
-                WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                WordWorker.FindReplace("{kopeiki}", "00");
             }
         }
 
@@ -352,7 +270,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                WordWorker.Open(fileName);
+                service.Open(fileName);
             }
             lLoad.Visible = false;
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Interfaces;
+using System;
 
 namespace DAL.DTO
 {
@@ -14,6 +15,8 @@ namespace DAL.DTO
         public string Klad { get; set; }
         public string Rukowoditel { get; set; }
         public int ProductBId { get; set; }
+        public string Otdelenie { get; set; }
+        public string Uchregdenie { get; set; }
 
         public override string ToString()
         {

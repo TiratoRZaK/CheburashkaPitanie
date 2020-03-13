@@ -294,5 +294,25 @@ namespace Дет.Сад.Питание.Forms
             }
             InitializeSellers();
         }
+
+        private void butExport_Click(object sender, EventArgs e)
+        {
+            fBDialog.Description = "Выберите куда экспортировать файлы";
+            fBDialog.ShowDialog();
+            if(fBDialog.SelectedPath != null)
+            {
+                new ImportExportService().Export(fBDialog.SelectedPath);
+            }
+        }
+
+        private void butImport_Click(object sender, EventArgs e)
+        {
+            fBDialog.Description = "Выберите откуда импортировать файлы";
+            fBDialog.ShowDialog();
+            if (fBDialog.SelectedPath != null)
+            {
+                new ImportExportService().Import(fBDialog.SelectedPath);
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using DAL.DTO;
-using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,12 +9,14 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Models;
 using Дет.Сад.Питание.Services;
+using Дет.Сад.Питание.Services.WordService;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class InvoicesForm : Form
     {
-        public WordWorker WordWorker;
+        IDocumentService service = new InvoiceService();
+
         public InvoiceDTO invoice = null;
         public List<ProductArrival> addedProducts;
         public MainForm main;
@@ -23,7 +24,6 @@ namespace Дет.Сад.Питание.Forms
         public InvoicesForm(MainForm main)
         {
             this.main = main;
-            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Счёт-фактура.docx");
             InitializeComponent();
             InitializeListBoxes();
             ButAddInvoice_Click(this, new EventArgs());
@@ -244,8 +244,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBInvoices.SelectedItem != null)
             {
-                InvoiceService.Delete((lBInvoices.SelectedItem as InvoiceDTO).Id);
-
+                service.Delete((lBInvoices.SelectedItem as InvoiceDTO).Id);
                 ReloadedInvoices();
             }
         }
@@ -264,68 +263,8 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                WordWorker.Load();
-                ReplaceStrings();
-                int i = 1;
-                foreach (ProductArrival product in addedProducts)
-                {
-                    WordWorker.doc.Tables[1].Rows.Add();
-                    i++;
-                    WordWorker.doc.Tables[1].Rows[i].Height = (float)12;
-                    WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
-                    WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                    WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = Math.Round(product.Balance, 2).ToString();
-                    WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = Math.Round(product.Price, 2).ToString();
-                    WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.getSum(), 2).ToString();
-                    WordWorker.doc.Tables[1].Cell(i, 9).Range.Text = Math.Round(product.getSum(), 2).ToString();
-                }
-                WordWorker.doc.Tables[1].Rows.Add();
-                i++;
-                WordWorker.doc.Tables[1].Rows[i].Range.Bold = 1;
-                WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = "Итого";
-                WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(float.Parse(lSumm.Text), 2).ToString();
-                WordWorker.doc.Tables[1].Cell(i, 9).Range.Text = Math.Round(float.Parse(lSumm.Text), 2).ToString();
-
-                WordWorker.Save(MainForm.DataPath + "\\Документы\\" + (cBContracts.SelectedItem as ContractDTO).ToString() + "\\" + (lBInvoices.SelectedItem as InvoiceDTO).ToString() + ".docx");
-                WordWorker.Close();
+                service.BuildDocument((lBInvoices.SelectedItem as InvoiceDTO).Id);
                 lLoad.Visible = false;
-            }
-
-            WordWorker.Close();
-        }
-        void ReplaceStrings()
-        {
-            WordWorker.FindReplace("{date}", dTPData.Value.ToShortDateString());
-            WordWorker.FindReplace("{contractDate}", (cBContracts.SelectedItem as ContractDTO).ConclusionDate.ToLongDateString());
-            WordWorker.FindReplace("{contractNumber}", (cBContracts.SelectedItem as ContractDTO).Number.ToString());
-            WordWorker.FindReplace("{number}", tBNumber.Text.ToString());
-            WordWorker.FindReplace("{NameCompanySeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).NameCompany);
-            WordWorker.FindReplace("{nameCompanyCustomer}", MainForm.DB.Customers.Get((cBContracts.SelectedItem as ContractDTO).CustomerId).NameCompany);
-            WordWorker.FindReplace("{nameSeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).NameSeller);
-            WordWorker.FindReplace("{addressCustomer}", MainForm.DB.Customers.Get((cBContracts.SelectedItem as ContractDTO).CustomerId).AddressCompany);
-            WordWorker.FindReplace("{addressSeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).AddressCompany);
-            WordWorker.FindReplace("{innCustomer}", MainForm.DB.Customers.Get((cBContracts.SelectedItem as ContractDTO).CustomerId).INN.ToString());
-            WordWorker.FindReplace("{innSeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).INN.ToString());
-            WordWorker.FindReplace("{kppCustomer}", MainForm.DB.Customers.Get((cBContracts.SelectedItem as ContractDTO).CustomerId).KPP.ToString());
-            WordWorker.FindReplace("{kppSeller}", MainForm.DB.Sellers.Get((cBContracts.SelectedItem as ContractDTO).SellerId).KPP.ToString());
-            string replacedOfWord = WordWorker.ReplaceOfWord(Math.Round(float.Parse(lSumm.Text), 2));
-            if (lSumm.Text.Contains(','))
-            {
-                if (lSumm.Text.Substring(lSumm.Text.IndexOf(',')).Length - 1 == 2)
-                {
-                    WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1));
-                }
-                else
-                {
-                    WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                    WordWorker.FindReplace("{kopeiki}", lSumm.Text.Substring(lSumm.Text.IndexOf(',') + 1) + "0");
-                }
-            }
-            else
-            {
-                WordWorker.FindReplace("{total}", replacedOfWord.Remove(replacedOfWord.Length - 1));
-                WordWorker.FindReplace("{kopeiki}", "00");
             }
         }
 
@@ -353,7 +292,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                WordWorker.Open(fileName);
+                service.Open(fileName);
             }
             lLoad.Visible = false;
         }

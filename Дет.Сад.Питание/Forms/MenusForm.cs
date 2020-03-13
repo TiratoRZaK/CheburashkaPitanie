@@ -8,14 +8,14 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services.WordWorker;
-using Word = Microsoft.Office.Interop.Word;
+using Дет.Сад.Питание.Services;
+using Дет.Сад.Питание.Services.WordService;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class MenusForm : Form
     {
-        public WordWorker WordWorker;
+        IDocumentService service = new MenuService();
 
         public MenuDTO menu = null;
         public List<ProductInMenu> addedProducts;
@@ -26,7 +26,6 @@ namespace Дет.Сад.Питание.Forms
         public MenusForm(MainForm main)
         {
             this.main = main;
-            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Меню.docx");
             InitializeComponent();
             InitializeListBoxes();
         }
@@ -103,7 +102,7 @@ namespace Дет.Сад.Питание.Forms
                     Math.Round(item.TotalOfKids * item.Price, 2).ToString()
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
-                if (checkValidate && summ > Math.Round(balance,2))
+                if (checkValidate && summ > Math.Round(balance, 2))
                 {
                     namesInvalidRows = namesInvalidRows + ("\n" + item.Name);
                     dGVProducts.Rows[dGVProducts.RowCount - 1].DefaultCellStyle.BackColor = Color.OrangeRed;
@@ -114,8 +113,6 @@ namespace Дет.Сад.Питание.Forms
                 MessageBox.Show("Следующих продуктов на складе меньше, чем запрашивается!" + namesInvalidRows + "\n Уменьшите расход и повторите попытку.", "Слишком большой расход продуктов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
-
 
         private void ButAddMenu_Click(object sender, EventArgs e)
         {
@@ -361,6 +358,8 @@ namespace Дет.Сад.Питание.Forms
                         Povar = tBPovar.Text,
                         Rukowoditel = tBRukov.Text,
                         Vrach = tBVrach.Text,
+                        Otdelenie = tBOtdelenie.Text,
+                        Uchregdenie = tBUchregdenie.Text,
                         ProductBId = (cBProductB.SelectedItem as ProductDTO).Id,
                         FileName = "\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu"
                     };
@@ -485,6 +484,9 @@ namespace Дет.Сад.Питание.Forms
                 tBRukov.Text = (lBMenus.SelectedItem as MenuDTO).Rukowoditel;
                 tBVrach.Text = (lBMenus.SelectedItem as MenuDTO).Vrach;
                 dTPDate.Value = (lBMenus.SelectedItem as MenuDTO).Date;
+                tBOtdelenie.Text = (lBMenus.SelectedItem as MenuDTO).Otdelenie;
+                tBUchregdenie.Text = (lBMenus.SelectedItem as MenuDTO).Uchregdenie;
+
                 foreach (var item in cBProductB.Items)
                 {
                     if ((item as ProductDTO).Id == (lBMenus.SelectedItem as MenuDTO).ProductBId)
@@ -535,138 +537,20 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                WordWorker.Load();
-                ReplaceStrings();
-                Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
-                int i = 4;
-                int y = 3;
-                Dictionary<int, int> productsId = new Dictionary<int, int>();
-                foreach (DishDTO dishZ in menuInFile.DishesZ)
-                {
-                    WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = dishZ.Name;
-                    foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishZ.Id))
-                    {
-                        if (!productsId.Keys.Contains(productDish.ProductId))
-                        {
-                            productsId.Add(productDish.ProductId, y);
-                            WordWorker.doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
-                            WordWorker.doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
-                            y++;
-                        }
-                        else
-                        {
-                            int s;
-                            productsId.TryGetValue(productDish.ProductId, out s);
-                            WordWorker.doc.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
-                        }
-                    }
-                    i++;
-                }
-                i = 9;
-                foreach (DishDTO dishO in menuInFile.DishesO)
-                {
-                    WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = dishO.Name;
-                    foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishO.Id))
-                    {
-                        if (!productsId.Keys.Contains(productDish.ProductId))
-                        {
-                            productsId.Add(productDish.ProductId, y);
-                            WordWorker.doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
-                            WordWorker.doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
-                            y++;
-                        }
-                        else
-                        {
-                            int s;
-                            productsId.TryGetValue(productDish.ProductId, out s);
-                            WordWorker.doc.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
-                        }
-                    }
-                    i++;
-                }
-                i = 15;
-                foreach (DishDTO dishP in menuInFile.DishesP)
-                {
-                    WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = dishP.Name;
-                    foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishP.Id))
-                    {
-                        if (!productsId.Keys.Contains(productDish.ProductId))
-                        {
-                            productsId.Add(productDish.ProductId, y);
-                            WordWorker.doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
-                            WordWorker.doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
-                            y++;
-                        }
-                        else
-                        {
-                            int s;
-                            productsId.TryGetValue(productDish.ProductId, out s);
-                            WordWorker.doc.Tables[1].Cell(i, s).Range.Text = productDish.Norm.ToString();
-                        }
-                    }
-                    i++;
-                }
-                foreach (ProductInMenu product in menuInFile.Products)
-                {
-                    int s;
-                    productsId.TryGetValue(product.Id, out s);
-                    WordWorker.doc.Tables[1].Cell(20, s - 1).Range.Text = Math.Round(product.SumNorms, 2).ToString();
-                    WordWorker.doc.Tables[1].Cell(21, s - 1).Range.Text = Math.Round(product.TotalOfKids, 2).ToString();
-                    WordWorker.doc.Tables[1].Cell(22, s - 1).Range.Text = Math.Round(product.Price, 2).ToString();
-                    if (product.Id != (cBProductB.SelectedItem as ProductDTO).Id)
-                    {
-                        WordWorker.doc.Tables[1].Cell(23, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
-                    }
-                    else
-                    {
-                        WordWorker.doc.Tables[1].Cell(24, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
-                    }
-                }
-                WordWorker.doc.Tables[1].Cell(23, 2).Range.Text = Math.Round(float.Parse(lSumm.Text), 2).ToString();
-                WordWorker.doc.Tables[1].Cell(24, 2).Range.Text = Math.Round(float.Parse(lSummB.Text), 2).ToString();
-
-                WordWorker.Save(MainForm.DataPath + "\\Документы\\Меню\\Меню на " + dTPDate.Value.ToLongDateString() + ".docx");
-                WordWorker.Close();
+                service.BuildDocument((lBMenus.SelectedItem as MenuDTO).Id);
                 lLoad.Visible = false;
             }
-            WordWorker.Close();
-        }
-
-        void ReplaceStrings()
-        {
-            WordWorker.FindReplace("{vrachName}", tBVrach.Text);
-            WordWorker.FindReplace("{kladName}", tBKlad.Text);
-            WordWorker.FindReplace("{otdelenie}", tBOtdelenie.Text);
-            WordWorker.FindReplace("{uchregdenie}", tBUchregdenie.Text);
-            WordWorker.FindReplace("{povarName}", tBPovar.Text);
-            WordWorker.FindReplace("{rukovoditelName}", tBRukov.Text);
-            WordWorker.FindReplace("{date}", dTPDate.Value.ToShortDateString());
-            WordWorker.FindReplace("{kids}", (int.Parse(tBKids.Text) + int.Parse(tBKidsB.Text)).ToString());
-            WordWorker.FindReplace("{total}", (float.Parse(lSumm.Text) + float.Parse(lSummB.Text)).ToString());
         }
 
         private void ButDel_Click(object sender, EventArgs e)
         {
             if (lBMenus.SelectedItem != null)
             {
-                var menu = MainForm.DB.Menus.Get((lBMenus.SelectedItem as MenuDTO).Id);
-                if (MessageBox.Show("Списанные в данном меню продукты будут возвращеы на склад! Вы уверены что хотите удалить меню на " + menu.Date.ToLongDateString() + " ?", "Внимание! Удаление меню", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show("Списанные в данном меню продукты будут возвращеы на склад! Вы уверены что хотите удалить меню?", "Внимание! Удаление меню", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    string path = Application.StartupPath + "\\Local Data\\Меню на " + menu.Date.ToLongDateString() + ".menu";
-                    File.Delete(path);
+                    service.Delete((lBMenus.SelectedItem as MenuDTO).Id);
+                    ReloadedMenus();
                 }
-                foreach (ProductInMenu product in addedProducts)
-                {
-                    ProductDTO productInDb = MainForm.DB.Products.Get(product.Id);
-                    float tempPrice = productInDb.Sum / productInDb.Balance;
-                    productInDb.Balance = (float)Math.Round((productInDb.Balance + product.TotalOfKids), 2);
-                    productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
-                    MainForm.DB.Products.Update(productInDb);
-                    MainForm.DB.Save();
-                }
-                MainForm.DB.Menus.Delete(menu.Id);
-                MainForm.DB.Save();
-                ReloadedMenus();
             }
         }
 
@@ -685,7 +569,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                WordWorker.Open(fileName);
+                service.Open(fileName);
             }
             lLoad.Visible = false;
         }

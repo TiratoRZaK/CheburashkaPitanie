@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.Interfaces;
+using System;
 
 namespace DAL.DTO
 {
@@ -11,6 +12,7 @@ namespace DAL.DTO
         public int CustomerId { get; set; }
         public string ResponsiblePerson { get; set; }
         public DateTime ConclusionDate { get; set; }
+        public DateTime EndDate { get; set; }
         public int PeriodInMonths { get; set; }
         public string FileName { get; set; }
         public float Total { get; set; }

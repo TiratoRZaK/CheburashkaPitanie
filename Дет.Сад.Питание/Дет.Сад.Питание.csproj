@@ -48,6 +48,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,6 +58,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\Images\Чебурашка.ico</ApplicationIcon>
@@ -242,10 +244,13 @@
     </Compile>
     <Compile Include="Services\ContractsService.cs" />
     <Compile Include="Services\DeliveryNotesService.cs" />
+    <Compile Include="Services\ImportExportService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\LoggingService.cs" />
-    <Compile Include="Services\WordService\WordWorker\RusNumber.cs" />
-    <Compile Include="Services\WordService\WordWorker\WordWorker.cs" />
+    <Compile Include="Services\MenuService.cs" />
+    <Compile Include="Services\WordService\IDocumentService.cs" />
+    <Compile Include="Services\WordService\RusNumber.cs" />
+    <Compile Include="Services\WordService\WordWorker.cs" />
     <EmbeddedResource Include="Forms\AccumulativeOnArrival.resx">
       <DependentUpon>AccumulativeOnArrival.cs</DependentUpon>
       <SubType>Designer</SubType>

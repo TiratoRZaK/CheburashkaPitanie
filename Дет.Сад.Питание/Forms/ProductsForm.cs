@@ -1,11 +1,11 @@
 ﻿using DAL.DTO;
-using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Forms;
 using Дет.Сад.Питание.Services;
+using Дет.Сад.Питание.Services.WordService;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание
