@@ -244,7 +244,8 @@
     <Compile Include="Services\DeliveryNotesService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\LoggingService.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Services\WordService\WordWorker\RusNumber.cs" />
+    <Compile Include="Services\WordService\WordWorker\WordWorker.cs" />
     <EmbeddedResource Include="Forms\AccumulativeOnArrival.resx">
       <DependentUpon>AccumulativeOnArrival.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -310,7 +311,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="keys.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -344,10 +344,6 @@
     <ProjectReference Include="..\DAL\DAL.csproj">
       <Project>{378e1aca-df97-4e8f-bf20-c643687200bf}</Project>
       <Name>DAL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Servises\Servises.csproj">
-      <Project>{2d7fb4dd-245c-4927-8291-edfcf936aee8}</Project>
-      <Name>Servises</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

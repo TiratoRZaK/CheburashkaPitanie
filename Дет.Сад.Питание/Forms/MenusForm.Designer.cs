@@ -36,6 +36,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenusForm));
             this.pMenus = new System.Windows.Forms.Panel();
+            this.pCheckDoc = new System.Windows.Forms.Panel();
+            this.lCheckDoc = new System.Windows.Forms.Label();
             this.lLoad = new System.Windows.Forms.Label();
             this.butOpen = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -100,15 +102,13 @@
             this.label20 = new System.Windows.Forms.Label();
             this.tBUchregdenie = new System.Windows.Forms.TextBox();
             this.butSaveSetting = new System.Windows.Forms.Button();
-            this.pCheckDoc = new System.Windows.Forms.Panel();
-            this.lCheckDoc = new System.Windows.Forms.Label();
             this.pMenus.SuspendLayout();
+            this.pCheckDoc.SuspendLayout();
             this.pProducts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pDishes.SuspendLayout();
             this.pInfo.SuspendLayout();
-            this.pCheckDoc.SuspendLayout();
             this.SuspendLayout();
             // 
             // pMenus
@@ -127,6 +127,27 @@
             this.pMenus.Name = "pMenus";
             this.pMenus.Size = new System.Drawing.Size(197, 527);
             this.pMenus.TabIndex = 16;
+            // 
+            // pCheckDoc
+            // 
+            this.pCheckDoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pCheckDoc.BackColor = System.Drawing.Color.Transparent;
+            this.pCheckDoc.Controls.Add(this.lCheckDoc);
+            this.pCheckDoc.Location = new System.Drawing.Point(9, 382);
+            this.pCheckDoc.Name = "pCheckDoc";
+            this.pCheckDoc.Size = new System.Drawing.Size(176, 18);
+            this.pCheckDoc.TabIndex = 18;
+            this.pCheckDoc.Visible = false;
+            // 
+            // lCheckDoc
+            // 
+            this.lCheckDoc.AutoSize = true;
+            this.lCheckDoc.ForeColor = System.Drawing.Color.Black;
+            this.lCheckDoc.Location = new System.Drawing.Point(28, 2);
+            this.lCheckDoc.Name = "lCheckDoc";
+            this.lCheckDoc.Size = new System.Drawing.Size(121, 13);
+            this.lCheckDoc.TabIndex = 0;
+            this.lCheckDoc.Text = "Документ отсутствует";
             // 
             // lLoad
             // 
@@ -329,7 +350,6 @@
             this.dGVProducts.Name = "dGVProducts";
             this.dGVProducts.Size = new System.Drawing.Size(540, 203);
             this.dGVProducts.TabIndex = 0;
-            this.dGVProducts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVProducts_CellContentClick);
             this.dGVProducts.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGVProducts_CellValueChanged);
             this.dGVProducts.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DGVProducts_RowsAdded);
             this.dGVProducts.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DGVProducts_RowsRemoved);
@@ -922,27 +942,6 @@
             this.butSaveSetting.UseVisualStyleBackColor = false;
             this.butSaveSetting.Click += new System.EventHandler(this.ButSaveSetting_Click);
             // 
-            // pCheckDoc
-            // 
-            this.pCheckDoc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.pCheckDoc.BackColor = System.Drawing.Color.Transparent;
-            this.pCheckDoc.Controls.Add(this.lCheckDoc);
-            this.pCheckDoc.Location = new System.Drawing.Point(9, 382);
-            this.pCheckDoc.Name = "pCheckDoc";
-            this.pCheckDoc.Size = new System.Drawing.Size(176, 18);
-            this.pCheckDoc.TabIndex = 18;
-            this.pCheckDoc.Visible = false;
-            // 
-            // lCheckDoc
-            // 
-            this.lCheckDoc.AutoSize = true;
-            this.lCheckDoc.ForeColor = System.Drawing.Color.Black;
-            this.lCheckDoc.Location = new System.Drawing.Point(28, 2);
-            this.lCheckDoc.Name = "lCheckDoc";
-            this.lCheckDoc.Size = new System.Drawing.Size(121, 13);
-            this.lCheckDoc.TabIndex = 0;
-            this.lCheckDoc.Text = "Документ отсутствует";
-            // 
             // MenusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -968,6 +967,8 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MenusForm_FormClosed);
             this.pMenus.ResumeLayout(false);
             this.pMenus.PerformLayout();
+            this.pCheckDoc.ResumeLayout(false);
+            this.pCheckDoc.PerformLayout();
             this.pProducts.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -976,8 +977,6 @@
             this.pDishes.PerformLayout();
             this.pInfo.ResumeLayout(false);
             this.pInfo.PerformLayout();
-            this.pCheckDoc.ResumeLayout(false);
-            this.pCheckDoc.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

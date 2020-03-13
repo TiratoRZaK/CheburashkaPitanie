@@ -33,7 +33,7 @@ namespace DAL.DTO
             return Name;
         }
 
-        public float getPrice()
+        public float GetPrice()
         {
             if (Balance != 0)
             {
@@ -41,7 +41,7 @@ namespace DAL.DTO
             }
             else
             {
-                return 0;
+                return 0.0f;
             }
         }
     }

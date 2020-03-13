@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Servises.WordWorker;
+using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -77,9 +77,11 @@ namespace Дет.Сад.Питание.Forms
                 double TotalAllB = 0;
                 int totalKids = 0;
                 int totalKidsB = 0;
-                ProductInMenu productB = new ProductInMenu(1, "r", 0, 1, 0, 1, 1, true);
-                productB.SumNorms = 0;
-                productB.TotalOfKids = 0;
+                ProductInMenu productB = new ProductInMenu(1, "r", 0, 1, 0, 1, 1, true)
+                {
+                    SumNorms = 0,
+                    TotalOfKids = 0
+                };
                 List<ProductInMenu> allProducts = new List<ProductInMenu>();
                 List<MenuDTO> menus = new List<MenuDTO>();
                 foreach (MenuDTO menu in clBMenus.CheckedItems)

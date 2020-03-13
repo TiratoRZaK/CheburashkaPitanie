@@ -21,7 +21,7 @@ namespace Дет.Сад.Питание.Forms
         void InitializeToProduct()
         {
             tBBalance.Text = _Product.Balance.ToString();
-            tBPrice.Text = _Product.getPrice().ToString();
+            tBPrice.Text = _Product.GetPrice().ToString();
             tBUnit.Text = MainForm.DB.Units.Get(_Product.UnitId).Name;
 
         }

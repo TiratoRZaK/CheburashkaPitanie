@@ -57,6 +57,8 @@ namespace Дет.Сад.Питание.Forms
                     product.Name = productInDb.Name;
                     product.Balance = float.Parse(tBBalance.Text);
                     product.Price = productInDb.Price;
+                    product.TypeId = productInDb.TypeId;
+                    product.UnitId = productInDb.UnitId;
 
                     main.addedProducts.Add(product);
                     MessageBox.Show("Продукт успешно добавлен");

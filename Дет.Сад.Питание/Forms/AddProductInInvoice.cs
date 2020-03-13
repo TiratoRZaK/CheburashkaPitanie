@@ -34,7 +34,7 @@ namespace Дет.Сад.Питание.Forms
         void InitializeToProduct()
         {
             tBBalance.Text = _Product.Balance.ToString();
-            tBOldPrice.Text = MainForm.DB.Products.Get(_Product.Id).getPrice().ToString();
+            tBOldPrice.Text = MainForm.DB.Products.Get(_Product.Id).GetPrice().ToString();
             tBNewPrice.Text = _Product.Price.ToString();
         }
         void InitializeComdoBoxes()
@@ -74,7 +74,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (tBBalance.Text != "")
             {
-                if (MainForm.DB.Products.Get(_Product.Id).getPrice() != _Product.Price)
+                if (MainForm.DB.Products.Get(_Product.Id).GetPrice() != _Product.Price)
                 {
                     if (MainForm.DB.Products.Get(_Product.Id).Balance != 0)
                     {

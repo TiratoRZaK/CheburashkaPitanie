@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Servises.WordWorker
+namespace Дет.Сад.Питание.Services.WordWorker
 {
     public class RusNumber
     {

@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Servises.WordWorker;
+using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,7 +126,7 @@ namespace Дет.Сад.Питание
                 WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
                 WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
                 WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = product.Balance.ToString();
-                WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.getPrice().ToString();
+                WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.GetPrice().ToString();
                 WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Sum, 2).ToString();
                 summ += product.Sum;
             }

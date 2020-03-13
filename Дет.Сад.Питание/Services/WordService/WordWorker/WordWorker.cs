@@ -1,12 +1,11 @@
-﻿using DAL.DTO;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
 
-namespace Servises.WordWorker
+namespace Дет.Сад.Питание.Services.WordWorker
 {
     public class WordWorker
     {
@@ -52,7 +51,7 @@ namespace Servises.WordWorker
         {
             String[] directories = path.Split('\\');
             StringBuilder buildedPath = new StringBuilder(directories[0]);
-            for (int i = 1; i < directories.Length-1; i++)
+            for (int i = 1; i < directories.Length - 1; i++)
             {
                 buildedPath.Append("\\" + directories[i]);
                 if (!Directory.Exists(buildedPath.ToString()))

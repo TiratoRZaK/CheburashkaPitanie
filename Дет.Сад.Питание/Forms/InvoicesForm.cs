@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Servises.WordWorker;
+using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

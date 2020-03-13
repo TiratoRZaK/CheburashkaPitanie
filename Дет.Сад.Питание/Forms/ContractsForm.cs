@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Servises.WordWorker;
+using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -487,13 +487,18 @@ namespace Дет.Сад.Питание.Forms
         {
             if (e.ColumnIndex == 2 && addedProducts != null)
             {
+                string temp = "";
                 if (dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("."))
                 {
-                    string temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
                     temp = temp.Replace(".", ",");
-                    dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = double.Parse(temp);
                 }
-                float newBalance = float.Parse(dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString());
+                else
+                {
+                    temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                }
+                ProductDTO prod = MainForm.DB.Products.Get((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id);
+                float newBalance = float.Parse(temp);
                 addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductArrival).Id).Balance = newBalance;
 
                 Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + "\\contract.cont", FileMode.Create);

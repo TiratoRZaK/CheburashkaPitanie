@@ -1,5 +1,4 @@
 ﻿using DAL.DTO;
-using Servises.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Models;
+using Дет.Сад.Питание.Services.WordWorker;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание.Forms
@@ -85,20 +85,33 @@ namespace Дет.Сад.Питание.Forms
             cBProductB.SelectedIndex = 0;
         }
 
-        public void ReloadedData()
+        public void ReloadedData(bool checkValidate)
         {
             dGVProducts.Rows.Clear();
+            string namesInvalidRows = "";
             foreach (var item in addedProducts)
             {
+                float balance = MainForm.DB.Products.Get(item.Id).Balance;
+                double summ = item.TotalOfKids;
+
                 dGVProducts.Rows.Add(new object[] {
                     item.Name,
-                    MainForm.DB.Products.Get(item.Id).Balance.ToString(),
+                    balance.ToString(),
                     item.SumNorms.ToString(),
-                    item.TotalOfKids.ToString(),
+                    summ.ToString(),
                     item.Price.ToString(),
-                    Math.Round(item.TotalOfKids*item.Price,2).ToString()
+                    Math.Round(item.TotalOfKids * item.Price, 2).ToString()
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
+                if (checkValidate && summ > Math.Round(balance,2))
+                {
+                    namesInvalidRows = namesInvalidRows + ("\n" + item.Name);
+                    dGVProducts.Rows[dGVProducts.RowCount - 1].DefaultCellStyle.BackColor = Color.OrangeRed;
+                }
+            }
+            if (checkValidate && namesInvalidRows.Length > 0)
+            {
+                MessageBox.Show("Следующих продуктов на складе меньше, чем запрашивается!" + namesInvalidRows + "\n Уменьшите расход и повторите попытку.", "Слишком большой расход продуктов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -203,7 +216,7 @@ namespace Дет.Сад.Питание.Forms
             }
         }
 
-        void AddProducts(CheckedListBox.CheckedItemCollection collection)
+        void AddProducts(CheckedListBox.CheckedItemCollection collection, bool checkValidate)
         {
             foreach (object item in collection)
             {
@@ -219,7 +232,7 @@ namespace Дет.Сад.Питание.Forms
                         addedProducts.Add(new ProductInMenu(
                             product.Id,
                             product.Name,
-                            product.getPrice(),
+                            product.GetPrice(),
                             productDish.DishId,
                             productDish.Norm,
                             int.Parse(tBKids.Text),
@@ -237,20 +250,25 @@ namespace Дет.Сад.Питание.Forms
                     }
                 }
             }
-            ReloadedData();
+            ReloadedData(checkValidate);
         }
 
         private void DGVProducts_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == 2 && addedProducts != null)
             {
+                string temp = "";
                 if (dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("."))
                 {
-                    string temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
                     temp = temp.Replace(".", ",");
-                    dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = double.Parse(temp);
                 }
-                double norm = double.Parse(dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString());
+                else
+                {
+                    temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                }
+                ProductDTO prod = MainForm.DB.Products.Get((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id);
+                double norm = double.Parse(temp);
                 addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).SumNorms = Math.Round(norm, 3);
                 if ((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id != (cBProductB.SelectedItem as ProductDTO).Id)
                 {
@@ -260,36 +278,34 @@ namespace Дет.Сад.Питание.Forms
                 {
                     addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).TotalOfKids = Math.Round(norm * int.Parse(tBKidsB.Text), 2);
                 }
-                ReloadedData();
+                ReloadedData(true);
             }
             if (e.ColumnIndex == 3 && addedProducts != null)
             {
+                string temp = "";
                 if (dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString().Contains("."))
                 {
-                    string temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                    temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
                     temp = temp.Replace(".", ",");
-                    dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = double.Parse(temp);
-                }
-                ProductDTO prod = MainForm.DB.Products.Get((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id);
-                double norm = double.Parse(dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString());
-                if (norm > prod.Balance)
-                {
-                    MessageBox.Show("Продукта " + prod.PsevdoName + " на складе меньше, чем запрашивается! Уменьшите расход и повторите попытку.", "Слишком большой расход", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    ReloadedData();
                 }
                 else
                 {
-                    addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).TotalOfKids = Math.Round(norm, 2);
-                    if ((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id != (cBProductB.SelectedItem as ProductDTO).Id)
-                    {
-                        addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).SumNorms = Math.Round(norm / (int.Parse(tBKids.Text) + int.Parse(tBKidsB.Text)), 3);
-                    }
-                    else
-                    {
-                        addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).SumNorms = Math.Round(norm / int.Parse(tBKidsB.Text), 3);
-                    }
-                    ReloadedData();
+                    temp = dGVProducts.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
                 }
+                ProductDTO prod = MainForm.DB.Products.Get((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id);
+                double norm = double.Parse(temp);
+
+                addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).TotalOfKids = Math.Round(norm, 2);
+                if ((dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id != (cBProductB.SelectedItem as ProductDTO).Id)
+                {
+                    addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).SumNorms = Math.Round(norm / (int.Parse(tBKids.Text) + int.Parse(tBKidsB.Text)), 3);
+                }
+                else
+                {
+                    addedProducts.Single(x => x.Id == (dGVProducts.Rows[e.RowIndex].Tag as ProductInMenu).Id).SumNorms = Math.Round(norm / int.Parse(tBKidsB.Text), 3);
+                }
+                ReloadedData(true);
+
             }
         }
 
@@ -313,10 +329,10 @@ namespace Дет.Сад.Питание.Forms
             {
                 pProducts.Enabled = true;
                 addedProducts = new List<ProductInMenu>();
-                AddProducts(cLBZ.CheckedItems);
-                AddProducts(cLBO.CheckedItems);
-                AddProducts(cLBP.CheckedItems);
-                ReloadedData();
+                AddProducts(cLBZ.CheckedItems, false);
+                AddProducts(cLBO.CheckedItems, false);
+                AddProducts(cLBP.CheckedItems, false);
+                ReloadedData(true);
 
                 butSave.Enabled = true;
             }
@@ -334,59 +350,80 @@ namespace Дет.Сад.Питание.Forms
             }
             else
             {
-                menu = new MenuDTO
+                if (checkValidateMenu())
                 {
-                    Date = dTPDate.Value,
-                    Kids = int.Parse(tBKids.Text),
-                    KidsB = int.Parse(tBKidsB.Text),
-                    Klad = tBKlad.Text,
-                    Povar = tBPovar.Text,
-                    Rukowoditel = tBRukov.Text,
-                    Vrach = tBVrach.Text,
-                    ProductBId = (cBProductB.SelectedItem as ProductDTO).Id,
-                    FileName = "\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu"
-                };
-                MainForm.DB.Menus.Create(menu);
-                foreach (ProductInMenu productInMenu in addedProducts)
-                {
-                    ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
-                    float tempPrice = productInDb.Sum / productInDb.Balance;
-                    productInDb.Balance = (float)Math.Round(productInDb.Balance - (float)productInMenu.TotalOfKids, 2);
-                    productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
-                    MainForm.DB.Products.Update(productInDb);
+                    menu = new MenuDTO
+                    {
+                        Date = dTPDate.Value,
+                        Kids = int.Parse(tBKids.Text),
+                        KidsB = int.Parse(tBKidsB.Text),
+                        Klad = tBKlad.Text,
+                        Povar = tBPovar.Text,
+                        Rukowoditel = tBRukov.Text,
+                        Vrach = tBVrach.Text,
+                        ProductBId = (cBProductB.SelectedItem as ProductDTO).Id,
+                        FileName = "\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu"
+                    };
+                    MainForm.DB.Menus.Create(menu);
+                    foreach (ProductInMenu productInMenu in addedProducts)
+                    {
+                        ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
+                        float tempPrice = productInDb.GetPrice();
+                        productInDb.Balance = (float)Math.Round(productInDb.Balance - (float)productInMenu.TotalOfKids, 2);
+                        productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
+                        MainForm.DB.Products.Update(productInDb);
+                    }
+                    MainForm.DB.Save();
+                    Models.Menu menuInFile = new Models.Menu();
+                    menuInFile.Products = addedProducts;
+                    foreach (object item in cLBZ.CheckedItems)
+                    {
+                        menuInFile.DishesZ.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    }
+                    foreach (object item in cLBO.CheckedItems)
+                    {
+                        menuInFile.DishesO.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    }
+                    foreach (object item in cLBP.CheckedItems)
+                    {
+                        menuInFile.DishesP.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    }
+                    string path = Application.StartupPath + "\\Local Data\\";
+                    DirectoryInfo dirInfo = new DirectoryInfo(path);
+                    if (!dirInfo.Exists)
+                    {
+                        dirInfo.Create();
+                    }
+                    if (Directory.Exists(path))
+                    {
+                        Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.Create);
+                        var serializer = new BinaryFormatter();
+                        serializer.Serialize(stream, menuInFile);
+                        stream.Close();
+                    }
+                    MessageBox.Show("Меню успешно сохранено и продукты списаны со склада");
+                    ButAddMenu_Click(this, new EventArgs());
+                    ReloadedMenus();
                 }
-                MainForm.DB.Save();
-                Models.Menu menuInFile = new Models.Menu();
-                menuInFile.Products = addedProducts;
-                foreach (object item in cLBZ.CheckedItems)
+                else
                 {
-                    menuInFile.DishesZ.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    return;
                 }
-                foreach (object item in cLBO.CheckedItems)
-                {
-                    menuInFile.DishesO.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
-                }
-                foreach (object item in cLBP.CheckedItems)
-                {
-                    menuInFile.DishesP.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
-                }
-                string path = Application.StartupPath + "\\Local Data\\";
-                DirectoryInfo dirInfo = new DirectoryInfo(path);
-                if (!dirInfo.Exists)
-                {
-                    dirInfo.Create();
-                }
-                if (Directory.Exists(path))
-                {
-                    Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.Create);
-                    var serializer = new BinaryFormatter();
-                    serializer.Serialize(stream, menuInFile);
-                    stream.Close();
-                }
-                MessageBox.Show("Меню успешно сохранено и продукты списаны со склада");
-                ButAddMenu_Click(this, new EventArgs());
-                ReloadedMenus();
             }
+        }
+
+        private bool checkValidateMenu()
+        {
+            foreach (ProductInMenu productInMenu in addedProducts)
+            {
+                ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
+                if (Math.Round(productInDb.Balance, 2) < productInMenu.TotalOfKids)
+                {
+                    MessageBox.Show("Меню не может быть созданно, так как вы запрашиваете больше продуктов, чем есть на складе!", "Невозможно создать меню", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void DGVProducts_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -426,7 +463,8 @@ namespace Дет.Сад.Питание.Forms
             if (lBMenus.SelectedItem != null)
             {
                 pCheckDoc.Visible = true;
-                if (File.Exists(MainForm.DataPath + "\\Документы\\Меню\\Меню на " + (lBMenus.SelectedItem as MenuDTO).Date.ToLongDateString() + ".docx")) {
+                if (File.Exists(MainForm.DataPath + "\\Документы\\Меню\\Меню на " + (lBMenus.SelectedItem as MenuDTO).Date.ToLongDateString() + ".docx"))
+                {
                     lCheckDoc.Text = "Документ сформирован";
                 }
                 else
@@ -475,7 +513,7 @@ namespace Дет.Сад.Питание.Forms
                 }
 
                 stream.Close();
-                ReloadedData();
+                ReloadedData(false);
             }
             else
             {
@@ -641,19 +679,6 @@ namespace Дет.Сад.Питание.Forms
             Proc.Start();
         }
 
-        private void ButNewMounth_Click(object sender, EventArgs e)
-        {
-            //var menus = MainForm.DB.Menus.GetAll();
-            //foreach (MenuDTO menu in menus)
-            //{
-            //    MainForm.DB.Menus.Delete(menu.Id);
-            //}
-            //MainForm.DB.Save();
-            //string path = MainForm.DataPath + "\\Документы\\Меню\\Файлы\\";
-            //Directory.Delete(path,true);
-            //ReloadedMenus();
-        }
-
         public void OpenDocument(string fileName)
         {
             DialogResult dialogResult = MessageBox.Show("Все запущенные документы будут закрыты без сохранения! Сохраните используемые в данный момент документы и нажмите 'Ок'", "ВНИМАНИЕ!!!", MessageBoxButtons.OKCancel);
@@ -710,11 +735,6 @@ namespace Дет.Сад.Питание.Forms
                     lP.Text = "0";
                 }
             }
-        }
-
-        private void dGVProducts_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
     }
 }

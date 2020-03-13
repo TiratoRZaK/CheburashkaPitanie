@@ -1,5 +1,5 @@
 ﻿using DAL.DTO;
-using Servises.WordWorker;
+using Дет.Сад.Питание.Services.WordWorker;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
+using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -15,8 +16,8 @@ namespace Дет.Сад.Питание.Forms
     {
         public WordWorker WordWorker;
 
-        public List<ProductDTO> deliveryNotesProducts;
-        public List<ProductDTO> accumulateProducts;
+        public List<ProductArrival> deliveryNotesProducts;
+        public List<ProductArrival> accumulateProducts;
         public List<ContractDTO> contracts;
         public MainForm main;
         public AccumulativeOnArrival(MainForm main)
@@ -66,9 +67,9 @@ namespace Дет.Сад.Питание.Forms
             {
                 dGVProducts.Rows.Add(new object[] {
                     item.Name,
-                    item.getPrice().ToString(),
+                    item.Price.ToString(),
                     item.Balance.ToString(),
-                    Math.Round((item.Sum),2).ToString()
+                    item.getSumRound().ToString()
                 });
             }
         }
@@ -80,9 +81,9 @@ namespace Дет.Сад.Питание.Forms
             {
                 dGVProductsAll.Rows.Add(new object[] {
                     item.Name,
-                    item.getPrice().ToString(),
+                    item.Price.ToString(),
                     item.Balance.ToString(),
-                    Math.Round((item.Sum),2).ToString()
+                    item.getSumRound().ToString()
                 });
             }
         }
@@ -101,7 +102,7 @@ namespace Дет.Сад.Питание.Forms
                 tBInvoice.Text = MainForm.DB.Invoices.Get((cLBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ToString();
                 dGVProducts.Rows.Clear();
                 Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((cLBDeliveryNotes.SelectedItem as DeliveryNoteDTO).InvoiceId).ContractId).ToString() +"\\" + (cLBDeliveryNotes.SelectedItem as DeliveryNoteDTO).ToString() + ".nakl", FileMode.Open);
-                deliveryNotesProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+                deliveryNotesProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
                 stream.Close();
                 ReloadedDataDeliveryNotesProducts();
             }
@@ -119,14 +120,14 @@ namespace Дет.Сад.Питание.Forms
             clb.SetItemCheckState(e.Index, e.NewValue);
             clb.ItemCheck += CLBDeliveryNotes_ItemCheck;
 
-            accumulateProducts = new List<ProductDTO>();
+            accumulateProducts = new List<ProductArrival>();
             dGVProductsAll.Rows.Clear();
             foreach (object itemChecked in cLBDeliveryNotes.CheckedItems)
             {
                 Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + MainForm.DB.Contracts.Get(MainForm.DB.Invoices.Get((itemChecked as DeliveryNoteDTO).InvoiceId).ContractId).ToString() + "\\" + (itemChecked as DeliveryNoteDTO).ToString() + ".nakl", FileMode.Open);
-                List<ProductDTO> newAddedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+                List<ProductArrival> newAddedProducts = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
                 stream.Close();
-                foreach (ProductDTO item in newAddedProducts)
+                foreach (ProductArrival item in newAddedProducts)
                 {
                     if (accumulateProducts.Where(x => x.Id == item.Id).Count() > 0)
                     {
@@ -162,7 +163,7 @@ namespace Дет.Сад.Питание.Forms
                 int naklIndex = 1;
                 float TotalAll = 0;
                 float TotalContract = 0;
-                List<ProductDTO> allProducts = new List<ProductDTO>();
+                List<ProductArrival> allProducts = new List<ProductArrival>();
                 List<DeliveryNoteDTO> deliveryNotes = new List<DeliveryNoteDTO>();
                 foreach (DeliveryNoteDTO deliveryNote in cLBDeliveryNotes.CheckedItems)
                 {
@@ -176,12 +177,12 @@ namespace Дет.Сад.Питание.Forms
                     foreach (DeliveryNoteDTO nakl in deliveryNotes.Where(x => MainForm.DB.Invoices.Get(x.InvoiceId).ContractId == contract.Id))
                     {
                         Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + contract.ToString() + "\\" + nakl.ToString() + ".nakl", FileMode.Open);
-                        List<ProductDTO> productList = new BinaryFormatter().Deserialize(stream) as List<ProductDTO>;
+                        List<ProductArrival> productList = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
                         stream.Close();
                         float Total = 0;
                         foreach (var item in productList)
                         {
-                            Total += item.Sum;
+                            Total += item.getSum();
                             if (allProducts.Where(x => x.Id == item.Id).Count() == 0)
                             {
                                 allProducts.Add(item);
@@ -189,12 +190,12 @@ namespace Дет.Сад.Питание.Forms
                                 WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 1).Range.Text = item.Name;
                                 WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), 2).Range.Text = MainForm.DB.Units.Get(item.UnitId).Name;
                                 WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = Math.Round(item.Balance, 2).ToString();
-                                WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Sum, 2).ToString();
+                                WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = item.getSumRound().ToString();
                             }
                             else
                             {
                                 WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 1).Range.Text = Math.Round(item.Balance, 2).ToString();
-                                WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = Math.Round(item.Sum, 2).ToString();
+                                WordWorker.doc.Tables[2].Cell((allProducts.FindIndex(x => x.Id == item.Id) + 2), naklIndex * 2 + 2).Range.Text = item.getSumRound().ToString();
                             }
 
                         }
