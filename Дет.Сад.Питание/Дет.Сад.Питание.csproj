@@ -248,6 +248,7 @@
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\MenuService.cs" />
+    <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\WordService\IDocumentService.cs" />
     <Compile Include="Services\WordService\RusNumber.cs" />
     <Compile Include="Services\WordService\WordWorker.cs" />

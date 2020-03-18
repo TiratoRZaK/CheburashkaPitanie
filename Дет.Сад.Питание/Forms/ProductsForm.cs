@@ -5,20 +5,17 @@ using System.Linq;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Forms;
 using Дет.Сад.Питание.Services;
-using Дет.Сад.Питание.Services.WordService;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace Дет.Сад.Питание
 {
     public partial class ProductsForm : Form
     {
+        public ProductService service = new ProductService();
         public MainForm main;
-        public WordWorker WordWorker;
 
         public ProductsForm(MainForm main)
         {
             this.main = main;
-            WordWorker = new WordWorker(Application.StartupPath + "\\Document Templates\\Остатки продуктов.docx");
             InitializeComponent();
         }
 
@@ -93,9 +90,7 @@ namespace Дет.Сад.Питание
                 ProductDTO product = (ProductDTO)dGVProductsList.CurrentRow.Tag;
                 if (MessageBox.Show("Удалить " + product.Name + " ?", "Подтверждение удаления", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    MainForm.DB.Products.Delete(product.Id);
-                    MainForm.DB.Save();
-                    LoggingService.AddLog("Удаление продукта: " + product.ToString());
+                    service.Delete(product.Id);
                     ReloadData();
                 }
             }
@@ -107,38 +102,9 @@ namespace Дет.Сад.Питание
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                BuildDocument();
+                service.BuildDocument();
                 lLoad.Visible = false;
             }
-            WordWorker.Close();
-        }
-
-        private void BuildDocument()
-        {
-            WordWorker.Load();
-            Word.Range range = WordWorker.doc.Paragraphs[WordWorker.doc.Paragraphs.Count].Range;
-            double summ = 0;
-            int i = 2;
-            foreach (ProductDTO product in MainForm.DB.Products.GetAll())
-            {
-                WordWorker.doc.Tables[1].Rows.Add();
-                i++;
-                WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = product.Name;
-                WordWorker.doc.Tables[1].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
-                WordWorker.doc.Tables[1].Cell(i, 4).Range.Text = product.Balance.ToString();
-                WordWorker.doc.Tables[1].Cell(i, 3).Range.Text = product.GetPrice().ToString();
-                WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(product.Sum, 2).ToString();
-                summ += product.Sum;
-            }
-            WordWorker.doc.Tables[1].Rows.Add();
-            i++;
-            WordWorker.doc.Tables[1].Cell(i, 1).Range.Text = "Итого";
-            WordWorker.doc.Tables[1].Cell(i, 5).Range.Text = Math.Round(summ,2).ToString();
-            DateTime now = DateTime.Now;
-            WordWorker.Save(MainForm.DataPath + "\\Документы\\Остатки продуктов на "+ (now.ToString("g")).Replace('.','-').Replace(':', '-') + ".docx");
-            WordWorker.Close();
-            WordWorker.Open(MainForm.DataPath + "\\Документы\\Остатки продуктов на " + (now.ToString("g")).Replace('.', '-').Replace(':', '-') + ".docx");
-            LoggingService.AddLog("Распечатка остатков на " + (now.ToString("g")).Replace('.', '-').Replace(':', '-') + " в файл по пути: " + MainForm.DataPath + "\\Документы\\");
         }
     }
 }
