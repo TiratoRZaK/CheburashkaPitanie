@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Дет.Сад.Питание.Models
 {
     [Serializable]
-    public class ProductInMenu
+    public class ProductInMenu : LocalModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

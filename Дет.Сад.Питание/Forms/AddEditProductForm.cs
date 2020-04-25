@@ -175,6 +175,7 @@ namespace Дет.Сад.Питание.Forms
                 MainForm.DB.Save();
                 MessageBox.Show("Продукт успешно сохранён");
                 LoggingService.AddLog(logMessage.ToString(), actions.ToArray());
+                main.ReloadData();
                 this.Close();
             }
         }

@@ -28,12 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenusForm));
             this.pMenus = new System.Windows.Forms.Panel();
             this.pCheckDoc = new System.Windows.Forms.Panel();
@@ -102,6 +103,9 @@
             this.label20 = new System.Windows.Forms.Label();
             this.tBUchregdenie = new System.Windows.Forms.TextBox();
             this.butSaveSetting = new System.Windows.Forms.Button();
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.удалитьМенюToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.пересозадатьМенюToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pMenus.SuspendLayout();
             this.pCheckDoc.SuspendLayout();
             this.pProducts.SuspendLayout();
@@ -109,6 +113,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pDishes.SuspendLayout();
             this.pInfo.SuspendLayout();
+            this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // pMenus
@@ -200,6 +205,7 @@
             this.lBMenus.Size = new System.Drawing.Size(178, 342);
             this.lBMenus.TabIndex = 0;
             this.lBMenus.SelectedIndexChanged += new System.EventHandler(this.LBMenus_SelectedIndexChanged);
+            this.lBMenus.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lBMenus_MouseDown);
             // 
             // butBuild
             // 
@@ -356,18 +362,18 @@
             // 
             // NameProduct
             // 
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
-            this.NameProduct.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.Black;
+            this.NameProduct.DefaultCellStyle = dataGridViewCellStyle13;
             this.NameProduct.HeaderText = "Наименование";
             this.NameProduct.Name = "NameProduct";
             this.NameProduct.ReadOnly = true;
             // 
             // Balance
             // 
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
-            this.Balance.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.Black;
+            this.Balance.DefaultCellStyle = dataGridViewCellStyle14;
             this.Balance.HeaderText = "Остаток";
             this.Balance.Name = "Balance";
             this.Balance.ReadOnly = true;
@@ -375,34 +381,34 @@
             // 
             // TotalOfOne
             // 
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
-            this.TotalOfOne.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.Color.Black;
+            this.TotalOfOne.DefaultCellStyle = dataGridViewCellStyle15;
             this.TotalOfOne.HeaderText = "Итого на одного";
             this.TotalOfOne.Name = "TotalOfOne";
             // 
             // TotalOfKids
             // 
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.Black;
-            this.TotalOfKids.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle16.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle16.SelectionForeColor = System.Drawing.Color.Black;
+            this.TotalOfKids.DefaultCellStyle = dataGridViewCellStyle16;
             this.TotalOfKids.HeaderText = "Итого на всех";
             this.TotalOfKids.Name = "TotalOfKids";
             // 
             // Price
             // 
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.Black;
-            this.Price.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle17.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.Color.Black;
+            this.Price.DefaultCellStyle = dataGridViewCellStyle17;
             this.Price.HeaderText = "Цена";
             this.Price.Name = "Price";
             this.Price.ReadOnly = true;
             // 
             // Summ
             // 
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.Black;
-            this.Summ.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle18.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.Color.Black;
+            this.Summ.DefaultCellStyle = dataGridViewCellStyle18;
             this.Summ.HeaderText = "Сумма";
             this.Summ.Name = "Summ";
             this.Summ.ReadOnly = true;
@@ -942,6 +948,28 @@
             this.butSaveSetting.UseVisualStyleBackColor = false;
             this.butSaveSetting.Click += new System.EventHandler(this.ButSaveSetting_Click);
             // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.удалитьМенюToolStripMenuItem,
+            this.пересозадатьМенюToolStripMenuItem});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(181, 70);
+            // 
+            // удалитьМенюToolStripMenuItem
+            // 
+            this.удалитьМенюToolStripMenuItem.Name = "удалитьМенюToolStripMenuItem";
+            this.удалитьМенюToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.удалитьМенюToolStripMenuItem.Text = "Удалить меню";
+            this.удалитьМенюToolStripMenuItem.Click += new System.EventHandler(this.ButDel_Click);
+            // 
+            // пересозадатьМенюToolStripMenuItem
+            // 
+            this.пересозадатьМенюToolStripMenuItem.Name = "пересозадатьМенюToolStripMenuItem";
+            this.пересозадатьМенюToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.пересозадатьМенюToolStripMenuItem.Text = "Пересоздать меню";
+            this.пересозадатьМенюToolStripMenuItem.Click += new System.EventHandler(this.пересозадатьМенюToolStripMenuItem_Click);
+            // 
             // MenusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -977,6 +1005,7 @@
             this.pDishes.PerformLayout();
             this.pInfo.ResumeLayout(false);
             this.pInfo.PerformLayout();
+            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1051,5 +1080,8 @@
         private System.Windows.Forms.TextBox tBUchregdenie;
         private System.Windows.Forms.Panel pCheckDoc;
         private System.Windows.Forms.Label lCheckDoc;
+        private System.Windows.Forms.ContextMenuStrip contextMenu;
+        private System.Windows.Forms.ToolStripMenuItem удалитьМенюToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem пересозадатьМенюToolStripMenuItem;
     }
 }

@@ -6,7 +6,5 @@
         void Delete(int id);
 
         void BuildDocument(int id);
-
-        void ReplaceStrings();
     }
 }

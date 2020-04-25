@@ -123,7 +123,7 @@ namespace Дет.Сад.Питание.Services
             }
             worker.doc.Tables[1].Cell(23, 2).Range.Text = Math.Round(summ, 2).ToString();
             worker.doc.Tables[1].Cell(24, 2).Range.Text = Math.Round(summB, 2).ToString();
-            worker.FindReplace("{total}", (summ + summB).ToString());
+            worker.FindReplace("{total}", Math.Round((summ + summB), 2).ToString());
 
             worker.Save(MainForm.DataPath + "\\Документы\\Меню\\Меню на " + menuInDb.Date.ToLongDateString() + ".docx");
             worker.Close();
@@ -136,17 +136,28 @@ namespace Дет.Сад.Питание.Services
 
             Stream stream = new FileStream(path, FileMode.Open);
             Models.Menu menu = new BinaryFormatter().Deserialize(stream) as Models.Menu;
-
+            stream.Close();
             File.Delete(path);
 
             foreach (ProductInMenu product in menu.Products)
             {
+                
                 ProductDTO productInDb = MainForm.DB.Products.Get(product.Id);
-                float tempPrice = productInDb.Sum / productInDb.Balance;
-                productInDb.Balance = (float)Math.Round((productInDb.Balance + product.TotalOfKids), 2);
-                productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
-                MainForm.DB.Products.Update(productInDb);
-                MainForm.DB.Save();
+                if (productInDb.Balance != 0)
+                {
+                    float tempPrice = productInDb.Sum / productInDb.Balance;
+                    productInDb.Balance = (float)Math.Round((productInDb.Balance + product.TotalOfKids), 2);
+                    productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
+                    MainForm.DB.Products.Update(productInDb);
+                    MainForm.DB.Save();
+                }
+                else
+                {
+                    productInDb.Balance = (float)Math.Round((product.TotalOfKids), 2);
+                    productInDb.Sum = (float)Math.Round(productInDb.Balance * product.Price, 2);
+                    MainForm.DB.Products.Update(productInDb);
+                    MainForm.DB.Save();
+                }
             }
             MainForm.DB.Menus.Delete(id);
             MainForm.DB.Save();
@@ -157,7 +168,7 @@ namespace Дет.Сад.Питание.Services
             worker.Open(fileName);
         }
 
-        public void ReplaceStrings()
+        private void ReplaceStrings()
         {
             worker.FindReplace("{vrachName}", menuInDb.Vrach);
             worker.FindReplace("{kladName}", menuInDb.Klad);
@@ -167,6 +178,77 @@ namespace Дет.Сад.Питание.Services
             worker.FindReplace("{rukovoditelName}", menuInDb.Rukowoditel);
             worker.FindReplace("{date}", menuInDb.Date.ToShortDateString());
             worker.FindReplace("{kids}", (menuInDb.Kids + menuInDb.KidsB).ToString());
+        }
+
+        public bool IsAvailableDate(DateTime date)
+        {
+            return MainForm.DB.Menus.GetAll().Where(x => x.Date.Date.Equals(date.Date)).Count() == 0;
+        }
+
+        private bool checkValidateProducts(List<ProductInMenu> addedProducts)
+        {
+            foreach (ProductInMenu productInMenu in addedProducts)
+            {
+                ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
+                if (Math.Round(productInDb.Balance, 2) < productInMenu.TotalOfKids)
+                {
+                    MessageBox.Show("Меню не может быть созданно, так как вы запрашиваете больше продуктов, чем есть на складе!", "Невозможно создать меню", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool CreateMenu(DateTime dateCreate, int kids, int kidsB, string kladName, string povarName, string rukowoditelName, string vrachName, string otdelenieName, string uchregdenieName, int productBId, List<ProductInMenu> addedProducts, CheckedListBox.CheckedItemCollection listZ, CheckedListBox.CheckedItemCollection listO, CheckedListBox.CheckedItemCollection listP  )
+        {
+            if (checkValidateProducts(addedProducts))
+            {
+                MenuDTO menu = new MenuDTO
+                {
+                    Date = dateCreate,
+                    Kids = kids,
+                    KidsB = kidsB,
+                    Klad = kladName,
+                    Povar = povarName,
+                    Rukowoditel = rukowoditelName,
+                    Vrach = vrachName,
+                    Otdelenie = otdelenieName,
+                    Uchregdenie = uchregdenieName,
+                    ProductBId = productBId,
+                    FileName = "\\Меню на " + dateCreate.ToLongDateString() + ".menu"
+                };
+                MainForm.DB.Menus.Create(menu);
+                foreach (ProductInMenu productInMenu in addedProducts)
+                {
+                    ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
+                    float tempPrice = productInDb.GetPrice();
+                    productInDb.Balance = (float)Math.Round(productInDb.Balance - (float)productInMenu.TotalOfKids, 2);
+                    productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
+                    MainForm.DB.Products.Update(productInDb);
+                }
+                MainForm.DB.Save();
+                Models.Menu menuInFile = new Models.Menu();
+                menuInFile.DateCreate = dateCreate;
+                menuInFile.Products = addedProducts;
+                foreach (object item in listZ)
+                {
+                    menuInFile.DishesZ.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                }
+                foreach (object item in listO)
+                {
+                    menuInFile.DishesO.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                }
+                foreach (object item in listP)
+                {
+                    menuInFile.DishesP.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                }
+                LocalModel.Save(menuInFile);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

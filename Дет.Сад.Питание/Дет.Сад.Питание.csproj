@@ -230,6 +230,7 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\ActionDescription.cs" />
+    <Compile Include="Models\LocalModel.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\Pattern.cs" />

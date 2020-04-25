@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Дет.Сад.Питание.Models
 {
     [Serializable]
-    public class ProductArrival
+    public class ProductArrival : LocalModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
