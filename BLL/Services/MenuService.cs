@@ -1,26 +1,38 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using BLL.Services.WordService;
+using DAL.DTO;
+using DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services.WordService;
 
-namespace Дет.Сад.Питание.Services
+namespace BLL.Services
 {
-    public class MenuService : IDocumentService
+    public class MenuService : IDocumentService<MenuDTO>
     {
-        WordWorker worker = new WordWorker(Application.StartupPath + "\\Document Templates\\Меню.docx");
-        MenuDTO menuInDb;
-        public void BuildDocument(int id)
-        {
-            menuInDb = MainForm.DB.Menus.Get(id);
+        MenuDTO menuInDB;
+        private WordWorker worker;
+        private IUnitOfWork DB;
+        private string startupPath;
+        private string dataPath;
 
-            Stream stream = new FileStream(Application.StartupPath + "\\Local Data"+menuInDb.FileName, FileMode.Open);
-            Models.Menu menuInFile = new BinaryFormatter().Deserialize(stream) as Models.Menu;
-            
+        public MenuService(IUnitOfWork DB, string startupPath, string dataPath)
+        {
+            this.DB = DB;
+            this.startupPath = startupPath;
+            this.dataPath = dataPath;
+            worker = new WordWorker(startupPath + "\\Document Templates\\Меню.docx");
+        }
+
+        public void BuildDocument(MenuDTO menu)
+        {
+            menuInDB = menu;
+
+            Stream stream = new FileStream(startupPath + "\\Local Data" + menuInDB.FileName, FileMode.Open);
+            Menu menuInFile = new BinaryFormatter().Deserialize(stream) as Menu;
+
             worker.Load();
             ReplaceStrings();
             Microsoft.Office.Interop.Word.Range range = worker.doc.Paragraphs[worker.doc.Paragraphs.Count].Range;
@@ -30,12 +42,12 @@ namespace Дет.Сад.Питание.Services
             foreach (DishDTO dishZ in menuInFile.DishesZ)
             {
                 worker.doc.Tables[1].Cell(i, 2).Range.Text = dishZ.Name;
-                foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishZ.Id))
+                foreach (ProductDishDTO productDish in DB.ProductDishes.GetAll().Where(x => x.DishId == dishZ.Id))
                 {
                     if (!productsId.Keys.Contains(productDish.ProductId))
                     {
                         productsId.Add(productDish.ProductId, y);
-                        worker.doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
+                        worker.doc.Tables[1].Cell(2, y - 1).Range.Text = DB.Products.Get(productDish.ProductId).PsevdoName;
                         worker.doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
                         y++;
                     }
@@ -52,12 +64,12 @@ namespace Дет.Сад.Питание.Services
             foreach (DishDTO dishO in menuInFile.DishesO)
             {
                 worker.doc.Tables[1].Cell(i, 2).Range.Text = dishO.Name;
-                foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishO.Id))
+                foreach (ProductDishDTO productDish in DB.ProductDishes.GetAll().Where(x => x.DishId == dishO.Id))
                 {
                     if (!productsId.Keys.Contains(productDish.ProductId))
                     {
                         productsId.Add(productDish.ProductId, y);
-                        worker.doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
+                        worker.doc.Tables[1].Cell(2, y - 1).Range.Text = DB.Products.Get(productDish.ProductId).PsevdoName;
                         worker.doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
                         y++;
                     }
@@ -74,12 +86,12 @@ namespace Дет.Сад.Питание.Services
             foreach (DishDTO dishP in menuInFile.DishesP)
             {
                 worker.doc.Tables[1].Cell(i, 2).Range.Text = dishP.Name;
-                foreach (ProductDishDTO productDish in MainForm.DB.ProductDishes.GetAll().Where(x => x.DishId == dishP.Id))
+                foreach (ProductDishDTO productDish in DB.ProductDishes.GetAll().Where(x => x.DishId == dishP.Id))
                 {
                     if (!productsId.Keys.Contains(productDish.ProductId))
                     {
                         productsId.Add(productDish.ProductId, y);
-                        worker.doc.Tables[1].Cell(2, y - 1).Range.Text = MainForm.DB.Products.Get(productDish.ProductId).PsevdoName;
+                        worker.doc.Tables[1].Cell(2, y - 1).Range.Text = DB.Products.Get(productDish.ProductId).PsevdoName;
                         worker.doc.Tables[1].Cell(i, y).Range.Text = productDish.Norm.ToString();
                         y++;
                     }
@@ -99,7 +111,7 @@ namespace Дет.Сад.Питание.Services
                 worker.doc.Tables[1].Cell(20, s - 1).Range.Text = Math.Round(product.SumNorms, 2).ToString();
                 worker.doc.Tables[1].Cell(21, s - 1).Range.Text = Math.Round(product.TotalOfKids, 2).ToString();
                 worker.doc.Tables[1].Cell(22, s - 1).Range.Text = Math.Round(product.Price, 2).ToString();
-                if (product.Id != menuInDb.ProductBId)
+                if (product.Id != menuInDB.ProductBId)
                 {
                     worker.doc.Tables[1].Cell(23, s).Range.Text = Math.Round(product.TotalOfKids * product.Price, 2).ToString();
                 }
@@ -112,7 +124,7 @@ namespace Дет.Сад.Питание.Services
             double summB = 0.0d;
             foreach (ProductInMenu prod in menuInFile.Products)
             {
-                if(prod.Id != menuInDb.ProductBId)
+                if (prod.Id != menuInDB.ProductBId)
                 {
                     summ += prod.Price * prod.TotalOfKids;
                 }
@@ -125,81 +137,79 @@ namespace Дет.Сад.Питание.Services
             worker.doc.Tables[1].Cell(24, 2).Range.Text = Math.Round(summB, 2).ToString();
             worker.FindReplace("{total}", Math.Round((summ + summB), 2).ToString());
 
-            worker.Save(MainForm.DataPath + "\\Документы\\Меню\\Меню на " + menuInDb.Date.ToLongDateString() + ".docx");
+            worker.Save(dataPath + "\\Документы\\Меню\\Меню на " + menuInDB.Date.ToLongDateString() + ".docx");
             worker.Close();
         }
 
-        public void Delete(int id)
+        public void Delete(MenuDTO menuInDB)
         {
-            var menuInDb = MainForm.DB.Menus.Get(id);
-            string path = Application.StartupPath + "\\Local Data" + menuInDb.FileName;
+            string path = startupPath + "\\Local Data" + menuInDB.FileName;
 
             Stream stream = new FileStream(path, FileMode.Open);
-            Models.Menu menu = new BinaryFormatter().Deserialize(stream) as Models.Menu;
+            Menu menu = new BinaryFormatter().Deserialize(stream) as Menu;
             stream.Close();
             File.Delete(path);
 
             foreach (ProductInMenu product in menu.Products)
             {
-                
-                ProductDTO productInDb = MainForm.DB.Products.Get(product.Id);
-                if (productInDb.Balance != 0)
+
+                ProductDTO productInDB = DB.Products.Get(product.Id);
+                if (productInDB.Balance != 0)
                 {
-                    float tempPrice = productInDb.Sum / productInDb.Balance;
-                    productInDb.Balance = (float)Math.Round((productInDb.Balance + product.TotalOfKids), 2);
-                    productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
-                    MainForm.DB.Products.Update(productInDb);
-                    MainForm.DB.Save();
+                    float tempPrice = productInDB.Sum / productInDB.Balance;
+                    productInDB.Balance = (float)Math.Round((productInDB.Balance + product.TotalOfKids), 2);
+                    productInDB.Sum = (float)Math.Round(productInDB.Balance * tempPrice, 2);
+                    DB.Products.Update(productInDB);
+                    DB.Save();
                 }
                 else
                 {
-                    productInDb.Balance = (float)Math.Round((product.TotalOfKids), 2);
-                    productInDb.Sum = (float)Math.Round(productInDb.Balance * product.Price, 2);
-                    MainForm.DB.Products.Update(productInDb);
-                    MainForm.DB.Save();
+                    productInDB.Balance = (float)Math.Round((product.TotalOfKids), 2);
+                    productInDB.Sum = (float)Math.Round(productInDB.Balance * product.Price, 2);
+                    DB.Products.Update(productInDB);
+                    DB.Save();
                 }
             }
-            MainForm.DB.Menus.Delete(id);
-            MainForm.DB.Save();
+            DB.Menus.Delete(menuInDB.Id);
+            DB.Save();
         }
 
-        public void Open(string fileName)
+        public bool Open(string fileName)
         {
-            worker.Open(fileName);
+            return worker.Open(fileName);
         }
 
         private void ReplaceStrings()
         {
-            worker.FindReplace("{vrachName}", menuInDb.Vrach);
-            worker.FindReplace("{kladName}", menuInDb.Klad);
-            worker.FindReplace("{otdelenie}", menuInDb.Otdelenie);
-            worker.FindReplace("{uchregdenie}", menuInDb.Uchregdenie);
-            worker.FindReplace("{povarName}", menuInDb.Povar);
-            worker.FindReplace("{rukovoditelName}", menuInDb.Rukowoditel);
-            worker.FindReplace("{date}", menuInDb.Date.ToShortDateString());
-            worker.FindReplace("{kids}", (menuInDb.Kids + menuInDb.KidsB).ToString());
+            worker.FindReplace("{vrachName}", menuInDB.Vrach);
+            worker.FindReplace("{kladName}", menuInDB.Klad);
+            worker.FindReplace("{otdelenie}", menuInDB.Otdelenie);
+            worker.FindReplace("{uchregdenie}", menuInDB.Uchregdenie);
+            worker.FindReplace("{povarName}", menuInDB.Povar);
+            worker.FindReplace("{rukovoditelName}", menuInDB.Rukowoditel);
+            worker.FindReplace("{date}", menuInDB.Date.ToShortDateString());
+            worker.FindReplace("{kids}", (menuInDB.Kids + menuInDB.KidsB).ToString());
         }
 
         public bool IsAvailableDate(DateTime date)
         {
-            return MainForm.DB.Menus.GetAll().Where(x => x.Date.Date.Equals(date.Date)).Count() == 0;
+            return DB.Menus.GetAll().Where(x => x.Date.Date.Equals(date.Date)).Count() == 0;
         }
 
         private bool checkValidateProducts(List<ProductInMenu> addedProducts)
         {
             foreach (ProductInMenu productInMenu in addedProducts)
             {
-                ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
-                if (Math.Round(productInDb.Balance, 2) < productInMenu.TotalOfKids)
+                ProductDTO productInDB = DB.Products.Get(productInMenu.Id);
+                if (Math.Round(productInDB.Balance, 2) < productInMenu.TotalOfKids)
                 {
-                    MessageBox.Show("Меню не может быть созданно, так как вы запрашиваете больше продуктов, чем есть на складе!", "Невозможно создать меню", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
             }
             return true;
         }
 
-        public bool CreateMenu(DateTime dateCreate, int kids, int kidsB, string kladName, string povarName, string rukowoditelName, string vrachName, string otdelenieName, string uchregdenieName, int productBId, List<ProductInMenu> addedProducts, CheckedListBox.CheckedItemCollection listZ, CheckedListBox.CheckedItemCollection listO, CheckedListBox.CheckedItemCollection listP  )
+        public bool CreateMenu(DateTime dateCreate, int kids, int kidsB, string kladName, string povarName, string rukowoditelName, string vrachName, string otdelenieName, string uchregdenieName, int productBId, List<ProductInMenu> addedProducts, List<DishDTO> listZ, List<DishDTO> listO, List<DishDTO> listP)
         {
             if (checkValidateProducts(addedProducts))
             {
@@ -217,32 +227,35 @@ namespace Дет.Сад.Питание.Services
                     ProductBId = productBId,
                     FileName = "\\Меню на " + dateCreate.ToLongDateString() + ".menu"
                 };
-                MainForm.DB.Menus.Create(menu);
+                DB.Menus.Create(menu);
                 foreach (ProductInMenu productInMenu in addedProducts)
                 {
-                    ProductDTO productInDb = MainForm.DB.Products.Get(productInMenu.Id);
-                    float tempPrice = productInDb.GetPrice();
-                    productInDb.Balance = (float)Math.Round(productInDb.Balance - (float)productInMenu.TotalOfKids, 2);
-                    productInDb.Sum = (float)Math.Round(productInDb.Balance * tempPrice, 2);
-                    MainForm.DB.Products.Update(productInDb);
+                    ProductDTO productInDB = DB.Products.Get(productInMenu.Id);
+                    float tempPrice = productInDB.GetPrice();
+                    productInDB.Balance = (float)Math.Round(productInDB.Balance - (float)productInMenu.TotalOfKids, 2);
+                    productInDB.Sum = (float)Math.Round(productInDB.Balance * tempPrice, 2);
+                    DB.Products.Update(productInDB);
                 }
-                MainForm.DB.Save();
-                Models.Menu menuInFile = new Models.Menu();
+                DB.Save();
+                Menu menuInFile = new Menu();
                 menuInFile.DateCreate = dateCreate;
                 menuInFile.Products = addedProducts;
                 foreach (object item in listZ)
                 {
-                    menuInFile.DishesZ.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    menuInFile.DishesZ.Add(DB.Dishes.Get((item as DishDTO).Id));
                 }
                 foreach (object item in listO)
                 {
-                    menuInFile.DishesO.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    menuInFile.DishesO.Add(DB.Dishes.Get((item as DishDTO).Id));
                 }
                 foreach (object item in listP)
                 {
-                    menuInFile.DishesP.Add(MainForm.DB.Dishes.Get((item as DishDTO).Id));
+                    menuInFile.DishesP.Add(DB.Dishes.Get((item as DishDTO).Id));
                 }
-                LocalModel.Save(menuInFile);
+                BinaryFormatter serializer = new BinaryFormatter();
+                Stream stream = new FileStream(startupPath + "\\Local Data" + menu.FileName, FileMode.Create);
+                serializer.Serialize(stream, menuInFile);
+                stream.Close();
                 return true;
             }
             else

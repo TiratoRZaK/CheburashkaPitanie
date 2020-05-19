@@ -44,17 +44,5 @@ namespace Дет.Сад.Питание.Properties {
                 this["DataPath"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("F:\\Архив\\source\\repos\\Дет.Сад.Питание\\Дет.Сад.Питание\\bin\\Debug\\Local Data")]
-        public string LogsPath {
-            get {
-                return ((string)(this["LogsPath"]));
-            }
-            set {
-                this["LogsPath"] = value;
-            }
-        }
     }
 }

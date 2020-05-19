@@ -1,4 +1,6 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using BLL.Services;
+using DAL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,20 +9,18 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class MenusForm : Form
     {
-        MenuService service = new MenuService();
+        MenuService service = new MenuService(MainForm.DB, Application.StartupPath, MainForm.DataPath);
 
         public MenuDTO menu = null;
         public List<ProductInMenu> addedProducts;
         public MainForm main;
         public Pattern pattern;
-        public Models.Menu menuInFile;
+        public BLL.Models.Menu menuInFile;
 
         public MenusForm(MainForm main)
         {
@@ -346,7 +346,22 @@ namespace Дет.Сад.Питание.Forms
             }
             else
             {
-                if (service.CreateMenu(dTPDate.Value, int.Parse(tBKids.Text), int.Parse(tBKidsB.Text), tBKlad.Text, tBPovar.Text, tBRukov.Text, tBVrach.Text, tBOtdelenie.Text, tBUchregdenie.Text, (cBProductB.SelectedItem as ProductDTO).Id, addedProducts, cLBZ.CheckedItems, cLBO.CheckedItems, cLBP.CheckedItems))
+                List<DishDTO> Z = new List<DishDTO>();
+                foreach (DishDTO dish in cLBZ.CheckedItems)
+                {
+                    Z.Add(dish);
+                }
+                List<DishDTO> O = new List<DishDTO>();
+                foreach (DishDTO dish in cLBO.CheckedItems)
+                {
+                    O.Add(dish);
+                }
+                List<DishDTO> P = new List<DishDTO>();
+                foreach (DishDTO dish in cLBP.CheckedItems)
+                {
+                    P.Add(dish);
+                }
+                if (service.CreateMenu(dTPDate.Value, int.Parse(tBKids.Text), int.Parse(tBKidsB.Text), tBKlad.Text, tBPovar.Text, tBRukov.Text, tBVrach.Text, tBOtdelenie.Text, tBUchregdenie.Text, (cBProductB.SelectedItem as ProductDTO).Id, addedProducts, Z, O, P))
                 {
                     MessageBox.Show("Меню успешно сохранено и продукты списаны со склада");
                     ButAddMenu_Click(this, new EventArgs());
@@ -354,7 +369,7 @@ namespace Дет.Сад.Питание.Forms
                 }
                 else
                 {
-                    MessageBox.Show("Неудалось создать меню. Данные не корректны.", "Ошибка при создании меню", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Меню не может быть созданно, так как вы запрашиваете больше продуктов, чем есть на складе!", "Невозможно создать меню", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -432,7 +447,7 @@ namespace Дет.Сад.Питание.Forms
                     }
                     dGVProducts.Rows.Clear();
                     Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\Меню на " + dTPDate.Value.ToLongDateString() + ".menu", FileMode.Open);
-                    menuInFile = new BinaryFormatter().Deserialize(stream) as Models.Menu;
+                    menuInFile = new BinaryFormatter().Deserialize(stream) as BLL.Models.Menu;
                     addedProducts = menuInFile.Products;
                     cLBZ.Items.Clear();
                     foreach (var item in menuInFile.DishesZ)
@@ -473,7 +488,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.BuildDocument((lBMenus.SelectedItem as MenuDTO).Id);
+                service.BuildDocument((lBMenus.SelectedItem as MenuDTO));
                 lLoad.Visible = false;
             }
         }
@@ -484,7 +499,7 @@ namespace Дет.Сад.Питание.Forms
             {
                 if (MessageBox.Show("Списанные в данном меню продукты будут возвращеы на склад! Вы уверены что хотите удалить меню?", "Внимание! Удаление меню", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    service.Delete((lBMenus.SelectedItem as MenuDTO).Id);
+                    service.Delete((lBMenus.SelectedItem as MenuDTO));
                     ReloadedMenus();
                 }
             }
@@ -505,7 +520,10 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.Open(fileName);
+                if (!service.Open(fileName))
+                {
+                    MessageBox.Show("Документ ещё не сформирован!");
+                }
             }
             lLoad.Visible = false;
         }
@@ -597,7 +615,7 @@ namespace Дет.Сад.Питание.Forms
             }
 
             Stream stream = new FileStream(Application.StartupPath + "//Local Data//" + menu.FileName, FileMode.Open);
-            menuInFile = new BinaryFormatter().Deserialize(stream) as Models.Menu;
+            menuInFile = new BinaryFormatter().Deserialize(stream) as BLL.Models.Menu;
             addedProducts = menuInFile.Products;
             stream.Close();
             cLBZ.Items.Clear();
@@ -632,7 +650,7 @@ namespace Дет.Сад.Питание.Forms
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
             }
-            service.Delete(menu.Id);
+            service.Delete(menu);
             ReloadedMenus();
             butSave.Enabled = true;
         }

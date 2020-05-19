@@ -1,4 +1,7 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using BLL.Services;
+using BLL.Services.WordService;
+using DAL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,15 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services;
-using Дет.Сад.Питание.Services.WordService;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class DeliveryNotesForm : Form
     {
-        IDocumentService service = new DeliveryNotesService();
+        IDocumentService<DeliveryNoteDTO> service = new DeliveryNotesService(MainForm.DB, Application.StartupPath, MainForm.DataPath);
 
         public DeliveryNoteDTO deliveryNote = null;
         public List<ProductArrival> addedProducts;
@@ -51,7 +51,7 @@ namespace Дет.Сад.Питание.Forms
                     item.Name,
                     item.Price.ToString(),
                     item.Balance.ToString(),
-                    item.getSumRound().ToString(),
+                    item.GetSumRound().ToString(),
                     "Удалить"
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
@@ -139,7 +139,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                     AddProduct(item);
                 }
                 deliveryNote = new DeliveryNoteDTO
@@ -216,7 +216,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -229,7 +229,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -239,8 +239,11 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBDeliveryNotes.SelectedItem != null)
             {
-                service.Delete((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
-
+                DeliveryNoteDTO deliveryNote = lBDeliveryNotes.SelectedItem as DeliveryNoteDTO;
+                if (MessageBox.Show("Вы уверены что хотите удалить накладную №" + deliveryNote.Number.ToString() + "?", "Удаление накладной", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    service.Delete(deliveryNote);
+                }
                 ReloadedDeliveryNotes();
             }
         }
@@ -259,7 +262,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.BuildDocument((lBDeliveryNotes.SelectedItem as DeliveryNoteDTO).Id);
+                service.BuildDocument(lBDeliveryNotes.SelectedItem as DeliveryNoteDTO);
                 lLoad.Visible = false;
             }
         }
@@ -270,7 +273,10 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.Open(fileName);
+                if (!service.Open(fileName))
+                {
+                    MessageBox.Show("Документ ещё не сформирован!");
+                }
             }
             lLoad.Visible = false;
         }

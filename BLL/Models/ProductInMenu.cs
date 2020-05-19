@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Дет.Сад.Питание.Models
+namespace BLL.Models
 {
     [Serializable]
-    public class ProductInMenu : LocalModel
+    public class ProductInMenu
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -26,7 +23,7 @@ namespace Дет.Сад.Питание.Models
                 this.Norms = new Dictionary<int, float>();
                 Norms.Add(dishId, Norm);
                 this.SumNorms = SetSumm();
-                this.TotalOfKids = Math.Round((Kids+KidsB) * SumNorms, 2);
+                this.TotalOfKids = Math.Round((Kids + KidsB) * SumNorms, 2);
             }
             else
             {
@@ -34,7 +31,7 @@ namespace Дет.Сад.Питание.Models
                 this.Name = Name;
                 this.Price = Price;
                 this.Norms = new Dictionary<int, float>();
-                this.SumNorms = Math.Round((((14 * KidsB) / Price)/KidsB),3);
+                this.SumNorms = Math.Round((((14 * KidsB) / Price) / KidsB), 3);
                 this.TotalOfKids = Math.Round(KidsB * SumNorms, 2);
             }
         }
@@ -57,7 +54,7 @@ namespace Дет.Сад.Питание.Models
             {
                 norms = norms + norm;
             }
-            return Math.Round( norms , 3 );
+            return Math.Round(norms, 3);
         }
     }
 }

@@ -73,7 +73,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.cBCustomer = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.cBMount = new System.Windows.Forms.ComboBox();
+            this.cBMonth = new System.Windows.Forms.ComboBox();
             this.cBYear = new System.Windows.Forms.ComboBox();
             this.butCheckClearD = new System.Windows.Forms.Button();
             this.butCheckAllD = new System.Windows.Forms.Button();
@@ -498,12 +498,12 @@
             // 
             // cBMount
             // 
-            this.cBMount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cBMount.FormattingEnabled = true;
-            this.cBMount.Location = new System.Drawing.Point(806, 516);
-            this.cBMount.Name = "cBMount";
-            this.cBMount.Size = new System.Drawing.Size(97, 21);
-            this.cBMount.TabIndex = 54;
+            this.cBMonth.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cBMonth.FormattingEnabled = true;
+            this.cBMonth.Location = new System.Drawing.Point(806, 516);
+            this.cBMonth.Name = "cBMount";
+            this.cBMonth.Size = new System.Drawing.Size(97, 21);
+            this.cBMonth.TabIndex = 54;
             // 
             // cBYear
             // 
@@ -573,7 +573,7 @@
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(980, 612);
             this.Controls.Add(this.cBYear);
-            this.Controls.Add(this.cBMount);
+            this.Controls.Add(this.cBMonth);
             this.Controls.Add(this.butDirectory);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.cBCustomer);
@@ -636,7 +636,7 @@
         private System.Windows.Forms.ComboBox cBCustomer;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox cBMount;
+        private System.Windows.Forms.ComboBox cBMonth;
         private System.Windows.Forms.ComboBox cBYear;
         private System.Windows.Forms.Label lLoad;
         private System.Windows.Forms.Button butCheckClearC;

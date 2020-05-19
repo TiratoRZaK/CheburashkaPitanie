@@ -1,4 +1,4 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {

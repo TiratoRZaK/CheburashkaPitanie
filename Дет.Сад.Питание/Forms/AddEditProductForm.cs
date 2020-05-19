@@ -1,27 +1,22 @@
 ﻿using DAL.DTO;
+using NLog;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class AddEditProductForm : Form
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private ProductDTO _Product = null;
         private ProductsForm main;
-        private List<ActionDescription> actions = new List<ActionDescription>();
-        private StringBuilder logMessage;
 
         public AddEditProductForm(ProductsForm main)
         {
             this.main = main;
             InitializeComponent();
             InitializeComdoBoxes();
-            logMessage = new StringBuilder("Добавление нового продукта: ");
         }
         public AddEditProductForm(ProductDTO product, ProductsForm main)
         {
@@ -33,7 +28,6 @@ namespace Дет.Сад.Питание.Forms
             butSave.Text = "Обновить продукт";
             this.Text = "Обновление продукта " + product.Name;
             butDel.Visible = true;
-            logMessage = new StringBuilder("Изменение продукта: ");
         }
 
         void InitializeTextBoxes()
@@ -79,7 +73,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButSave_Click(object sender, EventArgs e)
         {
-            if(tBName.Text == "")
+            if (tBName.Text == "")
             {
                 ShowError("Не все обязательные поля заполнены!");
             }
@@ -125,8 +119,19 @@ namespace Дет.Сад.Питание.Forms
                     product.Unit = unit;
                     product.UnitId = unit.Id;
                     MainForm.DB.Products.Create(product);
-                    actions.Add(new ActionDescription("Характеристики продукта: " + product.Name, "Псевдоним: " + product.PsevdoName, "Ед. изм.: "+product.Unit.Name, "Тип: "+product.Type.Name, "Сумма: " + product.Sum.ToString(), "Количество: " + product.Balance.ToString(), "Норма = " + product.Norm.ToString(), "Углеводы: " + product.Carbohydrate.ToString(), "Жиры: " + product.Fat.ToString(), "Белки: " + product.Protein.ToString(), "Витамин С: " + product.Vitamine_C.ToString()));
-                    logMessage.Append(product.Name);
+                    logger.Debug("Создание нового продукта: " + product + "c id = " + product.Id);
+                    logger.Trace("Наименование: " + product.Name);
+                    logger.Trace("Псевдоним: " + product.PsevdoName);
+                    logger.Trace("Норма: " + product.Norm);
+                    logger.Trace("Сумма: " + product.Sum);
+                    logger.Trace("Количество: " + product.Balance);
+                    logger.Trace("Углеводы: " + product.Carbohydrate);
+                    logger.Trace("Жиры: " + product.Fat);
+                    logger.Trace("Белки: " + product.Protein);
+                    logger.Trace("Витамин Ц: " + product.Vitamine_C);
+
+                    logger.Trace("Тип: " + product.Type.Name);
+                    logger.Trace("Ед. изм.: " + product.Type.Name);
                 }
                 else
                 {
@@ -169,12 +174,22 @@ namespace Дет.Сад.Питание.Forms
                     product.UnitId = unit.Id;
 
                     MainForm.DB.Products.Update(product);
-                    actions.Add(new ActionDescription("Характеристики продукта: " + product.Name, "Псевдоним: " + product.PsevdoName, "Ед. изм.: " + product.Unit.Name, "Тип: " + product.Type.Name, "Cумма: " + product.Sum.ToString(), "Количество: " + product.Balance.ToString(), "Норма = " + product.Norm.ToString(), "Углеводы: " + product.Carbohydrate.ToString(), "Жиры: " + product.Fat.ToString(), "Белки: " + product.Protein.ToString(), "Витамин С: " + product.Vitamine_C.ToString()));
-                    logMessage.Append(product.Name);
+                    logger.Debug("Обновление продукта: " + product + "c id = " + product.Id);
+                    logger.Trace("Наименование: " + product.Name);
+                    logger.Trace("Псевдоним: " + product.PsevdoName);
+                    logger.Trace("Норма: " + product.Norm);
+                    logger.Trace("Сумма: " + product.Sum);
+                    logger.Trace("Количество: " + product.Balance);
+                    logger.Trace("Углеводы: " + product.Carbohydrate);
+                    logger.Trace("Жиры: " + product.Fat);
+                    logger.Trace("Белки: " + product.Protein);
+                    logger.Trace("Витамин Ц: " + product.Vitamine_C);
+
+                    logger.Trace("Тип: " + product.Type.Name);
+                    logger.Trace("Ед. изм.: " + product.Type.Name);
                 }
                 MainForm.DB.Save();
                 MessageBox.Show("Продукт успешно сохранён");
-                LoggingService.AddLog(logMessage.ToString(), actions.ToArray());
                 main.ReloadData();
                 this.Close();
             }
@@ -182,16 +197,16 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButDel_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Вы уверены, что хотите удалить продукт "+_Product.Name+" ?","Удаление продукта",MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("Вы уверены, что хотите удалить продукт " + _Product.Name + " ?", "Удаление продукта", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
                 MainForm.DB.Products.Delete(_Product.Id);
                 MainForm.DB.Save();
+                logger.Debug("Удаление продукта: " + _Product + " с id = " + _Product.Id);
                 MessageBox.Show("Продукт успешно удалён");
-                LoggingService.AddLog("Удаление продукта: "+_Product.Name);
                 this.Close();
                 main.ReloadData();
-            }         
+            }
         }
 
         private void TBNorm_KeyPress(object sender, KeyPressEventArgs e)

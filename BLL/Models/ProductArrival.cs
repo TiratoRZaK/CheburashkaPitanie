@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Дет.Сад.Питание.Models
+namespace BLL.Models
 {
     [Serializable]
-    public class ProductArrival : LocalModel
+    public class ProductArrival
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -13,12 +13,12 @@ namespace Дет.Сад.Питание.Models
         public int UnitId { get; set; }
 
 
-        public float getSum()
+        public float GetSum()
         {
             return Price * Balance;
         }
 
-        public float getSumRound()
+        public float GetSumRound()
         {
             return (float)Math.Round(Price * Balance, 2);
         }

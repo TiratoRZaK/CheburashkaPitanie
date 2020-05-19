@@ -2,10 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
 using Word = Microsoft.Office.Interop.Word;
 
-namespace Дет.Сад.Питание.Services.WordService
+namespace BLL.Services.WordService
 {
     public class WordWorker
     {
@@ -28,7 +27,7 @@ namespace Дет.Сад.Питание.Services.WordService
             doc = null;
         }
 
-        public void Open(string path)
+        public bool Open(string path)
         {
             foreach (Process proc in Process.GetProcessesByName("WINWORD"))
             {
@@ -43,8 +42,9 @@ namespace Дет.Сад.Питание.Services.WordService
             catch (Exception)
             {
                 app.Quit();
-                MessageBox.Show("Документ ещё не сформирован!");
+                return false;
             }
+            return true;
         }
 
         public void Save(string path)

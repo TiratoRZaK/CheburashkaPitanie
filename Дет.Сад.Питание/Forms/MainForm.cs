@@ -1,54 +1,61 @@
 ﻿using DAL.Interfaces;
 using DAL.Repositories;
+using NLog;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Forms;
-using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание
 {
     public partial class MainForm : Form
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public static IUnitOfWork DB;
         public static String DataPath = Properties.Settings.Default.DataPath;
-        public static String LogsPath = Properties.Settings.Default.LogsPath;
         public MainForm()
         {
-            DB = EFUnitOfWork.GetInstance();
+            if ((DB = EFUnitOfWork.GetInstance()) == null)
+            {
+                MessageBox.Show("Критическая ошибка!", "Невозможно подключиться к базе данных! Приложение завершит свою работу.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logger.Fatal("Невозможно подключиться к базе данных.");
+                Application.Exit();
+            }
             InitializeComponent();
-            LoggingService.StartLogging();
         }
 
-        private void checkValidDirectory()
+        private void CheckValidDirectory()
         {
             if (!Directory.Exists(DataPath))
             {
+                logger.Debug("Отсутствует путь к документам.");
                 DialogResult result = MessageBox.Show("Путь к созданым ранее документам недоступен! Указать новый путь или использовать путь по умолчанию?", "Использовать новый путь?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
-                    fBDialogPath = new FolderBrowserDialog();
-                    fBDialogPath.Description = "Выберите папку для загрузки и сохранения документов";
+                    fBDialogPath = new FolderBrowserDialog
+                    {
+                        Description = "Выберите папку для загрузки и сохранения документов"
+                    };
                     fBDialogPath.ShowDialog();
                     if (!Directory.Exists(fBDialogPath.SelectedPath))
                     {
-                        checkValidDirectory();
+                        CheckValidDirectory();
                     }
                     else
                     {
                         DataPath = fBDialogPath.SelectedPath;
+                        logger.Debug("Выбран путь к документам: " + DataPath);
                     }
                 }
                 else
                 {
                     DataPath = Application.StartupPath;
+                    logger.Debug("Используется путь по умолчанию: " + DataPath);
                 }
 
             }
             this.WindowState = FormWindowState.Normal;
             this.Focus();
-            LoggingService.AddLog("Выбран путь: "+ DataPath);
         }
 
         private void ButProducts_Click(object sender, EventArgs e)
@@ -56,7 +63,6 @@ namespace Дет.Сад.Питание
             ProductsForm productsForm = new ProductsForm(this);
             productsForm.Show();
             this.WindowState = FormWindowState.Minimized;
-
         }
 
         private void ButDishes_Click(object sender, EventArgs e)
@@ -124,21 +130,16 @@ namespace Дет.Сад.Питание
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.DataPath = MainForm.DataPath;
-            Properties.Settings.Default.LogsPath = MainForm.LogsPath;
+            Properties.Settings.Default.DataPath = DataPath;
             Properties.Settings.Default.Save();
-            LoggingService.StopLogging();
+            logger.Debug("Сохранён путь к документам: " + DataPath);
+            logger.Debug("Программа завершена.");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            checkValidDirectory();
-            if (!Directory.Exists(Properties.Settings.Default.LogsPath))
-            {
-                Properties.Settings.Default.LogsPath = Application.StartupPath + "\\Local Data\\";
-                LogsPath = Application.StartupPath + "\\Local Data\\";
-                Properties.Settings.Default.Save();
-            }
+            logger.Debug("Старт программы.");
+            CheckValidDirectory();
         }
     }
 }

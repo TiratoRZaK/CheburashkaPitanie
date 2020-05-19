@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Дет.Сад.Питание.Services.WordService
+namespace BLL.Services.WordService
 {
     public class RusNumber
     {

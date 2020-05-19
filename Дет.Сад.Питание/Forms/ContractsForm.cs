@@ -1,4 +1,7 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using BLL.Services;
+using BLL.Services.WordService;
+using DAL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,15 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services;
-using Дет.Сад.Питание.Services.WordService;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class ContractsForm : Form
     {
-        IDocumentService service = new ContractsService();
+        IDocumentService<ContractDTO> service = new ContractsService(MainForm.DB, Application.StartupPath, MainForm.DataPath);
 
         public ContractDTO contract = null;
         public List<ProductArrival> addedProducts;
@@ -61,7 +61,7 @@ namespace Дет.Сад.Питание.Forms
                     item.Name,
                     item.Price.ToString(),
                     item.Balance.ToString(),
-                    Math.Round(item.getSum(),2).ToString(),
+                    Math.Round(item.GetSum(),2).ToString(),
                     "Удалить"
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
@@ -158,7 +158,7 @@ namespace Дет.Сад.Питание.Forms
                     float Total = 0;
                     foreach (var item in addedProducts)
                     {
-                        Total += item.getSumRound();
+                        Total += item.GetSumRound();
                     }
                     contract = new ContractDTO
                     {
@@ -227,7 +227,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -240,7 +240,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -250,8 +250,11 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBContracts.SelectedItem != null)
             {
-                service.Delete((lBContracts.SelectedItem as ContractDTO).Id);
-
+                ContractDTO contract = lBContracts.SelectedItem as ContractDTO;
+                if (MessageBox.Show("Вы уверены что хотите удалить договор №" + contract.Number.ToString() + " вместе с его счёт-фактурами и накладными?", "Удаление договора", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    service.Delete(contract);
+                }
                 ReloadedContracts();
             }
         }
@@ -270,7 +273,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.BuildDocument((lBContracts.SelectedItem as ContractDTO).Id);
+                service.BuildDocument((lBContracts.SelectedItem as ContractDTO));
                 lLoad.Visible = false;
             }
         }
@@ -281,7 +284,10 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.Open(path);
+                if (!service.Open(path))
+                {
+                    MessageBox.Show("Документ ещё не сформирован!");
+                }
             }
             lLoad.Visible = false;
         }
@@ -314,7 +320,10 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.Open(MainForm.DataPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1) + "\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + ".docx");
+                if (!service.Open(MainForm.DataPath + "\\Документы\\" + (lBContracts.SelectedItem as ContractDTO).ToString().Substring(0, (lBContracts.SelectedItem as ContractDTO).ToString().Length - 1) + "\\" + (lBContracts.SelectedItem as ContractDTO).ToString() + ".docx"))
+                {
+                    MessageBox.Show("Документ ещё не сформирован!");
+                }
                 lLoad.Visible = false;
             }
         }

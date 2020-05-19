@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace Дет.Сад.Питание.Models
+namespace BLL.Models
 {
     [Serializable]
-    public class Menu : LocalModel
+    public class Menu
     {
         public DateTime DateCreate { get; set; }
         public List<DishDTO> DishesZ { get; set; }

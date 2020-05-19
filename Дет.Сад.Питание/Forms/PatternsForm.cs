@@ -1,11 +1,10 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using DAL.DTO;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -122,7 +121,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButClear_Click(object sender, EventArgs e)
         {
-            foreach ( int item in cLBDishes.CheckedIndices)
+            foreach (int item in cLBDishes.CheckedIndices)
             {
                 cLBDishes.SetItemChecked(item, false);
             }
@@ -181,7 +180,7 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBZ.SelectedItems.Count > 0)
             {
-                List<DishDTO> selectedItems = new List<DishDTO>(); 
+                List<DishDTO> selectedItems = new List<DishDTO>();
                 foreach (DishDTO item in lBZ.SelectedItems)
                 {
                     cLBDishes.Items.Add(item);
@@ -258,7 +257,7 @@ namespace Дет.Сад.Питание.Forms
                 MessageBox.Show("Вариант меню успешно сохранён");
             }
             else
-                MessageBox.Show("Не заполнено имя варианта меню!","Ошибка");
+                MessageBox.Show("Не заполнено имя варианта меню!", "Ошибка");
         }
     }
 }

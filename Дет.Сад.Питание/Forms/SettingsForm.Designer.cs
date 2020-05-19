@@ -28,15 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tControl = new System.Windows.Forms.TabControl();
-            this.General = new System.Windows.Forms.TabPage();
-            this.butNewMonth = new System.Windows.Forms.Button();
-            this.butPathHistory = new System.Windows.Forms.Button();
-            this.tBPathHistory = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.butDir = new System.Windows.Forms.Button();
-            this.tBDirectoryPath = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.fBDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.Providers = new System.Windows.Forms.TabPage();
             this.butAdd = new System.Windows.Forms.Button();
             this.butDelete = new System.Windows.Forms.Button();
@@ -76,126 +68,23 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.cBSellers = new System.Windows.Forms.ComboBox();
-            this.Types = new System.Windows.Forms.TabPage();
-            this.History = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.nMin = new System.Windows.Forms.NumericUpDown();
-            this.clearFilters = new System.Windows.Forms.Button();
-            this.butNow = new System.Windows.Forms.Button();
-            this.lBLogs = new System.Windows.Forms.ListBox();
-            this.fBDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.butExport = new System.Windows.Forms.Button();
+            this.General = new System.Windows.Forms.TabPage();
             this.butImport = new System.Windows.Forms.Button();
-            this.tControl.SuspendLayout();
-            this.General.SuspendLayout();
+            this.butExport = new System.Windows.Forms.Button();
+            this.butNewMonth = new System.Windows.Forms.Button();
+            this.butDir = new System.Windows.Forms.Button();
+            this.tBDirectoryPath = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tControl = new System.Windows.Forms.TabControl();
             this.Providers.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.History.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nMin)).BeginInit();
+            this.General.SuspendLayout();
+            this.tControl.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tControl
+            // fBDialog
             // 
-            this.tControl.Controls.Add(this.General);
-            this.tControl.Controls.Add(this.Providers);
-            this.tControl.Controls.Add(this.Types);
-            this.tControl.Controls.Add(this.History);
-            this.tControl.Location = new System.Drawing.Point(13, 13);
-            this.tControl.Name = "tControl";
-            this.tControl.SelectedIndex = 0;
-            this.tControl.Size = new System.Drawing.Size(775, 425);
-            this.tControl.TabIndex = 0;
-            // 
-            // General
-            // 
-            this.General.Controls.Add(this.butImport);
-            this.General.Controls.Add(this.butExport);
-            this.General.Controls.Add(this.butNewMonth);
-            this.General.Controls.Add(this.butPathHistory);
-            this.General.Controls.Add(this.tBPathHistory);
-            this.General.Controls.Add(this.label2);
-            this.General.Controls.Add(this.butDir);
-            this.General.Controls.Add(this.tBDirectoryPath);
-            this.General.Controls.Add(this.label1);
-            this.General.Location = new System.Drawing.Point(4, 22);
-            this.General.Name = "General";
-            this.General.Padding = new System.Windows.Forms.Padding(3);
-            this.General.Size = new System.Drawing.Size(767, 399);
-            this.General.TabIndex = 0;
-            this.General.Text = "Общие";
-            this.General.UseVisualStyleBackColor = true;
-            // 
-            // butNewMonth
-            // 
-            this.butNewMonth.Location = new System.Drawing.Point(21, 353);
-            this.butNewMonth.Name = "butNewMonth";
-            this.butNewMonth.Size = new System.Drawing.Size(191, 28);
-            this.butNewMonth.TabIndex = 6;
-            this.butNewMonth.Text = "Перейти на новый месяц";
-            this.butNewMonth.UseVisualStyleBackColor = true;
-            this.butNewMonth.Click += new System.EventHandler(this.butNewMonth_Click);
-            // 
-            // butPathHistory
-            // 
-            this.butPathHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.butPathHistory.Location = new System.Drawing.Point(581, 95);
-            this.butPathHistory.Name = "butPathHistory";
-            this.butPathHistory.Size = new System.Drawing.Size(165, 20);
-            this.butPathHistory.TabIndex = 5;
-            this.butPathHistory.Text = "Выберите папку";
-            this.butPathHistory.UseVisualStyleBackColor = true;
-            this.butPathHistory.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // tBPathHistory
-            // 
-            this.tBPathHistory.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::Дет.Сад.Питание.Properties.Settings.Default, "LogsPath", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.tBPathHistory.Location = new System.Drawing.Point(21, 95);
-            this.tBPathHistory.Name = "tBPathHistory";
-            this.tBPathHistory.ReadOnly = true;
-            this.tBPathHistory.Size = new System.Drawing.Size(542, 20);
-            this.tBPathHistory.TabIndex = 4;
-            this.tBPathHistory.Text = global::Дет.Сад.Питание.Properties.Settings.Default.LogsPath;
-            this.tBPathHistory.TextChanged += new System.EventHandler(this.tBPathHistory_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(18, 79);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(136, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Путь к файлу с историей:";
-            // 
-            // butDir
-            // 
-            this.butDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.butDir.Location = new System.Drawing.Point(581, 38);
-            this.butDir.Name = "butDir";
-            this.butDir.Size = new System.Drawing.Size(165, 20);
-            this.butDir.TabIndex = 2;
-            this.butDir.Text = "Выберите папку";
-            this.butDir.UseVisualStyleBackColor = true;
-            this.butDir.Click += new System.EventHandler(this.butDir_Click);
-            // 
-            // tBDirectoryPath
-            // 
-            this.tBDirectoryPath.Location = new System.Drawing.Point(21, 38);
-            this.tBDirectoryPath.Name = "tBDirectoryPath";
-            this.tBDirectoryPath.ReadOnly = true;
-            this.tBDirectoryPath.Size = new System.Drawing.Size(542, 20);
-            this.tBDirectoryPath.TabIndex = 1;
-            this.tBDirectoryPath.Text = global::Дет.Сад.Питание.Properties.Settings.Default.DataPath;
-            this.tBDirectoryPath.TextChanged += new System.EventHandler(this.tBDirectoryPath_TextChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(156, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Путь к папке с документами:";
+            this.fBDialog.Description = "Выберите папку для сохранения сформированных документов";
             // 
             // Providers
             // 
@@ -555,98 +444,31 @@
             this.cBSellers.TabIndex = 0;
             this.cBSellers.SelectedIndexChanged += new System.EventHandler(this.cBSellers_SelectedIndexChanged);
             // 
-            // Types
+            // General
             // 
-            this.Types.Location = new System.Drawing.Point(4, 22);
-            this.Types.Name = "Types";
-            this.Types.Size = new System.Drawing.Size(767, 399);
-            this.Types.TabIndex = 2;
-            this.Types.Text = "Типы продуктов";
-            this.Types.UseVisualStyleBackColor = true;
+            this.General.Controls.Add(this.butImport);
+            this.General.Controls.Add(this.butExport);
+            this.General.Controls.Add(this.butNewMonth);
+            this.General.Controls.Add(this.butDir);
+            this.General.Controls.Add(this.tBDirectoryPath);
+            this.General.Controls.Add(this.label1);
+            this.General.Location = new System.Drawing.Point(4, 22);
+            this.General.Name = "General";
+            this.General.Padding = new System.Windows.Forms.Padding(3);
+            this.General.Size = new System.Drawing.Size(767, 399);
+            this.General.TabIndex = 0;
+            this.General.Text = "Общие";
+            this.General.UseVisualStyleBackColor = true;
             // 
-            // History
+            // butImport
             // 
-            this.History.Controls.Add(this.label4);
-            this.History.Controls.Add(this.label3);
-            this.History.Controls.Add(this.nMin);
-            this.History.Controls.Add(this.clearFilters);
-            this.History.Controls.Add(this.butNow);
-            this.History.Controls.Add(this.lBLogs);
-            this.History.Location = new System.Drawing.Point(4, 22);
-            this.History.Name = "History";
-            this.History.Size = new System.Drawing.Size(767, 399);
-            this.History.TabIndex = 3;
-            this.History.Text = "История";
-            this.History.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(437, 26);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(37, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "минут";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(263, 26);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(77, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "За последние";
-            // 
-            // nMin
-            // 
-            this.nMin.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.nMin.Location = new System.Drawing.Point(346, 24);
-            this.nMin.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.nMin.Name = "nMin";
-            this.nMin.Size = new System.Drawing.Size(85, 20);
-            this.nMin.TabIndex = 3;
-            this.nMin.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
-            // 
-            // clearFilters
-            // 
-            this.clearFilters.Location = new System.Drawing.Point(518, 19);
-            this.clearFilters.Name = "clearFilters";
-            this.clearFilters.Size = new System.Drawing.Size(201, 26);
-            this.clearFilters.TabIndex = 2;
-            this.clearFilters.Text = "Показать все";
-            this.clearFilters.UseVisualStyleBackColor = true;
-            this.clearFilters.Click += new System.EventHandler(this.clearFilters_Click);
-            // 
-            // butNow
-            // 
-            this.butNow.Location = new System.Drawing.Point(32, 19);
-            this.butNow.Name = "butNow";
-            this.butNow.Size = new System.Drawing.Size(194, 26);
-            this.butNow.TabIndex = 1;
-            this.butNow.Text = "Сегодня";
-            this.butNow.UseVisualStyleBackColor = true;
-            this.butNow.Click += new System.EventHandler(this.butNow_Click);
-            // 
-            // lBLogs
-            // 
-            this.lBLogs.FormattingEnabled = true;
-            this.lBLogs.Location = new System.Drawing.Point(32, 59);
-            this.lBLogs.Name = "lBLogs";
-            this.lBLogs.Size = new System.Drawing.Size(687, 316);
-            this.lBLogs.TabIndex = 0;
-            this.lBLogs.SelectedIndexChanged += new System.EventHandler(this.lBLogs_SelectedIndexChanged);
-            // 
-            // fBDialog
-            // 
-            this.fBDialog.Description = "Выберите папку для сохранения сформированных документов";
+            this.butImport.Location = new System.Drawing.Point(581, 354);
+            this.butImport.Name = "butImport";
+            this.butImport.Size = new System.Drawing.Size(164, 27);
+            this.butImport.TabIndex = 8;
+            this.butImport.Text = "Импорт";
+            this.butImport.UseVisualStyleBackColor = true;
+            this.butImport.Click += new System.EventHandler(this.butImport_Click);
             // 
             // butExport
             // 
@@ -658,15 +480,55 @@
             this.butExport.UseVisualStyleBackColor = true;
             this.butExport.Click += new System.EventHandler(this.butExport_Click);
             // 
-            // butImport
+            // butNewMonth
             // 
-            this.butImport.Location = new System.Drawing.Point(581, 354);
-            this.butImport.Name = "butImport";
-            this.butImport.Size = new System.Drawing.Size(164, 27);
-            this.butImport.TabIndex = 8;
-            this.butImport.Text = "Импорт";
-            this.butImport.UseVisualStyleBackColor = true;
-            this.butImport.Click += new System.EventHandler(this.butImport_Click);
+            this.butNewMonth.Location = new System.Drawing.Point(21, 353);
+            this.butNewMonth.Name = "butNewMonth";
+            this.butNewMonth.Size = new System.Drawing.Size(191, 28);
+            this.butNewMonth.TabIndex = 6;
+            this.butNewMonth.Text = "Перейти на новый месяц";
+            this.butNewMonth.UseVisualStyleBackColor = true;
+            this.butNewMonth.Click += new System.EventHandler(this.butNewMonth_Click);
+            // 
+            // butDir
+            // 
+            this.butDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.butDir.Location = new System.Drawing.Point(581, 38);
+            this.butDir.Name = "butDir";
+            this.butDir.Size = new System.Drawing.Size(165, 20);
+            this.butDir.TabIndex = 2;
+            this.butDir.Text = "Выберите папку";
+            this.butDir.UseVisualStyleBackColor = true;
+            this.butDir.Click += new System.EventHandler(this.butDir_Click);
+            // 
+            // tBDirectoryPath
+            // 
+            this.tBDirectoryPath.Location = new System.Drawing.Point(21, 38);
+            this.tBDirectoryPath.Name = "tBDirectoryPath";
+            this.tBDirectoryPath.ReadOnly = true;
+            this.tBDirectoryPath.Size = new System.Drawing.Size(542, 20);
+            this.tBDirectoryPath.TabIndex = 1;
+            this.tBDirectoryPath.Text = global::Дет.Сад.Питание.Properties.Settings.Default.DataPath;
+            this.tBDirectoryPath.TextChanged += new System.EventHandler(this.tBDirectoryPath_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(18, 22);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(156, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Путь к папке с документами:";
+            // 
+            // tControl
+            // 
+            this.tControl.Controls.Add(this.General);
+            this.tControl.Controls.Add(this.Providers);
+            this.tControl.Location = new System.Drawing.Point(13, 13);
+            this.tControl.Name = "tControl";
+            this.tControl.SelectedIndex = 0;
+            this.tControl.Size = new System.Drawing.Size(775, 425);
+            this.tControl.TabIndex = 0;
             // 
             // SettingsForm
             // 
@@ -679,43 +541,25 @@
             this.Text = "Настройки";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
             this.Load += new System.EventHandler(this.SettingsForm_Load);
-            this.tControl.ResumeLayout(false);
-            this.General.ResumeLayout(false);
-            this.General.PerformLayout();
             this.Providers.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.History.ResumeLayout(false);
-            this.History.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nMin)).EndInit();
+            this.General.ResumeLayout(false);
+            this.General.PerformLayout();
+            this.tControl.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TabControl tControl;
-        private System.Windows.Forms.TabPage General;
-        private System.Windows.Forms.TabPage Providers;
-        private System.Windows.Forms.TabPage Types;
-        private System.Windows.Forms.TabPage History;
-        private System.Windows.Forms.TextBox tBDirectoryPath;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button butDir;
         private System.Windows.Forms.FolderBrowserDialog fBDialog;
-        private System.Windows.Forms.ListBox lBLogs;
-        private System.Windows.Forms.Button butPathHistory;
-        private System.Windows.Forms.TextBox tBPathHistory;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button butNow;
-        private System.Windows.Forms.Button clearFilters;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown nMin;
-        private System.Windows.Forms.Button butNewMonth;
+        private System.Windows.Forms.TabPage Providers;
+        private System.Windows.Forms.Button butAdd;
         private System.Windows.Forms.Button butDelete;
         private System.Windows.Forms.Button butSave;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TextBox tBRangSeller;
+        private System.Windows.Forms.Label label21;
         private System.Windows.Forms.TextBox tBNameCompanyFull;
         private System.Windows.Forms.TextBox tBNameSellerSpec;
         private System.Windows.Forms.TextBox tBNameSeller;
@@ -748,10 +592,13 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cBSellers;
-        private System.Windows.Forms.Button butAdd;
-        private System.Windows.Forms.TextBox tBRangSeller;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Button butExport;
+        private System.Windows.Forms.TabPage General;
         private System.Windows.Forms.Button butImport;
+        private System.Windows.Forms.Button butExport;
+        private System.Windows.Forms.Button butNewMonth;
+        private System.Windows.Forms.Button butDir;
+        private System.Windows.Forms.TextBox tBDirectoryPath;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TabControl tControl;
     }
 }

@@ -27,7 +27,7 @@ namespace Дет.Сад.Питание.Forms
             {
                 e.Handled = true;
             }
-            
+
         }
     }
 }

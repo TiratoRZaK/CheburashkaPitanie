@@ -1,4 +1,4 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -52,7 +51,7 @@ namespace Дет.Сад.Питание.Forms
             {
                 if (main.addedProducts.Where(x => x.Name == (cBProduct.SelectedItem as ProductArrival).Name).Count() == 0)
                 {
-                    ProductArrival productInContract = addedProducts.Single(x=>x.Id == (cBProduct.SelectedItem as ProductArrival).Id);
+                    ProductArrival productInContract = addedProducts.Single(x => x.Id == (cBProduct.SelectedItem as ProductArrival).Id);
                     ProductArrival product = new ProductArrival();
                     product.Id = productInContract.Id;
                     product.Name = productInContract.Name;
@@ -111,9 +110,9 @@ namespace Дет.Сад.Питание.Forms
         private void TBBalance_KeyPress(object sender, KeyPressEventArgs e)
         {
             char ch = e.KeyChar;
-            
+
             if (Char.IsDigit(ch) ||
-                (ch == ',' && !tBBalance.Text.Contains(',') && tBBalance.Text.Count() != 0)  ||
+                (ch == ',' && !tBBalance.Text.Contains(',') && tBBalance.Text.Count() != 0) ||
                 (ch == '\b' && tBBalance.Text.Count() != 0)
                 )
             {
@@ -130,7 +129,7 @@ namespace Дет.Сад.Питание.Forms
                 }
                 else
                 {
-                    if(ch == '\b' && temp.Length != 1)
+                    if (ch == '\b' && temp.Length != 1)
                     {
                         temp.Remove(temp.Length - 1, 1);
                         if (float.Parse(temp.ToString()) > (float)_Product.Balance)

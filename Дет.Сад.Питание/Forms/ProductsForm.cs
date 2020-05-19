@@ -1,16 +1,16 @@
-﻿using DAL.DTO;
+﻿using BLL.Services;
+using DAL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Дет.Сад.Питание.Forms;
-using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание
 {
     public partial class ProductsForm : Form
     {
-        public ProductService service = new ProductService();
+        public ProductService service = new ProductService(MainForm.DB, Application.StartupPath, MainForm.DataPath);
         public MainForm main;
 
         public ProductsForm(MainForm main)
@@ -39,7 +39,6 @@ namespace Дет.Сад.Питание
         {
             if (tBSearch.Text.Trim().Length > 0)
             {
-                //search data
                 PopulateData(MainForm.DB.Products.GetAll().Where(x => x.Name.ToLower().Contains(tBSearch.Text.ToLower())));
             }
             else
@@ -90,7 +89,7 @@ namespace Дет.Сад.Питание
                 ProductDTO product = (ProductDTO)dGVProductsList.CurrentRow.Tag;
                 if (MessageBox.Show("Удалить " + product.Name + " ?", "Подтверждение удаления", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    service.Delete(product.Id);
+                    service.Delete(product);
                     ReloadData();
                 }
             }

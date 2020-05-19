@@ -1,8 +1,8 @@
-﻿using DAL.Interfaces;
-using System;
+﻿using System;
 
 namespace DAL.DTO
 {
+    [Serializable]
     public class DeliveryNoteDTO
     {
         public int Id { get; set; }

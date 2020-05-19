@@ -1,34 +1,42 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using BLL.Services.WordService;
+using DAL.DTO;
+using DAL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services.WordService;
 
-namespace Дет.Сад.Питание.Services
+namespace BLL.Services
 {
-    public class ContractsService : IDocumentService
+    public class ContractsService : IDocumentService<ContractDTO>
     {
-        WordWorker worker = new WordWorker(Application.StartupPath + "\\Document Templates\\Договор.docx");
+        WordWorker worker;
+        IUnitOfWork DB;
+        string startupPath;
+        string dataPath;
         ContractDTO contractInDb;
 
-
-        public void BuildDocument(int id)
+        public ContractsService(IUnitOfWork DB, string startupPath, string dataPath)
         {
-            contractInDb = MainForm.DB.Contracts.Get(id);
+            this.DB = DB;
+            this.startupPath = startupPath;
+            this.dataPath = dataPath;
+            worker = new WordWorker(startupPath + "\\Document Templates\\Договор.docx");
+        }
 
-            Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\" + contractInDb.FileName, FileMode.Open);
+        public void BuildDocument(ContractDTO contract)
+        {
+            contractInDb = contract;
+
+            Stream stream = new FileStream(startupPath + "\\Local Data\\" + contractInDb.FileName, FileMode.Open);
             List<ProductArrival> productsInContract = new BinaryFormatter().Deserialize(stream) as List<ProductArrival>;
 
             List<string> types = new List<string>();
             foreach (var item in productsInContract)
             {
-                var type = MainForm.DB.Types.Get(item.TypeId).Name;
+                var type = DB.Types.Get(item.TypeId).Name;
                 if (!types.Contains(type))
                 {
                     types.Add(type);
@@ -47,16 +55,16 @@ namespace Дет.Сад.Питание.Services
                 worker.doc.Tables[4].Rows[i].Range.Bold = 0;
                 worker.doc.Tables[4].Rows[i].Height = float.Parse("0,3");
                 worker.doc.Tables[4].Rows[i].Cells[1].Range.Text = item;
-                foreach (ProductArrival product in productsInContract.Where(x => MainForm.DB.Types.Get(x.TypeId).Name == item))
+                foreach (ProductArrival product in productsInContract.Where(x => DB.Types.Get(x.TypeId).Name == item))
                 {
                     worker.doc.Tables[4].Rows.Add();
                     i++;
                     worker.doc.Tables[4].Cell(i, 1).Range.Text = product.Name;
-                    worker.doc.Tables[4].Cell(i, 2).Range.Text = MainForm.DB.Units.Get(product.UnitId).Name;
+                    worker.doc.Tables[4].Cell(i, 2).Range.Text = DB.Units.Get(product.UnitId).Name;
                     worker.doc.Tables[4].Cell(i, 3).Range.Text = Math.Round(product.Price, 2).ToString();
                     worker.doc.Tables[4].Cell(i, 4).Range.Text = "-";
                     worker.doc.Tables[4].Cell(i, 5).Range.Text = Math.Round(product.Balance, 2).ToString();
-                    worker.doc.Tables[4].Cell(i, 6).Range.Text = product.getSumRound().ToString();
+                    worker.doc.Tables[4].Cell(i, 6).Range.Text = product.GetSumRound().ToString();
                     worker.doc.Tables[4].Cell(i, 7).Range.Text = "0";
                 }
             }
@@ -64,7 +72,7 @@ namespace Дет.Сад.Питание.Services
             double summ = 0.0d;
             foreach (ProductArrival prod in productsInContract)
             {
-                 summ += prod.getSumRound();
+                summ += prod.GetSumRound();
             }
 
             foreach (var item in mergesRows)
@@ -95,31 +103,27 @@ namespace Дет.Сад.Питание.Services
                 worker.FindReplace("{totalRub}", replacedOfWord.Remove(replacedOfWord.Length - 1));
                 worker.FindReplace("{kopeiki}", "00");
             }
-            worker.Save(MainForm.DataPath + "\\Документы\\" + contractInDb.ToString() + "\\" + contractInDb.ToString() + ".docx");
+            worker.Save(dataPath + "\\Документы\\" + contractInDb.ToString() + "\\" + contractInDb.ToString() + ".docx");
             worker.Close();
         }
 
-        public void Delete(int id)
+        public void Delete(ContractDTO contract)
         {
-            ContractDTO contract = MainForm.DB.Contracts.Get(id);
-            if (MessageBox.Show("Вы уверены что хотите удалить договор №" + contract.Number.ToString() + " вместе с его счёт-фактурами и накладными?", "Удаление договора", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            foreach (var invoice in DB.Invoices.GetAll())
             {
-                foreach (var invoice in MainForm.DB.Invoices.GetAll())
+                if (invoice.ContractId == contract.Id)
                 {
-                    if (invoice.ContractId == contract.Id)
-                    {
-                        new InvoiceService().Delete(invoice.Id);
-                    }
+                    new InvoiceService(DB, startupPath, dataPath).Delete(invoice);
                 }
-                string path = Application.StartupPath + "\\Local Data\\" + contract.ToString();
-                DirectoryInfo dirInfo = new DirectoryInfo(path);
-                if (dirInfo.Exists)
-                {
-                    dirInfo.Delete(true);
-                }
-                MainForm.DB.Contracts.Delete(contract.Id);
-                MainForm.DB.Save();
             }
+            string path = startupPath + "\\Local Data\\" + contract.ToString();
+            DirectoryInfo dirInfo = new DirectoryInfo(path);
+            if (dirInfo.Exists)
+            {
+                dirInfo.Delete(true);
+            }
+            DB.Contracts.Delete(contract.Id);
+            DB.Save();
         }
 
         public void ReplaceStrings()
@@ -129,8 +133,8 @@ namespace Дет.Сад.Питание.Services
             worker.FindReplace("{typeSpec}", contractInDb.TypeSpec);
             worker.FindReplace("{number}", contractInDb.Number.ToString());
             worker.FindReplace("{address}", "п.Советский");
-            CustomerDTO customer = MainForm.DB.Customers.Get(contractInDb.CustomerId);
-            SellerDTO seller = MainForm.DB.Sellers.Get(contractInDb.SellerId);
+            CustomerDTO customer = DB.Customers.Get(contractInDb.CustomerId);
+            SellerDTO seller = DB.Sellers.Get(contractInDb.SellerId);
             worker.FindReplace("{fullNameCompanyCustomer}", customer.FullNameCompany);
             worker.FindReplace("{fullNameCompanySeller}", seller.FullNameCompany);
             worker.FindReplace("{nameCustomerSpec}", customer.NameCustomerSpec);
@@ -265,9 +269,9 @@ namespace Дет.Сад.Питание.Services
             worker.FindReplace("{year}", contractInDb.ConclusionDate.Year.ToString());
         }
 
-        public void Open(string fileName)
+        public bool Open(string fileName)
         {
-            worker.Open(fileName);
+            return worker.Open(fileName);
         }
     }
 }

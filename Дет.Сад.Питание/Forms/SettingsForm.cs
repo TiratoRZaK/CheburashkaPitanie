@@ -1,16 +1,17 @@
-﻿using DAL.DTO;
+﻿using BLL.Services;
+using DAL.DTO;
+using NLog;
 using System;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class SettingsForm : Form
     {
-        public MainForm main;
+        private MainForm main;
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private ImportExportService service = new ImportExportService(MainForm.DB, Application.StartupPath);
 
         public SettingsForm(MainForm main)
         {
@@ -31,19 +32,7 @@ namespace Дет.Сад.Питание.Forms
         {
             main.WindowState = FormWindowState.Normal;
             Properties.Settings.Default.DataPath = tBDirectoryPath.Text;
-            Properties.Settings.Default.LogsPath = tBPathHistory.Text;
             Properties.Settings.Default.Save();
-        }
-
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
-            tBDirectoryPath.Text = MainForm.DataPath;
-            tBPathHistory.Text = MainForm.LogsPath;
-            lBLogs.Items.Clear();
-            foreach (Log log in LoggingService.logs)
-            {
-                lBLogs.Items.Add(log);
-            }
         }
 
         private void butDir_Click(object sender, EventArgs e)
@@ -53,80 +42,6 @@ namespace Дет.Сад.Питание.Forms
             if (fBDialog.SelectedPath != "")
             {
                 tBDirectoryPath.Text = fBDialog.SelectedPath;
-            }
-        }
-
-        private void lBLogs_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Log log = lBLogs.SelectedItem as Log;
-            StringBuilder message = new StringBuilder(log.time.ToString());
-            if (log.actions != null)
-            {
-                foreach (ActionDescription action in log.actions)
-                {
-                    StringBuilder desc = new StringBuilder("");
-                    if (action.description != null)
-                    {
-                        foreach (string item in action.description)
-                        {
-                            desc.Append(item + "\n");
-                        }
-                    }
-                    message.Append("\n" + action.name + "\n " + desc.ToString());
-                }
-            }
-            MessageBox.Show(message.ToString(), log.message, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            fBDialog.Description = "Выберите папку для сохранения файла с иторией";
-            fBDialog.ShowDialog();
-            if (fBDialog.SelectedPath != "")
-            {
-                tBPathHistory.Text = fBDialog.SelectedPath;
-            }
-        }
-
-        private void tBPathHistory_TextChanged(object sender, EventArgs e)
-        {
-            if (!tBPathHistory.Text.Equals(""))
-            {
-                MainForm.LogsPath = tBPathHistory.Text;
-            }
-        }
-
-        private void butNow_Click(object sender, EventArgs e)
-        {
-            lBLogs.Items.Clear();
-            foreach (Log log in LoggingService.logs)
-            {
-                if (log.time.Date.Equals(DateTime.Now.Date))
-                {
-                    lBLogs.Items.Add(log);
-                }
-            }
-        }
-
-        private void clearFilters_Click(object sender, EventArgs e)
-        {
-            nMin.Value = 0;
-            lBLogs.Items.Clear();
-            foreach (Log log in LoggingService.logs)
-            {
-                lBLogs.Items.Add(log);
-            }
-        }
-
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-            lBLogs.Items.Clear();
-            foreach (Log log in LoggingService.logs)
-            {
-                if (log.time.AddMinutes((int)nMin.Value) >= DateTime.Now)
-                {
-                    lBLogs.Items.Add(log);
-                }
             }
         }
 
@@ -160,7 +75,7 @@ namespace Дет.Сад.Питание.Forms
                     MainForm.DB.Menus.Delete(menu.Id);
                 }
                 MainForm.DB.Save();
-                MessageBox.Show("Программа готова для работы с нового месяца.","Успешно выполнено");
+                MessageBox.Show("Программа готова для работы с нового месяца.", "Успешно выполнено");
             }
         }
 
@@ -254,7 +169,8 @@ namespace Дет.Сад.Питание.Forms
 
         private void butAdd_Click(object sender, EventArgs e)
         {
-            if (butAdd.Text.Equals("Добавить нового поставщика")) {
+            if (butAdd.Text.Equals("Добавить нового поставщика"))
+            {
                 cBSellers.Enabled = false;
                 butDelete.Enabled = false;
                 butAdd.Text = "Отменить добавление";
@@ -299,9 +215,16 @@ namespace Дет.Сад.Питание.Forms
         {
             fBDialog.Description = "Выберите куда экспортировать файлы";
             fBDialog.ShowDialog();
-            if(fBDialog.SelectedPath != null)
+            if (fBDialog.SelectedPath != null)
             {
-                new ImportExportService().Export(fBDialog.SelectedPath);
+                if (service.Export(fBDialog.SelectedPath))
+                {
+                    MessageBox.Show("Экспорт успешно выполнен.");
+                }
+                else
+                {
+                    MessageBox.Show("Критическая ошибка!", "Невозможно подключиться к базе данных в следствии её экспортирования! Приложение завершит свою работу.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -311,8 +234,21 @@ namespace Дет.Сад.Питание.Forms
             fBDialog.ShowDialog();
             if (fBDialog.SelectedPath != null)
             {
-                new ImportExportService().Import(fBDialog.SelectedPath);
+                if (service.Import(fBDialog.SelectedPath))
+                {
+                    MessageBox.Show("Импорт успешно выполнен.");
+                    InitializeSellers();
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка выполнения импорта.");
+                }
             }
+        }
+
+        private void SettingsForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

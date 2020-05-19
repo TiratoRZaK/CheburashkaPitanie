@@ -1,4 +1,7 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using BLL.Services;
+using BLL.Services.WordService;
+using DAL.DTO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,15 +10,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
-using Дет.Сад.Питание.Services;
-using Дет.Сад.Питание.Services.WordService;
 
 namespace Дет.Сад.Питание.Forms
 {
     public partial class InvoicesForm : Form
     {
-        IDocumentService service = new InvoiceService();
+        IDocumentService<InvoiceDTO> service = new InvoiceService(MainForm.DB, Application.StartupPath, MainForm.DataPath);
 
         public InvoiceDTO invoice = null;
         public List<ProductArrival> addedProducts;
@@ -53,7 +53,7 @@ namespace Дет.Сад.Питание.Forms
                     item.Name,
                     item.Price.ToString(),
                     item.Balance.ToString(),
-                    item.getSumRound().ToString(),
+                    item.GetSumRound().ToString(),
                     "Удалить"
                 });
                 dGVProducts.Rows[dGVProducts.RowCount - 1].Tag = item;
@@ -139,7 +139,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                     AddProduct(item);
                 }
                 invoice = new InvoiceDTO
@@ -181,7 +181,7 @@ namespace Дет.Сад.Питание.Forms
         {
             ProductDTO dbProduct = MainForm.DB.Products.Get(product.Id);
             float newBalance = (float)(dbProduct.Balance + product.Balance);
-            dbProduct.Sum = (float)Math.Round(product.getSumRound() + dbProduct.Sum, 2);
+            dbProduct.Sum = (float)Math.Round(product.GetSumRound() + dbProduct.Sum, 2);
             dbProduct.Balance = newBalance;
             MainForm.DB.Products.Update(dbProduct);
             MainForm.DB.Save();
@@ -221,7 +221,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -234,7 +234,7 @@ namespace Дет.Сад.Питание.Forms
                 float Total = 0;
                 foreach (var item in addedProducts)
                 {
-                    Total += item.getSumRound();
+                    Total += item.GetSumRound();
                 }
                 lSumm.Text = Math.Round(Total, 2).ToString();
             }
@@ -244,7 +244,11 @@ namespace Дет.Сад.Питание.Forms
         {
             if (lBInvoices.SelectedItem != null)
             {
-                service.Delete((lBInvoices.SelectedItem as InvoiceDTO).Id);
+                InvoiceDTO invoice = lBInvoices.SelectedItem as InvoiceDTO;
+                if (MessageBox.Show("Вы уверены что хотите удалить счёт-фактуру №" + invoice.Number.ToString() + " со всеми её накладными? Все продукты пришедшие по накладной будут изъяты со склада!", "Удаление счёт-фактуры", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    service.Delete(invoice);
+                }
                 ReloadedInvoices();
             }
         }
@@ -263,7 +267,7 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.BuildDocument((lBInvoices.SelectedItem as InvoiceDTO).Id);
+                service.BuildDocument(lBInvoices.SelectedItem as InvoiceDTO);
                 lLoad.Visible = false;
             }
         }
@@ -292,7 +296,10 @@ namespace Дет.Сад.Питание.Forms
             if (dialogResult == DialogResult.OK)
             {
                 lLoad.Visible = true;
-                service.Open(fileName);
+                if (!service.Open(fileName))
+                {
+                    MessageBox.Show("Документ ещё не сформирован!");
+                }
             }
             lLoad.Visible = false;
         }

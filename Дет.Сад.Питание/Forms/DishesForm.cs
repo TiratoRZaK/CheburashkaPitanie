@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Services;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -80,7 +79,6 @@ namespace Дет.Сад.Питание.Forms
                 {
                     MainForm.DB.Dishes.Delete(dish.Id);
                     MainForm.DB.Save();
-                    LoggingService.AddLog("Удаление блюда: "+dish.ToString());
                     ReloadData();
                 }
             }

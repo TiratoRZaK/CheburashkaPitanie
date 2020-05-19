@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace DAL.DTO
 {
-    //Для разделения продуктов в договоре на категории(типы). Например, Молочные продукты, Алкогольные изделия, Сухофрукты...
     [Serializable]
     public class TypeDTO
     {

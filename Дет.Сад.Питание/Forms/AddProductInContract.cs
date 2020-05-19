@@ -1,8 +1,8 @@
-﻿using DAL.DTO;
+﻿using BLL.Models;
+using DAL.DTO;
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using Дет.Сад.Питание.Models;
 
 namespace Дет.Сад.Питание.Forms
 {
@@ -66,7 +66,7 @@ namespace Дет.Сад.Питание.Forms
 
         private void ButSave_Click(object sender, EventArgs e)
         {
-            if ( tBPrice.Text == "" || tBBalance.Text == "")
+            if (tBPrice.Text == "" || tBBalance.Text == "")
             {
                 ShowError("Не все обязательные поля заполнены!");
             }
@@ -82,7 +82,7 @@ namespace Дет.Сад.Питание.Forms
                     product.Price = float.Parse(tBPrice.Text);
                     product.TypeId = productInDb.TypeId;
                     product.UnitId = productInDb.UnitId;
-                    
+
                     main.addedProducts.Add(product);
                     MessageBox.Show("Продукт успешно добавлен");
                     this.Close();
