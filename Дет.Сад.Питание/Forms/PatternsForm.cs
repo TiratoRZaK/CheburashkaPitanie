@@ -33,13 +33,17 @@ namespace Дет.Сад.Питание.Forms
                 Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\patterns.pat", FileMode.Open);
                 patterns = new BinaryFormatter().Deserialize(stream) as List<Pattern>;
                 stream.Close();
+                foreach (Pattern pattern in patterns)
+                    lBPatterns.Items.Add(pattern);
+            }
+            else
+            {
+                patterns = new List<Pattern>();
             }
             lBPatterns.Items.Add(new Pattern
             {
                 Name = "Новый вариант меню"
             });
-            foreach (Pattern pattern in patterns)
-                lBPatterns.Items.Add(pattern);
             lBPatterns.SelectedIndex = 0;
             cLBDishes.Items.Clear();
             foreach (DishDTO dish in MainForm.DB.Dishes.GetAll())
@@ -231,7 +235,13 @@ namespace Дет.Сад.Питание.Forms
         {
             if (tBName.Text != "")
             {
-                patterns.Remove(pattern);
+                foreach (Pattern pat in patterns)
+                {
+                    if (tBName.Text.Equals(pat.Name))
+                    {
+                        patterns.Remove(pat);
+                    }
+                }
                 pattern = new Pattern
                 {
                     Name = tBName.Text,

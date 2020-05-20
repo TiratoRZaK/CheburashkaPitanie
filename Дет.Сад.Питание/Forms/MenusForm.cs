@@ -43,10 +43,19 @@ namespace Дет.Сад.Питание.Forms
             }
         }
 
-        void InitializeListBoxes()
+        private void InitializeListBoxes()
         {
-            Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\patterns.pat", FileMode.Open);
-            List<Pattern> patterns = new BinaryFormatter().Deserialize(stream) as List<Pattern>;
+            List<Pattern> patterns;
+            if (File.Exists(Application.StartupPath + "\\Local Data\\patterns.pat"))
+            {
+                Stream stream = new FileStream(Application.StartupPath + "\\Local Data\\patterns.pat", FileMode.Open);
+                patterns = new BinaryFormatter().Deserialize(stream) as List<Pattern>;
+                stream.Close();
+            }
+            else
+            {
+                patterns = new List<Pattern>();
+            }
             cBPattern.Items.Clear();
             Pattern patternNull = new Pattern()
             {
@@ -58,7 +67,6 @@ namespace Дет.Сад.Питание.Forms
                 cBPattern.Items.Add(pattern);
             }
             cBPattern.SelectedIndex = 0;
-            stream.Close();
             cBProductB.Items.Clear();
             lBMenus.Items.Clear();
             dGVProducts.Rows.Clear();

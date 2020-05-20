@@ -57,6 +57,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.butCheckClearC = new System.Windows.Forms.Button();
+            this.butCheckAllC = new System.Windows.Forms.Button();
+            this.butCheckClearD = new System.Windows.Forms.Button();
+            this.butCheckAllD = new System.Windows.Forms.Button();
             this.cLBContracts = new System.Windows.Forms.CheckedListBox();
             this.cLBDeliveryNotes = new System.Windows.Forms.CheckedListBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -75,10 +79,6 @@
             this.label10 = new System.Windows.Forms.Label();
             this.cBMonth = new System.Windows.Forms.ComboBox();
             this.cBYear = new System.Windows.Forms.ComboBox();
-            this.butCheckClearD = new System.Windows.Forms.Button();
-            this.butCheckAllD = new System.Windows.Forms.Button();
-            this.butCheckClearC = new System.Windows.Forms.Button();
-            this.butCheckAllC = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).BeginInit();
             this.pNakl.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -302,6 +302,58 @@
             this.panel1.Size = new System.Drawing.Size(201, 612);
             this.panel1.TabIndex = 28;
             // 
+            // butCheckClearC
+            // 
+            this.butCheckClearC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckClearC.ForeColor = System.Drawing.Color.Black;
+            this.butCheckClearC.Location = new System.Drawing.Point(96, 170);
+            this.butCheckClearC.Name = "butCheckClearC";
+            this.butCheckClearC.Size = new System.Drawing.Size(96, 23);
+            this.butCheckClearC.TabIndex = 65;
+            this.butCheckClearC.Text = "Снять все";
+            this.butCheckClearC.UseVisualStyleBackColor = true;
+            this.butCheckClearC.Click += new System.EventHandler(this.butCheckClearC_Click);
+            // 
+            // butCheckAllC
+            // 
+            this.butCheckAllC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckAllC.ForeColor = System.Drawing.Color.Black;
+            this.butCheckAllC.Location = new System.Drawing.Point(8, 170);
+            this.butCheckAllC.Name = "butCheckAllC";
+            this.butCheckAllC.Size = new System.Drawing.Size(82, 23);
+            this.butCheckAllC.TabIndex = 64;
+            this.butCheckAllC.Text = "Выбрать все";
+            this.butCheckAllC.UseVisualStyleBackColor = true;
+            this.butCheckAllC.Click += new System.EventHandler(this.butCheckAllC_Click);
+            // 
+            // butCheckClearD
+            // 
+            this.butCheckClearD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckClearD.ForeColor = System.Drawing.Color.Black;
+            this.butCheckClearD.Location = new System.Drawing.Point(96, 582);
+            this.butCheckClearD.Name = "butCheckClearD";
+            this.butCheckClearD.Size = new System.Drawing.Size(96, 23);
+            this.butCheckClearD.TabIndex = 63;
+            this.butCheckClearD.Text = "Снять все";
+            this.butCheckClearD.UseVisualStyleBackColor = true;
+            this.butCheckClearD.Click += new System.EventHandler(this.butCheckClearD_Click);
+            // 
+            // butCheckAllD
+            // 
+            this.butCheckAllD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.butCheckAllD.ForeColor = System.Drawing.Color.Black;
+            this.butCheckAllD.Location = new System.Drawing.Point(8, 582);
+            this.butCheckAllD.Name = "butCheckAllD";
+            this.butCheckAllD.Size = new System.Drawing.Size(82, 23);
+            this.butCheckAllD.TabIndex = 62;
+            this.butCheckAllD.Text = "Выбрать все";
+            this.butCheckAllD.UseVisualStyleBackColor = true;
+            this.butCheckAllD.Click += new System.EventHandler(this.butCheckAllD_Click);
+            // 
             // cLBContracts
             // 
             this.cLBContracts.FormattingEnabled = true;
@@ -496,12 +548,12 @@
             this.label10.TabIndex = 53;
             this.label10.Text = "Выберите дату составления:";
             // 
-            // cBMount
+            // cBMonth
             // 
             this.cBMonth.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cBMonth.FormattingEnabled = true;
             this.cBMonth.Location = new System.Drawing.Point(806, 516);
-            this.cBMonth.Name = "cBMount";
+            this.cBMonth.Name = "cBMonth";
             this.cBMonth.Size = new System.Drawing.Size(97, 21);
             this.cBMonth.TabIndex = 54;
             // 
@@ -513,58 +565,6 @@
             this.cBYear.Name = "cBYear";
             this.cBYear.Size = new System.Drawing.Size(57, 21);
             this.cBYear.TabIndex = 55;
-            // 
-            // butCheckClearD
-            // 
-            this.butCheckClearD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.butCheckClearD.ForeColor = System.Drawing.Color.Black;
-            this.butCheckClearD.Location = new System.Drawing.Point(96, 582);
-            this.butCheckClearD.Name = "butCheckClearD";
-            this.butCheckClearD.Size = new System.Drawing.Size(96, 23);
-            this.butCheckClearD.TabIndex = 63;
-            this.butCheckClearD.Text = "Снять все";
-            this.butCheckClearD.UseVisualStyleBackColor = true;
-            this.butCheckClearD.Click += new System.EventHandler(this.butCheckClearD_Click);
-            // 
-            // butCheckAllD
-            // 
-            this.butCheckAllD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.butCheckAllD.ForeColor = System.Drawing.Color.Black;
-            this.butCheckAllD.Location = new System.Drawing.Point(8, 582);
-            this.butCheckAllD.Name = "butCheckAllD";
-            this.butCheckAllD.Size = new System.Drawing.Size(82, 23);
-            this.butCheckAllD.TabIndex = 62;
-            this.butCheckAllD.Text = "Выбрать все";
-            this.butCheckAllD.UseVisualStyleBackColor = true;
-            this.butCheckAllD.Click += new System.EventHandler(this.butCheckAllD_Click);
-            // 
-            // butCheckClearC
-            // 
-            this.butCheckClearC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.butCheckClearC.ForeColor = System.Drawing.Color.Black;
-            this.butCheckClearC.Location = new System.Drawing.Point(96, 170);
-            this.butCheckClearC.Name = "butCheckClearC";
-            this.butCheckClearC.Size = new System.Drawing.Size(96, 23);
-            this.butCheckClearC.TabIndex = 65;
-            this.butCheckClearC.Text = "Снять все";
-            this.butCheckClearC.UseVisualStyleBackColor = true;
-            this.butCheckClearC.Click += new System.EventHandler(this.butCheckClearC_Click);
-            // 
-            // butCheckAllC
-            // 
-            this.butCheckAllC.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.butCheckAllC.ForeColor = System.Drawing.Color.Black;
-            this.butCheckAllC.Location = new System.Drawing.Point(8, 170);
-            this.butCheckAllC.Name = "butCheckAllC";
-            this.butCheckAllC.Size = new System.Drawing.Size(82, 23);
-            this.butCheckAllC.TabIndex = 64;
-            this.butCheckAllC.Text = "Выбрать все";
-            this.butCheckAllC.UseVisualStyleBackColor = true;
-            this.butCheckAllC.Click += new System.EventHandler(this.butCheckAllC_Click);
             // 
             // AccumulativeOnArrival
             // 
@@ -587,6 +587,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(996, 651);
             this.Name = "AccumulativeOnArrival";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Накопительные по приходу";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AccumulativeOnArrival_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.dGVProducts)).EndInit();

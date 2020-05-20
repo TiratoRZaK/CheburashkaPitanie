@@ -353,6 +353,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "PatternsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Варианты меню";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PatternsForm_FormClosed);
             this.panel1.ResumeLayout(false);
